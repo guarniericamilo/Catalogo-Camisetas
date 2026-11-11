@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catálogo de camisas</title>
+<meta name="description" content="Camisas de futebol e basquete. Escolha o tamanho e peça pelo WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --chalk:#F1F3EE; --paper:#FFFFFF; --ink:#12181B; --muted:#5B666B;
+  --line:#D3D9D0; --grass:#0F5C3E; --signal:#F2C230; --img:#E4E8E0;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--chalk);color:var(--ink);font:400 16px/1.45 'Barlow',system-ui,sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+header .wrap{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding-top:22px;padding-bottom:12px}
+h1{font:700 36px/1 'Barlow Condensed',sans-serif;margin:0;letter-spacing:.01em}
+.sub{color:var(--muted);margin:6px 0 0;font-size:15px}
+.wa{color:var(--grass);font-weight:600;white-space:nowrap}
+
+.bar{position:sticky;top:0;z-index:5;background:var(--chalk);padding:8px 0 10px;border-bottom:1px solid var(--line)}
+.search input{width:100%;height:46px;border:1.5px solid var(--ink);border-radius:4px;padding:0 14px;font:500 16px 'Barlow',sans-serif;background:var(--paper);color:var(--ink)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1.5px solid var(--ink);background:transparent;border-radius:999px;padding:7px 14px;font:600 15px 'Barlow',sans-serif;color:var(--ink);cursor:pointer;white-space:nowrap}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--chalk)}
+.chip small{opacity:.65;font-weight:500;margin-left:5px;font-size:13px}
+.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-top:8px}
+select{width:100%;height:42px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);font:500 15px 'Barlow',sans-serif;padding:0 8px;color:var(--ink)}
+
+.meta{display:flex;justify-content:space-between;align-items:center;padding:14px 0 10px;color:var(--muted);font-size:15px}
+.link{background:none;border:0;color:var(--grass);font:600 15px 'Barlow',sans-serif;text-decoration:underline;cursor:pointer;padding:0}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px;padding-bottom:64px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 16px}}
+@media(min-width:960px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1180px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+
+.card{display:block;width:100%;text-align:left;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit}
+.ph{position:relative;aspect-ratio:4/5;background:var(--img);border-radius:3px;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.tag{position:absolute;right:0;top:10px;background:var(--grass);color:#fff;padding:3px 10px 3px 18px;
+  clip-path:polygon(11px 0,100% 0,100% 100%,11px 100%,0 50%);font:700 21px/1.15 'Barlow Condensed',sans-serif;letter-spacing:.01em}
+.low{position:absolute;left:0;bottom:10px;background:var(--signal);color:var(--ink);font:600 13px 'Barlow',sans-serif;padding:3px 9px}
+.team{font-size:14px;color:var(--muted);margin:8px 0 0}
+.name{font:600 16px/1.25 'Barlow',sans-serif;margin:2px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sz{display:flex;flex-wrap:wrap;gap:4px}
+.sz span{min-width:26px;height:24px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;font:600 14px 'Barlow Condensed',sans-serif;letter-spacing:.02em;border:1px solid var(--ink)}
+.sz .off{color:#97A09D;border-color:var(--line);text-decoration:line-through}
+
+.empty,.state{padding:48px 0;text-align:center;color:var(--muted)}
+.empty .link,.state .link{display:block;margin:10px auto 0}
+
+.modal{position:fixed;inset:0;z-index:20;background:rgba(18,24,27,.55);display:flex;align-items:flex-end;justify-content:center}
+.modal[hidden]{display:none}
+.sheet{background:var(--chalk);width:100%;max-width:920px;max-height:92vh;overflow:auto;border-radius:12px 12px 0 0;position:relative;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@media(min-width:760px){.modal{align-items:center}.sheet{border-radius:6px;display:grid;grid-template-columns:1fr 1fr;max-height:88vh}}
+@media(prefers-reduced-motion:reduce){.sheet{animation:none}}
+.gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;background:var(--img);scrollbar-width:none}
+.gallery::-webkit-scrollbar{display:none}
+.gallery img{flex:none;width:100%;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:center}
+.info{padding:18px 18px 26px}
+.x{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:var(--paper);font-size:22px;line-height:1;cursor:pointer}
+.info h2{font:600 20px/1.25 'Barlow',sans-serif;margin:0 40px 0 0}
+.m-team{color:var(--muted);margin:2px 0 0}
+.m-price{font:700 40px/1 'Barlow Condensed',sans-serif;color:var(--grass);margin:12px 0 16px}
+.sizes{border:0;padding:0;margin:0 0 8px;display:flex;flex-wrap:wrap;gap:8px}
+.sizes legend{font-weight:600;margin-bottom:8px;padding:0}
+.sb{min-width:48px;height:44px;border:1.5px solid var(--ink);background:var(--paper);border-radius:3px;font:600 18px 'Barlow Condensed',sans-serif;cursor:pointer;color:var(--ink)}
+.sb[aria-pressed=true]{background:var(--ink);color:#fff}
+.sb:disabled{color:#97A09D;border-color:var(--line);text-decoration:line-through;cursor:not-allowed;background:transparent}
+.stock{min-height:24px;color:var(--muted);margin:2px 0 14px}
+.buy{display:flex;align-items:center;justify-content:center;height:52px;background:var(--grass);color:#fff;border-radius:4px;font:600 17px 'Barlow',sans-serif;text-decoration:none}
+.buy[aria-disabled=true]{background:#9DB7AB;pointer-events:none}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--grass);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div>
+      <h1 id="brand">Catálogo</h1>
+      <p class="sub">Escolha a camisa e o tamanho. O pedido sai pelo WhatsApp.</p>
+    </div>
+    <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="search"><input id="q" type="search" placeholder="Buscar time, seleção ou jogador" autocomplete="off" aria-label="Buscar"></div>
+    <div class="chips" id="chips" role="group" aria-label="Categorias"></div>
+    <div class="filters">
+      <select id="team" aria-label="Time"></select>
+      <select id="size" aria-label="Tamanho"></select>
+      <select id="sort" aria-label="Ordenar">
+        <option value="az">Nome A–Z</option>
+        <option value="menor">Menor preço</option>
+        <option value="maior">Maior preço</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="meta"><span id="count"></span><button class="link" id="clear" hidden>Limpar filtros</button></div>
+  <div id="state" class="state">Carregando o catálogo…</div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="x" id="mClose" aria-label="Fechar">×</button>
+    <div class="gallery" id="mGallery"></div>
+    <div class="info">
+      <h2 id="mTitle"></h2>
+      <p class="m-team" id="mTeam"></p>
+      <p class="m-price" id="mPrice"></p>
+      <fieldset class="sizes" id="mSizes"><legend>Tamanho</legend></fieldset>
+      <p class="stock" id="mStock" aria-live="polite"></p>
+      <a class="buy" id="mBuy" href="#" target="_blank" rel="noopener" aria-disabled="true">Escolha um tamanho</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ---------- Configuração ----------
+  const CONFIG = {
+    nome: 'Catálogo',                       // nome provisório da marca
+    whatsapp: '',                            // número dos pedidos com DDI e DDD, ex.: '5511999999999'
+    supabaseUrl: 'https://sjcnnafmshtdymfvmunt.supabase.co',
+    supabaseKey: 'sb_publishable_tg6lE_gEx3EboWHYjORdXw_Sc38uot5'
+  };
+  const LOW_STOCK = 5;
+
+  const CAT = { torcedor:'Torcedor', player:'Player', retro:'Retrô', feminina:'Feminina',
+                infantil:'Infantil', nba:'Basquete', treino:'Treino', acessorio:'Acessórios' };
+  const CAT_ORDER = Object.keys(CAT);
+  const SIZE_ORDER = ['PP','P','M','G','GG','XG','XGG','2GG','3GG','4GG','5GG','2XL','3XL','4XL'];
+
+  // ---------- Utilidades ----------
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const money = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: Number.isInteger(Number(v)) ? 0 : 2, maximumFractionDigits: 2 });
+  const imgUrl = (u, w) => u + (u.includes('?') ? '&' : '?') + 'width=' + w;
+  const rank = s => { const i = SIZE_ORDER.indexOf(String(s).toUpperCase()); if (i >= 0) return i; const n = parseFloat(s); return isNaN(n) ? 99 : 100 + n; };
+
+  // Times, seleções e apelidos (escritos sem acento, em minúsculas)
+  const T = (label, ...alias) => ({ label, alias, re: new RegExp('(^| )(' + alias.map(reEsc).join('|') + ')( |$)') });
+  const TEAMS = [
+    T('Flamengo','flamengo','fla','mengao'), T('Corinthians','corinthians','timao'),
+    T('Palmeiras','palmeiras','verdao'), T('São Paulo','sao paulo','spfc','sao paulino'),
+    T('Santos','santos','peixe'), T('Vasco','vasco','vasco da gama'), T('Fluminense','fluminense','flu'),
+    T('Botafogo','botafogo'), T('Grêmio','gremio'),
+    T('Inter de Milão','inter de milao','inter milan'), T('Inter Miami','inter miami'),
+    T('Internacional','internacional','colorado'), T('Cruzeiro','cruzeiro'),
+    T('Atlético de Madrid','atletico de madrid','atletico madrid'),
+    T('Atlético-MG','atletico mg','atletico mineiro','galo'), T('Bahia','bahia'),
+    T('Real Madrid','real madrid'), T('Barcelona','barcelona','barca'),
+    T('Manchester City','manchester city','man city'), T('Manchester United','manchester united','man united'),
+    T('Liverpool','liverpool'), T('Arsenal','arsenal'), T('Chelsea','chelsea'), T('Tottenham','tottenham'),
+    T('Bayern de Munique','bayern','bayern de munique'), T('Borussia Dortmund','borussia dortmund','dortmund'),
+    T('PSG','psg','paris saint germain'), T('Milan','milan','ac milan'), T('Juventus','juventus','juve'),
+    T('Napoli','napoli'), T('Roma','roma','as roma'), T('Benfica','benfica'), T('Porto','porto','fc porto'),
+    T('Ajax','ajax'), T('Boca Juniors','boca juniors','boca'), T('River Plate','river plate'), T('Al Nassr','al nassr'),
+    T('Brasil','brasil','selecao brasileira','selecao'), T('Argentina','argentina'), T('Portugal','portugal'),
+    T('França','franca'), T('Alemanha','alemanha'), T('Espanha','espanha'), T('Inglaterra','inglaterra'),
+    T('Itália','italia'), T('Holanda','holanda'), T('Uruguai','uruguai'), T('Colômbia','colombia'),
+    T('México','mexico'), T('Japão','japao'), T('Croácia','croacia'), T('Marrocos','marrocos'),
+    T('Estados Unidos','estados unidos','eua','usa'),
+    T('Lakers','lakers'), T('Warriors','warriors'), T('Bulls','bulls'), T('Celtics','celtics'), T('Knicks','knicks'),
+    T('Heat','heat','miami heat'), T('Nets','nets'), T('Suns','suns'), T('Mavericks','mavericks'),
+    T('76ers','76ers','sixers'), T('Magic','magic','orlando magic'), T('Spurs','spurs'), T('Bucks','bucks'),
+    T('Clippers','clippers'), T('Raptors','raptors'), T('Rockets','rockets'), T('Thunder','thunder'),
+    T('Cavaliers','cavaliers','cavs'), T('Nuggets','nuggets'), T('Timberwolves','timberwolves'), T('Pistons','pistons'),
+    T('Hornets','hornets'), T('Grizzlies','grizzlies'), T('Pelicans','pelicans'), T('Hawks','hawks'),
+    T('Pacers','pacers'), T('Wizards','wizards'), T('Jazz','jazz'), T('Trail Blazers','trail blazers','blazers'), T('Kings','kings')
+  ];
+
+  // ---------- Estado ----------
+  let ALL = [];
+  const S = { q:'', cat:'', team:'', size:'', sort:'az' };
+  let current = null, pickedSize = '', lastFocus = null;
+
+  function prep(p) {
+    const n = norm(p.nome);
+    const team = TEAMS.find(t => t.re.test(n));
+    p._team = team ? team.label : '';
+    p._hay = n + ' ' + (team ? team.alias.join(' ') : '') + ' ' + norm(CAT[p.categoria] || '');
+    p._sizes = (Array.isArray(p.tamanhos) ? p.tamanhos : []).slice().sort((a, b) => rank(a.tamanho) - rank(b.tamanho));
+    p._avail = p._sizes.filter(s => s.disponivel);
+    const qs = p._avail.filter(s => s.qtd != null);
+    p._low = qs.length > 0 && qs.reduce((t, s) => t + s.qtd, 0) <= LOW_STOCK;
+    p.imagens = Array.isArray(p.imagens) ? p.imagens : [];
+    return p;
+  }
+
+  // ---------- Filtros ----------
+  function visible() {
+    const toks = norm(S.q).split(' ').filter(Boolean);
+    const out = ALL.filter(p =>
+      (!S.cat || p.categoria === S.cat) &&
+      (!S.team || p._team === S.team) &&
+      (!S.size || p._avail.some(s => s.tamanho === S.size)) &&
+      toks.every(t => p._hay.includes(t)));
+    const price = p => p.preco == null ? Infinity : Number(p.preco);
+    if (S.sort === 'menor') out.sort((a, b) => price(a) - price(b) || a.nome.localeCompare(b.nome, 'pt'));
+    else if (S.sort === 'maior') out.sort((a, b) => (price(b) === Infinity ? -1 : price(b)) - (price(a) === Infinity ? -1 : price(a)) || a.nome.localeCompare(b.nome, 'pt'));
+    else out.sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+    return out;
+  }
+
+  function card(p) {
+    const img = p.imagens[0] ? `<img src="${esc(imgUrl(p.imagens[0], 480))}" alt="" loading="lazy" decoding="async">` : '';
+    const price = p.preco != null ? money(p.preco) : 'Consulte';
+    const sizes = p._sizes.map(s => `<span class="${s.disponivel ? '' : 'off'}">${esc(s.tamanho)}</span>`).join('');
+    return `<button class="card" data-h="${esc(p.handle)}"><div class="ph">${img}<span class="tag">${esc(price)}</span>${p._low ? '<span class="low">Últimas peças</span>' : ''}</div>` +
+           `<p class="team">${esc(p._team || CAT[p.categoria] || '')}</p><p class="name">${esc(p.nome)}</p><div class="sz">${sizes}</div></button>`;
+  }
+
+  function render() {
+    const list = visible();
+    $('#count').textContent = list.length + (list.length === 1 ? ' produto' : ' produtos');
+    $('#clear').hidden = !(S.q || S.cat || S.team || S.size);
+    $('#grid').innerHTML = list.map(card).join('');
+    const st = $('#state');
+    if (!list.length) { st.hidden = false; st.innerHTML = 'Nenhum produto com esses filtros.<button class="link" id="clear2">Limpar filtros</button>'; }
+    else st.hidden = true;
+    syncHash();
+  }
+
+  function buildControls() {
+    const counts = {};
+    ALL.forEach(p => counts[p.categoria] = (counts[p.categoria] || 0) + 1);
+    const chips = [`<button class="chip" data-c="" aria-pressed="${!S.cat}">Tudo<small>${ALL.length}</small></button>`]
+      .concat(CAT_ORDER.filter(c => counts[c]).map(c => `<button class="chip" data-c="${c}" aria-pressed="${S.cat === c}">${CAT[c]}<small>${counts[c]}</small></button>`));
+    $('#chips').innerHTML = chips.join('');
+
+    const tc = {};
+    ALL.forEach(p => { if (p._team) tc[p._team] = (tc[p._team] || 0) + 1; });
+    const teams = Object.keys(tc).sort((a, b) => tc[b] - tc[a] || a.localeCompare(b, 'pt'));
+    $('#team').innerHTML = '<option value="">Todos os times</option>' + teams.map(t => `<option value="${esc(t)}">${esc(t)} (${tc[t]})</option>`).join('');
+    $('#team').value = S.team;
+
+    const sz = new Set();
+    ALL.forEach(p => p._avail.forEach(s => sz.add(s.tamanho)));
+    const sizes = [...sz].sort((a, b) => rank(a) - rank(b));
+    $('#size').innerHTML = '<option value="">Qualquer tamanho</option>' + sizes.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+    $('#size').value = S.size;
+    $('#sort').value = S.sort;
+    $('#q').value = S.q;
+  }
+
+  function setCat(c) {
+    S.cat = c;
+    document.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.c === c)));
+    render();
+  }
+  function clearAll() {
+    S.q = ''; S.cat = ''; S.team = ''; S.size = '';
+    $('#q').value = ''; $('#team').value = ''; $('#size').value = '';
+    document.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.c === '')));
+    render();
+  }
+
+  // ---------- Endereço (compartilhar filtros e peças) ----------
+  function syncHash() {
+    const p = new URLSearchParams();
+    if (S.q) p.set('q', S.q);
+    if (S.cat) p.set('cat', S.cat);
+    if (S.team) p.set('time', S.team);
+    if (S.size) p.set('tam', S.size);
+    if (S.sort !== 'az') p.set('ord', S.sort);
+    if (current) p.set('p', current.handle);
+    const h = p.toString();
+    try { history.replaceState(null, '', h ? '#' + h : location.pathname + location.search); } catch (_) {}
+  }
+  function readHash() {
+    const p = new URLSearchParams(location.hash.slice(1));
+    S.q = p.get('q') || ''; S.cat = p.get('cat') || ''; S.team = p.get('time') || '';
+    S.size = p.get('tam') || ''; S.sort = p.get('ord') || 'az';
+    return p.get('p');
+  }
+
+  // ---------- Peça aberta ----------
+  function waLink(p, size) {
+    let msg = 'Olá! Tenho interesse na ' + p.nome;
+    if (size && size !== 'Único') msg += ', tamanho ' + size;
+    msg += p.preco != null ? ' (' + money(p.preco) + '). Ainda está disponível?' : '. Qual o valor e a disponibilidade?';
+    if (/^https?:/.test(location.protocol)) msg += '\n' + location.origin + location.pathname + '#p=' + p.handle;
+    return 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
+  }
+
+  function pick(size) {
+    pickedSize = size;
+    document.querySelectorAll('.sb').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === size)));
+    const s = current._sizes.find(x => x.tamanho === size);
+    $('#mStock').textContent = !s ? '' : (s.qtd != null && s.qtd <= LOW_STOCK ? (s.qtd === 1 ? 'Resta 1 peça neste tamanho.' : 'Restam ' + s.qtd + ' peças neste tamanho.') : 'Disponível.');
+    const buy = $('#mBuy');
+    buy.textContent = 'Pedir pelo WhatsApp';
+    buy.href = waLink(current, size);
+    buy.setAttribute('aria-disabled', 'false');
+  }
+
+  function openProduct(handle) {
+    const p = ALL.find(x => x.handle === handle);
+    if (!p) return;
+    current = p; pickedSize = ''; lastFocus = document.activeElement;
+    $('#mTitle').textContent = p.nome;
+    $('#mTeam').textContent = p._team || CAT[p.categoria] || '';
+    $('#mPrice').textContent = p.preco != null ? money(p.preco) : 'Consulte o valor';
+    $('#mGallery').innerHTML = (p.imagens.length ? p.imagens : []).slice(0, 8).map(u => `<img src="${esc(imgUrl(u, 900))}" alt="${esc(p.nome)}" loading="lazy">`).join('');
+    $('#mSizes').innerHTML = '<legend>Tamanho</legend>' + p._sizes.map(s =>
+      `<button class="sb" data-s="${esc(s.tamanho)}" aria-pressed="false" ${s.disponivel ? '' : 'disabled'}>${esc(s.tamanho)}</button>`).join('');
+    $('#mStock').textContent = '';
+    const buy = $('#mBuy');
+    buy.textContent = 'Escolha um tamanho'; buy.href = '#'; buy.setAttribute('aria-disabled', 'true');
+    $('#modal').hidden = false;
+    document.body.style.overflow = 'hidden';
+    $('#mClose').focus();
+    if (p._avail.length === 1) pick(p._avail[0].tamanho);
+    syncHash();
+  }
+  function closeProduct() {
+    $('#modal').hidden = true;
+    document.body.style.overflow = '';
+    current = null;
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+    syncHash();
+  }
+
+  // ---------- Eventos ----------
+  $('#chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) setCat(b.dataset.c); });
+  $('#q').addEventListener('input', e => { S.q = e.target.value; render(); });
+  $('#team').addEventListener('change', e => { S.team = e.target.value; render(); });
+  $('#size').addEventListener('change', e => { S.size = e.target.value; render(); });
+  $('#sort').addEventListener('change', e => { S.sort = e.target.value; render(); });
+  $('#clear').addEventListener('click', clearAll);
+  $('#state').addEventListener('click', e => { if (e.target.id === 'clear2') clearAll(); if (e.target.id === 'retry') load(); });
+  $('#grid').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) openProduct(c.dataset.h); });
+  $('#mSizes').addEventListener('click', e => { const b = e.target.closest('.sb'); if (b && !b.disabled) pick(b.dataset.s); });
+  $('#mClose').addEventListener('click', closeProduct);
+  $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) closeProduct(); });
+
+  // ---------- Carregamento ----------
+  const DEMO = [
+    { handle:'demo-1', nome:'Camisa Flamengo I 26/27 Torcedor - Rubro Negra', categoria:'torcedor', preco:150, imagens:[],
+      tamanhos:[{tamanho:'P',qtd:3,disponivel:true},{tamanho:'M',qtd:0,disponivel:false},{tamanho:'G',qtd:12,disponivel:true},{tamanho:'GG',qtd:8,disponivel:true}] },
+    { handle:'demo-2', nome:'Camisa Brasil Retrô 1998 Nike Amarela', categoria:'retro', preco:225, imagens:[],
+      tamanhos:[{tamanho:'M',qtd:2,disponivel:true},{tamanho:'G',qtd:1,disponivel:true}] },
+    { handle:'demo-3', nome:'Regata NBA Los Angeles Lakers - Amarela - LUKA DONČIĆ 77', categoria:'nba', preco:250, imagens:[],
+      tamanhos:[{tamanho:'M',qtd:9,disponivel:true},{tamanho:'G',qtd:0,disponivel:false},{tamanho:'GG',qtd:6,disponivel:true}] },
+    { handle:'demo-4', nome:'Infantil Corinthians II 26/27 Nike - Preta', categoria:'infantil', preco:150, imagens:[],
+      tamanhos:[{tamanho:'4',qtd:5,disponivel:true},{tamanho:'6',qtd:7,disponivel:true},{tamanho:'8',qtd:0,disponivel:false}] },
+    { handle:'demo-5', nome:'Camisa Real Madrid II 26/27 Jogador Adidas - Verde', categoria:'player', preco:150, imagens:[],
+      tamanhos:[{tamanho:'G',qtd:4,disponivel:true},{tamanho:'GG',qtd:10,disponivel:true}] },
+    { handle:'demo-6', nome:'Chaveiro Camisa Barcelona', categoria:'acessorio', preco:null, imagens:[],
+      tamanhos:[{tamanho:'Único',qtd:null,disponivel:true}] }
+  ];
+
+  async function load() {
+    const st = $('#state');
+    st.hidden = false; st.textContent = 'Carregando o catálogo…';
+    let data;
+    try {
+      if (new URLSearchParams(location.search).has('demo')) data = DEMO;
+      else {
+        const url = CONFIG.supabaseUrl + '/rest/v1/catalogo?select=handle,nome,tipo,categoria,imagens,preco,tamanhos,disponivel&disponivel=eq.true&limit=1000';
+        const r = await fetch(url, { headers: { apikey: CONFIG.supabaseKey, Accept: 'application/json' } });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        data = await r.json();
+      }
+    } catch (e) {
+      st.innerHTML = 'Não consegui carregar o catálogo. Verifique a conexão e tente de novo.<button class="link" id="retry">Tentar de novo</button>';
+      return;
+    }
+    ALL = data.filter(p => p.categoria !== 'patch').map(prep);
+    const open = readHash();
+    buildControls();
+    render();
+    if (open) openProduct(open);
+  }
+
+  document.title = CONFIG.nome + ' | Camisas';
+  $('#brand').textContent = CONFIG.nome;
+  if (CONFIG.whatsapp) { const a = $('#waTop'); a.hidden = false; a.href = 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, ''); a.target = '_blank'; a.rel = 'noopener'; }
+  load();
+})();
+</script>
+</body>
+</html>
