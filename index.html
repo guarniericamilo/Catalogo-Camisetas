@@ -7,112 +7,190 @@
 <meta name="description" content="Camisas de futebol e basquete. Escolha o tamanho e peça pelo WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --chalk:#F1F3EE; --paper:#FFFFFF; --ink:#12181B; --muted:#5B666B;
-  --line:#D3D9D0; --grass:#0F5C3E; --signal:#F2C230; --img:#E4E8E0;
+  --bg:#E8ECEA; --tile:#FFFFFF; --ink:#0F1A15; --muted:#5C6963; --line:#C9D1CD;
+  --pitch:#0A7C3E; --amarelo:#FFD400; --vermelho:#E3262B;
+  --head:'Big Shoulders Display','Arial Narrow',sans-serif;
+  --body:'Hanken Grotesk',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--chalk);color:var(--ink);font:400 16px/1.45 'Barlow',system-ui,sans-serif}
-.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
-header .wrap{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding-top:22px;padding-bottom:12px}
-h1{font:700 36px/1 'Barlow Condensed',sans-serif;margin:0;letter-spacing:.01em}
-.sub{color:var(--muted);margin:6px 0 0;font-size:15px}
-.wa{color:var(--grass);font-weight:600;white-space:nowrap}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.4 var(--body)}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+button{font-family:inherit;color:inherit}
 
-.bar{position:sticky;top:0;z-index:5;background:var(--chalk);padding:8px 0 10px;border-bottom:1px solid var(--line)}
-.search input{width:100%;height:46px;border:1.5px solid var(--ink);border-radius:4px;padding:0 14px;font:500 16px 'Barlow',sans-serif;background:var(--paper);color:var(--ink)}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+/* topo */
+.top{background:var(--ink);color:#fff}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;height:60px}
+h1{font:900 34px/1 var(--head);margin:0;letter-spacing:.02em}
+.wa{font:600 15px var(--body);color:#fff;text-decoration:none;border:1.5px solid #fff;padding:7px 14px;border-radius:2px}
+.wa[hidden]{display:none}
+
+/* busca e filtros */
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;border-bottom:1px solid var(--line)}
+.searchrow{display:flex;gap:8px}
+.search{flex:1;min-width:0}
+.search input{width:100%;height:48px;border:1.5px solid var(--ink);border-radius:2px;padding:0 14px;font:500 16px var(--body);background:#fff;color:var(--ink)}
+.fbtn{flex:none;height:48px;padding:0 16px;border:1.5px solid var(--ink);border-radius:2px;background:transparent;font:600 16px var(--body);cursor:pointer;display:flex;align-items:center;gap:8px}
+.fbtn[aria-expanded=true]{background:var(--ink);color:#fff}
+.badge{min-width:22px;height:22px;border-radius:11px;background:var(--pitch);color:#fff;font:700 13px/22px var(--body);text-align:center;padding:0 6px}
+
+/* ligas = abas */
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1.5px solid var(--ink);background:transparent;border-radius:999px;padding:7px 14px;font:600 15px 'Barlow',sans-serif;color:var(--ink);cursor:pointer;white-space:nowrap}
-.chip[aria-pressed=true]{background:var(--ink);color:var(--chalk)}
-.chip small{opacity:.65;font-weight:500;margin-left:5px;font-size:13px}
-.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-top:8px}
-select{width:100%;height:42px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);font:500 15px 'Barlow',sans-serif;padding:0 8px;color:var(--ink)}
+.ligas{gap:22px;margin-top:6px}
+#ligas .chip{flex:none;border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:12px 0 9px;font:600 16px var(--body);color:var(--muted);cursor:pointer;white-space:nowrap}
+#ligas .chip small{font-weight:500;font-size:12px;margin-left:5px;opacity:.8}
+#ligas .chip[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--pitch)}
 
-.meta{display:flex;justify-content:space-between;align-items:center;padding:14px 0 10px;color:var(--muted);font-size:15px}
-.link{background:none;border:0;color:var(--grass);font:600 15px 'Barlow',sans-serif;text-decoration:underline;cursor:pointer;padding:0}
+/* filtros laterais */
+.layout{display:block}
+.lbl{display:block;margin:0 0 8px;font:600 14px var(--body);color:var(--muted)}
+.group{margin-bottom:22px}
+.list{display:flex;flex-direction:column}
+.list .chip{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;border:0;border-left:3px solid transparent;background:none;padding:9px 10px;font:500 15px var(--body);cursor:pointer;color:var(--ink)}
+.list .chip:hover{background:rgba(15,26,21,.06)}
+.list .chip[aria-pressed=true]{border-left-color:var(--pitch);background:#fff;font-weight:700}
+.chip small{font-weight:500;font-size:12px;opacity:.7}
+#versoes{display:flex;width:100%;border:1.5px solid var(--ink);border-radius:2px;overflow:hidden}
+#versoes .chip{flex:1;border:0;background:#fff;padding:9px 6px;font:600 15px var(--body);cursor:pointer;border-right:1.5px solid var(--ink)}
+#versoes .chip:last-child{border-right:0}
+#versoes .chip[aria-pressed=true]{background:var(--ink);color:#fff}
+#versoes .chip small{display:none}
+.side-head,.side-foot,.scrim{display:none}
+.side{position:fixed;z-index:30;top:0;bottom:0;left:0;width:min(88vw,360px);background:var(--bg);display:flex;flex-direction:column;transform:translateX(-102%);transition:transform .22s ease-out;box-shadow:0 0 0 100vmax rgba(0,0,0,0)}
+.side.open{transform:none}
+.side-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);font:800 24px var(--head);letter-spacing:.02em}
+.x2{width:40px;height:40px;border:1.5px solid var(--ink);background:#fff;border-radius:2px;font-size:22px;line-height:1;cursor:pointer}
+.side-body{flex:1;overflow:auto;padding:16px}
+.side-foot{padding:12px 16px;border-top:1px solid var(--line);background:var(--bg)}
+.apply{width:100%;height:50px;border:0;border-radius:2px;background:var(--pitch);color:#fff;font:700 16px var(--body);cursor:pointer}
+.scrim{position:fixed;inset:0;z-index:25;background:rgba(15,26,21,.55)}
+.side-head,.side-foot{display:flex}
+.scrim:not([hidden]){display:block}
+@media(prefers-reduced-motion:reduce){.side{transition:none}}
+@media(min-width:960px){
+  .layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:36px;align-items:start;padding-top:18px}
+  .side{position:sticky;top:78px;z-index:1;width:auto;transform:none;background:none;max-height:calc(100vh - 92px);transition:none}
+  .side-head,.side-foot{display:none}
+  .side-body{padding:0 4px 24px 0}
+  .fbtn,.ligas{display:none}
+  .scrim{display:none!important}
+  .bar{padding-bottom:12px}
+  .meta{padding-top:0}
+}
+.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media(max-width:560px){.filters{grid-template-columns:1fr 1fr}.filters select:first-child{grid-column:1/-1}}
+select{width:100%;height:46px;border:1.5px solid var(--line);border-radius:2px;background:#fff;font:500 15px var(--body);padding:0 8px;color:var(--ink)}
 
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px;padding-bottom:64px}
-@media(min-width:640px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 16px}}
-@media(min-width:960px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media(min-width:1180px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.active{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px}
+.active:empty{display:none}
+.tagx{border:1.5px solid var(--pitch);background:transparent;color:var(--pitch);border-radius:2px;padding:4px 10px;font:600 14px var(--body);cursor:pointer}
+.meta{display:flex;justify-content:space-between;align-items:center;padding:14px 0 12px;color:var(--muted);font-size:15px}
+.link{background:none;border:0;color:var(--ink);font:600 15px var(--body);text-decoration:underline;cursor:pointer;padding:0}
 
-.card{display:block;width:100%;text-align:left;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit}
-.ph{position:relative;aspect-ratio:4/5;background:var(--img);border-radius:3px;overflow:hidden}
-.ph img{width:100%;height:100%;object-fit:cover;display:block}
-.tag{position:absolute;right:0;top:10px;background:var(--grass);color:#fff;padding:3px 10px 3px 18px;
-  clip-path:polygon(11px 0,100% 0,100% 100%,11px 100%,0 50%);font:700 21px/1.15 'Barlow Condensed',sans-serif;letter-spacing:.01em}
-.low{position:absolute;left:0;bottom:10px;background:var(--signal);color:var(--ink);font:600 13px 'Barlow',sans-serif;padding:3px 9px}
-.team{font-size:14px;color:var(--muted);margin:8px 0 0}
-.name{font:600 16px/1.25 'Barlow',sans-serif;margin:2px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.sz{display:flex;flex-wrap:wrap;gap:4px}
-.sz span{min-width:26px;height:24px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;font:600 14px 'Barlow Condensed',sans-serif;letter-spacing:.02em;border:1px solid var(--ink)}
-.sz .off{color:#97A09D;border-color:var(--line);text-decoration:line-through}
+/* vitrine */
+@media(max-width:480px){.row{flex-direction:column-reverse;align-items:flex-start;gap:3px}}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px;padding-bottom:72px}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 14px}}
+@media(min-width:960px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1200px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.card{display:flex;flex-direction:column;align-self:start;width:100%;text-align:left;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit}
+.ph{position:relative;aspect-ratio:4/5;background:var(--tile);overflow:hidden;width:100%}
+.ph img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;padding:4%;display:block;transition:transform .25s}
+.card:hover .ph img{transform:scale(1.04)}
+@media(prefers-reduced-motion:reduce){.card:hover .ph img{transform:none}}
+.low{position:absolute;left:10px;top:0;width:46px;padding:9px 4px 8px;background:var(--amarelo);color:var(--ink);font:700 11px/1.1 var(--body);text-align:center;border-radius:0 0 3px 3px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:10px}
+.name{margin:0;font:600 16px/1.2 var(--body)}
+.pr{margin:0;flex:none;font:800 26px/1 var(--head);letter-spacing:.01em}
+.det{margin:3px 0 8px;font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:1.3em}
+.sz{display:flex;flex-wrap:wrap;gap:4px 12px;font:700 14px var(--body);letter-spacing:.02em}
+.sz .off{color:#A3ADA8;text-decoration:line-through;font-weight:500}
 
 .empty,.state{padding:48px 0;text-align:center;color:var(--muted)}
-.empty .link,.state .link{display:block;margin:10px auto 0}
+.state .link{display:block;margin:10px auto 0}
 
-.modal{position:fixed;inset:0;z-index:20;background:rgba(18,24,27,.55);display:flex;align-items:flex-end;justify-content:center}
+/* peça aberta */
+.modal{position:fixed;inset:0;z-index:20;background:rgba(15,26,21,.6);display:flex;align-items:flex-end;justify-content:center}
 .modal[hidden]{display:none}
-.sheet{background:var(--chalk);width:100%;max-width:920px;max-height:92vh;overflow:auto;border-radius:12px 12px 0 0;position:relative;animation:up .22s ease-out}
-@keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
-@media(min-width:760px){.modal{align-items:center}.sheet{border-radius:6px;display:grid;grid-template-columns:1fr 1fr;max-height:88vh}}
+.sheet{background:var(--bg);width:100%;max-width:940px;max-height:94vh;overflow:auto;position:relative;animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+@media(min-width:760px){.modal{align-items:center}.sheet{display:grid;grid-template-columns:1fr 1fr;max-height:88vh}}
 @media(prefers-reduced-motion:reduce){.sheet{animation:none}}
-.gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;background:var(--img);scrollbar-width:none}
+.gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;background:var(--tile);scrollbar-width:none}
 .gallery::-webkit-scrollbar{display:none}
-.gallery img{flex:none;width:100%;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:center}
-.info{padding:18px 18px 26px}
-.x{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:var(--paper);font-size:22px;line-height:1;cursor:pointer}
-.info h2{font:600 20px/1.25 'Barlow',sans-serif;margin:0 40px 0 0}
-.m-team{color:var(--muted);margin:2px 0 0}
-.m-price{font:700 40px/1 'Barlow Condensed',sans-serif;color:var(--grass);margin:12px 0 16px}
+.gallery img{flex:none;width:100%;aspect-ratio:1/1;max-height:62vh;object-fit:contain;mix-blend-mode:multiply;scroll-snap-align:center;padding:4%}
+.info{padding:18px 18px 28px}
+.x{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;border-radius:2px;border:1.5px solid var(--ink);background:#fff;font-size:22px;line-height:1;cursor:pointer}
+.info h2{font:600 22px/1.2 var(--body);margin:0 44px 0 0}
+.m-det{color:var(--muted);margin:3px 0 0}
+.m-orig{color:var(--muted);font-size:13px;margin:14px 0 0}
+.m-price{font:800 56px/1 var(--head);margin:12px 0 18px;letter-spacing:.01em}
+.desc{list-style:none;margin:-8px 0 16px;padding:0;display:grid;gap:4px;font-size:15px}
+.desc li{display:flex;gap:8px;align-items:center}
+.desc li::before{content:"";flex:none;width:8px;height:8px;background:var(--pitch)}
 .sizes{border:0;padding:0;margin:0 0 8px;display:flex;flex-wrap:wrap;gap:8px}
-.sizes legend{font-weight:600;margin-bottom:8px;padding:0}
-.sb{min-width:48px;height:44px;border:1.5px solid var(--ink);background:var(--paper);border-radius:3px;font:600 18px 'Barlow Condensed',sans-serif;cursor:pointer;color:var(--ink)}
+.sizes legend{font:600 14px var(--body);color:var(--muted);margin-bottom:8px;padding:0}
+.sb{min-width:52px;height:46px;padding:0 12px;border:1.5px solid var(--ink);background:#fff;border-radius:2px;font:700 16px var(--body);cursor:pointer}
 .sb[aria-pressed=true]{background:var(--ink);color:#fff}
-.sb:disabled{color:#97A09D;border-color:var(--line);text-decoration:line-through;cursor:not-allowed;background:transparent}
-.stock{min-height:24px;color:var(--muted);margin:2px 0 14px}
-.buy{display:flex;align-items:center;justify-content:center;height:52px;background:var(--grass);color:#fff;border-radius:4px;font:600 17px 'Barlow',sans-serif;text-decoration:none}
-.buy[aria-disabled=true]{background:#9DB7AB;pointer-events:none}
-a{color:inherit}
-:focus-visible{outline:3px solid var(--grass);outline-offset:2px}
+.sb:disabled{color:#A3ADA8;border-color:var(--line);text-decoration:line-through;cursor:not-allowed;background:transparent;font-weight:500}
+.stock{min-height:26px;color:var(--muted);margin:2px 0 14px;display:flex;align-items:center;gap:8px}
+.stock.baixo{color:var(--ink);font-weight:600}
+.stock.baixo::before{content:"";flex:none;width:14px;height:19px;background:var(--amarelo);border-radius:2px;transform:rotate(-6deg)}
+.buy{display:flex;align-items:center;justify-content:center;height:54px;background:var(--pitch);color:#fff;border-radius:2px;font:700 17px var(--body);text-decoration:none}
+.buy[aria-disabled=true]{background:#B7C2BC;pointer-events:none}
+:focus-visible{outline:3px solid var(--pitch);outline-offset:2px}
 </style>
 </head>
 <body>
-<header>
+<header class="top">
   <div class="wrap">
-    <div>
-      <h1 id="brand">Catálogo</h1>
-      <p class="sub">Escolha a camisa e o tamanho. O pedido sai pelo WhatsApp.</p>
-    </div>
+    <h1 id="brand">Catálogo</h1>
     <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
   </div>
 </header>
 
 <div class="bar">
   <div class="wrap">
-    <div class="search"><input id="q" type="search" placeholder="Buscar time, seleção ou jogador" autocomplete="off" aria-label="Buscar"></div>
-    <div class="chips" id="chips" role="group" aria-label="Categorias"></div>
-    <div class="filters">
-      <select id="team" aria-label="Time"></select>
-      <select id="size" aria-label="Tamanho"></select>
-      <select id="sort" aria-label="Ordenar">
-        <option value="az">Nome A–Z</option>
-        <option value="menor">Menor preço</option>
-        <option value="maior">Maior preço</option>
-      </select>
+    <div class="searchrow">
+      <div class="search"><input id="q" type="search" placeholder="Buscar time, seleção ou liga" autocomplete="off" aria-label="Buscar"></div>
+      <button class="fbtn" id="fbtn" aria-expanded="false" aria-controls="side">Filtros<span class="badge" id="fcount" hidden></span></button>
     </div>
+    <div class="chips ligas" id="ligas" role="group" aria-label="Seleções e ligas"></div>
   </div>
 </div>
 
-<main class="wrap">
-  <div class="meta"><span id="count"></span><button class="link" id="clear" hidden>Limpar filtros</button></div>
-  <div id="state" class="state">Carregando o catálogo…</div>
-  <div class="grid" id="grid"></div>
-</main>
+<div class="layout wrap">
+  <aside class="side" id="side" aria-label="Filtros">
+    <div class="side-head"><span>Filtros</span><button class="x2" id="sideClose" aria-label="Fechar filtros">×</button></div>
+    <div class="side-body">
+      <div class="group"><p class="lbl">Seleções e ligas</p><div class="list" id="ligasSide" role="group" aria-label="Seleções e ligas"></div></div>
+      <div class="group"><p class="lbl">Versão</p><div class="chips" id="versoes" role="group" aria-label="Versão"></div></div>
+      <div class="group"><p class="lbl">Tipo</p><div class="list" id="tipos" role="group" aria-label="Tipo"></div></div>
+      <div class="group"><label class="lbl" for="team">Time</label><select id="team"></select></div>
+      <div class="group"><label class="lbl" for="size">Tamanho</label><select id="size"></select></div>
+      <div class="group"><label class="lbl" for="sort">Ordenar</label>
+        <select id="sort">
+          <option value="az">Nome A–Z</option>
+          <option value="menor">Menor preço</option>
+          <option value="maior">Maior preço</option>
+        </select></div>
+    </div>
+    <div class="side-foot"><button class="apply" id="apply">Ver produtos</button></div>
+  </aside>
+
+  <main class="content">
+    <div class="active" id="active"></div>
+    <div class="meta"><span id="count"></span><button class="link" id="clear" hidden>Limpar filtros</button></div>
+    <div id="state" class="state">Carregando o catálogo…</div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+<div class="scrim" id="scrim" hidden></div>
 
 <div class="modal" id="modal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
@@ -120,11 +198,13 @@ a{color:inherit}
     <div class="gallery" id="mGallery"></div>
     <div class="info">
       <h2 id="mTitle"></h2>
-      <p class="m-team" id="mTeam"></p>
+      <p class="m-det" id="mDet"></p>
       <p class="m-price" id="mPrice"></p>
+      <ul class="desc" id="mDesc" hidden></ul>
       <fieldset class="sizes" id="mSizes"><legend>Tamanho</legend></fieldset>
       <p class="stock" id="mStock" aria-live="polite"></p>
       <a class="buy" id="mBuy" href="#" target="_blank" rel="noopener" aria-disabled="true">Escolha um tamanho</a>
+      <p class="m-orig" id="mOrig"></p>
     </div>
   </div>
 </div>
@@ -134,69 +214,312 @@ a{color:inherit}
   // ---------- Configuração ----------
   const CONFIG = {
     nome: 'Catálogo',                       // nome provisório da marca
-    whatsapp: '',                            // número dos pedidos com DDI e DDD, ex.: '5511999999999'
+    whatsapp: '5511971576189',               // pedidos; o painel (Sistema) sobrescreve
     supabaseUrl: 'https://sjcnnafmshtdymfvmunt.supabase.co',
     supabaseKey: 'sb_publishable_tg6lE_gEx3EboWHYjORdXw_Sc38uot5'
   };
   const LOW_STOCK = 5;
 
-  const CAT = { torcedor:'Torcedor', player:'Player', retro:'Retrô', feminina:'Feminina',
-                infantil:'Infantil', nba:'Basquete', treino:'Treino', acessorio:'Acessórios' };
-  const CAT_ORDER = Object.keys(CAT);
-  const SIZE_ORDER = ['PP','P','M','G','GG','XG','XGG','2GG','3GG','4GG','5GG','2XL','3XL','4XL'];
-
-  // ---------- Utilidades ----------
-  const $ = s => document.querySelector(s);
+// <logica>
+  const $ = typeof document !== 'undefined' ? (s => document.querySelector(s)) : null;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
   const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  const CAT = { torcedor:'Torcedor', player:'Jogador', retro:'Retrô', feminina:'Feminina',
+                infantil:'Infantil', nba:'Basquete', treino:'Treino', acessorio:'Acessórios' };
+  const TIPO_CHIPS = ['retro', 'feminina', 'infantil', 'treino', 'acessorio'];   // filtros de "Tipo"
+  const LIGA_ORDER = ['Seleções','Brasileirão','Premier League','La Liga','Serie A','Bundesliga','Ligue 1','Basquete'];
+  const LIGA_BUSCA = {
+    'Seleções':'selecao selecoes pais', 'Brasileirão':'brasileirao brasileiro campeonato brasileiro nacional',
+    'Premier League':'premier league ingles campeonato ingles', 'La Liga':'la liga laliga espanhol campeonato espanhol',
+    'Serie A':'serie a italiano campeonato italiano', 'Bundesliga':'bundesliga alemao', 'Ligue 1':'ligue 1 frances campeonato frances',
+    'Basquete':'basquete basket nba', 'Liga Portugal':'portugues portugal liga portugal', 'Eredivisie':'holandes holanda eredivisie',
+    'Liga Argentina':'argentino argentina campeonato argentino', 'Liga Saudita':'saudita arabia', 'MLS':'mls americano eua',
+    'Escócia':'escoces escocia', 'Turquia':'turco turquia'
+  };
+  const SIZE_ORDER = ['PP','P','M','G','GG','XG','XGG','2GG','3GG','4GG','5GG','2XL','3XL','4XL'];
+  const sizeRank = s => { const i = SIZE_ORDER.indexOf(String(s).toUpperCase()); if (i >= 0) return i; const n = parseFloat(s); return isNaN(n) ? 99 : 100 + n; };
+
+  // Times, seleções e apelidos: "liga|nome|apelido1,apelido2" (apelidos sem acento, em minúsculas).
+  // A ordem importa: vale o primeiro que combinar.
+  const DATA = `
+Brasileirão|Flamengo|flamengo,fla,mengao
+Brasileirão|Corinthians|corinthians,timao,corintiano
+Brasileirão|Palmeiras|palmeiras,verdao
+Brasileirão|São Paulo|sao paulo,spfc,sao paulino
+Brasileirão|Santos|santos,peixe
+Brasileirão|Vasco|vasco,vasco da gama
+Brasileirão|Fluminense|fluminense,flu
+Brasileirão|Botafogo|botafogo
+Brasileirão|Grêmio|gremio
+Brasileirão|Internacional|internacional,colorado
+Brasileirão|Cruzeiro|cruzeiro,cruzeirense
+Brasileirão|Atlético-MG|atletico mg,atletico mineiro,galo
+Brasileirão|Bahia|bahia
+Brasileirão|Fortaleza|fortaleza
+Brasileirão|Ceará|ceara
+Brasileirão|Vitória|vitoria
+Brasileirão|Athletico-PR|athletico,athletico pr,atletico pr,furacao
+Brasileirão|Coritiba|coritiba
+Brasileirão|Goiás|goias
+Brasileirão|Cuiabá|cuiaba
+Brasileirão|Juventude|juventude
+Brasileirão|Bragantino|bragantino
+Brasileirão|Mirassol|mirassol
+Brasileirão|Sport|sport recife
+Brasileirão|Remo|remo
+Brasileirão|Paysandu|paysandu
+Brasileirão|Chapecoense|chapecoense
+Brasileirão|Náutico|nautico
+Premier League|Manchester City|manchester city,man city
+Premier League|Manchester United|manchester united,man united
+Premier League|Liverpool|liverpool
+Premier League|Arsenal|arsenal
+Premier League|Chelsea|chelsea
+Premier League|Tottenham|tottenham
+Premier League|Newcastle|newcastle
+Premier League|West Ham|west ham
+Premier League|Aston Villa|aston villa
+Premier League|Leicester|leicester
+Premier League|Everton|everton
+Premier League|Brighton|brighton
+Premier League|Wolverhampton|wolves,wolverhampton,wolverhampton wanderers
+Premier League|Nottingham Forest|nottingham forest
+Premier League|Leeds|leeds
+La Liga|Real Madrid|real madrid
+La Liga|Barcelona|barcelona,barca
+La Liga|Atlético de Madrid|atletico de madrid,atletico madrid
+La Liga|Sevilla|sevilla
+La Liga|Valencia|valencia
+La Liga|Real Sociedad|real sociedad
+La Liga|Athletic Bilbao|athletic bilbao,athletic club
+La Liga|Villarreal|villarreal
+La Liga|Betis|betis,real betis
+Serie A|Inter de Milão|inter de milao,inter milan
+Serie A|Milan|milan,ac milan
+Serie A|Juventus|juventus,juve
+Serie A|Napoli|napoli
+Serie A|Roma|roma,as roma
+Serie A|Lazio|lazio
+Serie A|Atalanta|atalanta
+Serie A|Fiorentina|fiorentina
+Bundesliga|Bayern de Munique|bayern,bayern de munique
+Bundesliga|Borussia Dortmund|borussia dortmund,dortmund
+Bundesliga|Bayer Leverkusen|leverkusen,bayer leverkusen
+Bundesliga|RB Leipzig|leipzig,rb leipzig
+Bundesliga|Eintracht Frankfurt|eintracht frankfurt
+Ligue 1|PSG|psg,paris saint germain
+Ligue 1|Olympique de Marselha|marseille,marselha,olympique de marseille
+Ligue 1|Lyon|lyon
+Ligue 1|Monaco|monaco
+Liga Portugal|Benfica|benfica
+Liga Portugal|Porto|porto,fc porto
+Liga Portugal|Sporting|sporting cp,sporting lisboa,sporting
+Liga Portugal|Braga|braga
+Eredivisie|Ajax|ajax
+Eredivisie|PSV|psv
+Liga Saudita|Al Nassr|al nassr
+Liga Saudita|Al Hilal|al hilal
+Liga Saudita|Al Ittihad|al ittihad
+MLS|Inter Miami|inter miami
+MLS|LA Galaxy|la galaxy
+Liga Argentina|Boca Juniors|boca juniors,boca
+Liga Argentina|River Plate|river plate
+Liga Argentina|Racing|racing club
+Liga Argentina|Independiente|independiente
+Liga Argentina|San Lorenzo|san lorenzo
+Escócia|Celtic|celtic
+Escócia|Rangers|rangers
+Turquia|Galatasaray|galatasaray
+Turquia|Fenerbahçe|fenerbahce
+Turquia|Besiktas|besiktas
+Seleções|Brasil|brasil,selecao brasileira
+Seleções|Argentina|argentina
+Seleções|Portugal|portugal
+Seleções|França|franca
+Seleções|Alemanha|alemanha
+Seleções|Espanha|espanha
+Seleções|Inglaterra|inglaterra
+Seleções|Itália|italia
+Seleções|Holanda|holanda
+Seleções|Uruguai|uruguai
+Seleções|Colômbia|colombia
+Seleções|México|mexico
+Seleções|Japão|japao
+Seleções|Croácia|croacia
+Seleções|Marrocos|marrocos
+Seleções|Estados Unidos|estados unidos,eua,usa
+Seleções|Bélgica|belgica
+Seleções|Suíça|suica
+Seleções|Senegal|senegal
+Seleções|Nigéria|nigeria
+Seleções|Chile|chile
+Seleções|Equador|equador
+Seleções|Paraguai|paraguai
+Seleções|Peru|peru
+Seleções|Coreia do Sul|coreia do sul,coreia
+Seleções|Austrália|australia
+Seleções|Canadá|canada
+Seleções|Dinamarca|dinamarca
+Seleções|Suécia|suecia
+Seleções|Polônia|polonia
+Seleções|Ucrânia|ucrania
+Seleções|Turquia|turquia
+Seleções|Egito|egito
+Seleções|Camarões|camaroes
+Seleções|Gana|gana
+Seleções|Costa do Marfim|costa do marfim
+Seleções|Argélia|argelia
+Seleções|Tunísia|tunisia
+Seleções|Irã|ira
+Seleções|Arábia Saudita|arabia saudita
+Seleções|Escócia|escocia
+Seleções|Noruega|noruega
+Seleções|Áustria|austria
+Seleções|Sérvia|servia
+Basquete|Lakers|lakers,los angeles lakers
+Basquete|Warriors|warriors,golden state warriors
+Basquete|Bulls|bulls,chicago bulls
+Basquete|Celtics|celtics,boston celtics
+Basquete|Knicks|knicks,new york knicks
+Basquete|Heat|heat,miami heat
+Basquete|Nets|nets,brooklyn nets
+Basquete|Suns|suns,phoenix suns
+Basquete|Mavericks|mavericks,dallas mavericks
+Basquete|76ers|76ers,sixers,philadelphia 76ers
+Basquete|Magic|magic,orlando magic,orlando magic city
+Basquete|Spurs|spurs,san antonio spurs
+Basquete|Bucks|bucks,milwaukee bucks
+Basquete|Clippers|clippers,los angeles clippers
+Basquete|Raptors|raptors,toronto raptors
+Basquete|Rockets|rockets,houston rockets
+Basquete|Thunder|thunder,oklahoma city thunder
+Basquete|Cavaliers|cavaliers,cavs,cleveland cavaliers
+Basquete|Nuggets|nuggets,denver nuggets
+Basquete|Timberwolves|timberwolves,minnesota timberwolves
+Basquete|Pistons|pistons,detroit pistons
+Basquete|Hornets|hornets,charlotte hornets
+Basquete|Grizzlies|grizzlies,memphis grizzlies
+Basquete|Pelicans|pelicans,new orleans pelicans
+Basquete|Hawks|hawks,atlanta hawks
+Basquete|Pacers|pacers,indiana pacers
+Basquete|Wizards|wizards,washington wizards
+Basquete|Jazz|jazz,utah jazz
+Basquete|Trail Blazers|trail blazers,portland trail blazers,blazers
+Basquete|Kings|kings,sacramento kings`;
+
+  const TEAMS = DATA.trim().split('\n').map(l => {
+    const [liga, label, al] = l.split('|');
+    const alias = al.split(',').map(a => a.trim());
+    return { liga, label, alias, re: new RegExp('(^| )(' + alias.map(reEsc).join('|') + ')( |$)') };
+  });
+  const TEAMS_CLUBES = TEAMS.filter(t => t.liga !== 'Basquete');
+  const TEAMS_BASQUETE = TEAMS.filter(t => t.liga === 'Basquete').concat(TEAMS.filter(t => t.liga === 'Seleções'));
+
+  // ---------- Padronização dos nomes ----------
+  const BRAND = new Set(['nike','adidas','umbro','puma','reebok','reebook','kappa','betel','penalty','topper','lotto','diadora','macron','hummel','joma','castore','mizuno','jordan']);
+  const DROP = new Set(['camisa','do','da','de','dos','das','masculina','masculino','kit','oficial','nba']);
+  const TIPOS = { regata:'Regata', polo:'Polo', camiseta:'Camiseta', jaqueta:'Jaqueta', moletom:'Moletom', conjunto:'Conjunto', conjuntos:'Conjunto' };
+  const UNIF = { i:'I', ii:'II', iii:'III', titular:'I', reserva:'II', home:'I', away:'II', third:'III', terceira:'III' };
+  const VERSAO = { torcedor:'Torcedor', jogador:'Jogador', player:'Jogador', feminina:'Feminina', feminino:'Feminina', infantil:'Infantil', retro:'Retrô' };
+  const MINOR = new Set(['e','com','sem','da','de','do','dos','das']);
+  const ACRO = new Set(['FIBA','NBA','FIFA','UEFA','CBF','RB','FC','AC','SC','USA','PSG','CR7','II','III']);
+
+  function bonito(tok) {
+    if (!tok) return tok;
+    const up = tok.toUpperCase();
+    if (ACRO.has(up)) return up;
+    if (MINOR.has(tok.toLowerCase())) return tok.toLowerCase();
+    if (tok === up && tok.length > 1 && /[A-ZÀ-Ý]/.test(tok)) return tok.charAt(0) + tok.slice(1).toLowerCase();
+    return tok.charAt(0).toUpperCase() + tok.slice(1);
+  }
+
+  function padroniza(nome, categoria, team) {
+    if (categoria === 'acessorio') return { titulo: String(nome || '').trim(), det: 'Acessório' };
+    let s = String(nome || '');
+    const par = [];
+    s = s.replace(/\(([^)]*)\)/g, (_, t) => { par.push(...t.split(/[+,]/).map(x => x.trim()).filter(Boolean)); return ' '; });
+    const retro = /retr[oô]/i.test(s) || categoria === 'retro';
+
+    let season = '', m;
+    if ((m = s.match(/\b(19\d{2}|20\d{2})\s*\/\s*(\d{2,4})\b/))) {
+      const y1 = m[1], y2 = m[2].slice(-2);
+      season = retro ? y1 + '/' + y2 : y1.slice(2) + '/' + y2; s = s.replace(m[0], ' ');
+    } else if ((m = s.match(/\b(\d{2})\s*\/\s*(\d{2})\b/))) {
+      season = m[1] + '/' + m[2]; s = s.replace(m[0], ' ');
+    } else if ((m = s.match(/\b(19\d{2}|20\d{2})\b/))) {
+      season = m[1]; s = s.replace(m[0], ' ');
+    }
+    s = s.replace(/[–—-]+/g, ' ');
+    const toks = s.split(/\s+/).map(t => t.replace(/^[,;:.]+|[,;:.]+$/g, '')).filter(Boolean);
+    const nt = toks.map(norm);
+
+    if (team) {
+      const als = team.alias.slice().sort((a, b) => b.split(' ').length - a.split(' ').length);
+      for (const al of als) {
+        const w = al.split(' ');
+        for (let i = 0; i + w.length <= nt.length; i++) {
+          if (w.every((x, j) => nt[i + j] === x)) { toks.splice(i, w.length); nt.splice(i, w.length); break; }
+        }
+      }
+    }
+
+    let tipo = '', unif = '', versao = '';
+    const extra = [];
+    for (let i = 0; i < toks.length; i++) {
+      const t = nt[i];
+      if (!t) continue;
+      if (DROP.has(t) || BRAND.has(t)) continue;
+      if (t === 'selecao' && team && team.liga === 'Seleções') continue;
+      if (UNIF[t]) { if (!unif) unif = UNIF[t]; continue; }
+      if (VERSAO[t]) { if (!versao) versao = VERSAO[t]; continue; }
+      if (TIPOS[t]) { if (!tipo) tipo = TIPOS[t]; continue; }
+      if (t === 'treino' && tipo === 'Conjunto') { tipo = 'Conjunto treino'; continue; }
+      extra.push(bonito(toks[i]));
+    }
+    if (!versao) versao = ({ torcedor:'Torcedor', player:'Jogador', feminina:'Feminina', infantil:'Infantil', retro:'Retrô', nba:'Basquete' })[categoria] || '';
+
+    const ehRetro = versao === 'Retrô' || categoria === 'retro';
+    const parts = [];
+    if (tipo && tipo !== 'Camisa') parts.push(tipo);
+    if (team) parts.push(team.label);
+    if (ehRetro) parts.push('Retrô');
+    if (unif) parts.push(unif);
+    if (season) parts.push(season);
+    let titulo = parts.join(' ');
+    if (!team || !titulo) titulo = String(nome || '').replace(/^(camisa|kit infantil|infantil)\s+(d[oae]s?\s+)?/i, '').trim() || String(nome || '');
+
+    const detalhes = [extra.join(' '), par.map(bonito).join(' ')].filter(Boolean).join(' ');
+    const det = team ? [ehRetro ? '' : versao, detalhes].filter(Boolean).join(' · ') : (ehRetro ? '' : versao);
+    return { titulo, det };
+  }
+// </logica>
+
+  const $q = s => document.querySelector(s);
   const money = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: Number.isInteger(Number(v)) ? 0 : 2, maximumFractionDigits: 2 });
   const imgUrl = (u, w) => u + (u.includes('?') ? '&' : '?') + 'width=' + w;
-  const rank = s => { const i = SIZE_ORDER.indexOf(String(s).toUpperCase()); if (i >= 0) return i; const n = parseFloat(s); return isNaN(n) ? 99 : 100 + n; };
-
-  // Times, seleções e apelidos (escritos sem acento, em minúsculas)
-  const T = (label, ...alias) => ({ label, alias, re: new RegExp('(^| )(' + alias.map(reEsc).join('|') + ')( |$)') });
-  const TEAMS = [
-    T('Flamengo','flamengo','fla','mengao'), T('Corinthians','corinthians','timao'),
-    T('Palmeiras','palmeiras','verdao'), T('São Paulo','sao paulo','spfc','sao paulino'),
-    T('Santos','santos','peixe'), T('Vasco','vasco','vasco da gama'), T('Fluminense','fluminense','flu'),
-    T('Botafogo','botafogo'), T('Grêmio','gremio'),
-    T('Inter de Milão','inter de milao','inter milan'), T('Inter Miami','inter miami'),
-    T('Internacional','internacional','colorado'), T('Cruzeiro','cruzeiro'),
-    T('Atlético de Madrid','atletico de madrid','atletico madrid'),
-    T('Atlético-MG','atletico mg','atletico mineiro','galo'), T('Bahia','bahia'),
-    T('Real Madrid','real madrid'), T('Barcelona','barcelona','barca'),
-    T('Manchester City','manchester city','man city'), T('Manchester United','manchester united','man united'),
-    T('Liverpool','liverpool'), T('Arsenal','arsenal'), T('Chelsea','chelsea'), T('Tottenham','tottenham'),
-    T('Bayern de Munique','bayern','bayern de munique'), T('Borussia Dortmund','borussia dortmund','dortmund'),
-    T('PSG','psg','paris saint germain'), T('Milan','milan','ac milan'), T('Juventus','juventus','juve'),
-    T('Napoli','napoli'), T('Roma','roma','as roma'), T('Benfica','benfica'), T('Porto','porto','fc porto'),
-    T('Ajax','ajax'), T('Boca Juniors','boca juniors','boca'), T('River Plate','river plate'), T('Al Nassr','al nassr'),
-    T('Brasil','brasil','selecao brasileira','selecao'), T('Argentina','argentina'), T('Portugal','portugal'),
-    T('França','franca'), T('Alemanha','alemanha'), T('Espanha','espanha'), T('Inglaterra','inglaterra'),
-    T('Itália','italia'), T('Holanda','holanda'), T('Uruguai','uruguai'), T('Colômbia','colombia'),
-    T('México','mexico'), T('Japão','japao'), T('Croácia','croacia'), T('Marrocos','marrocos'),
-    T('Estados Unidos','estados unidos','eua','usa'),
-    T('Lakers','lakers'), T('Warriors','warriors'), T('Bulls','bulls'), T('Celtics','celtics'), T('Knicks','knicks'),
-    T('Heat','heat','miami heat'), T('Nets','nets'), T('Suns','suns'), T('Mavericks','mavericks'),
-    T('76ers','76ers','sixers'), T('Magic','magic','orlando magic'), T('Spurs','spurs'), T('Bucks','bucks'),
-    T('Clippers','clippers'), T('Raptors','raptors'), T('Rockets','rockets'), T('Thunder','thunder'),
-    T('Cavaliers','cavaliers','cavs'), T('Nuggets','nuggets'), T('Timberwolves','timberwolves'), T('Pistons','pistons'),
-    T('Hornets','hornets'), T('Grizzlies','grizzlies'), T('Pelicans','pelicans'), T('Hawks','hawks'),
-    T('Pacers','pacers'), T('Wizards','wizards'), T('Jazz','jazz'), T('Trail Blazers','trail blazers','blazers'), T('Kings','kings')
-  ];
+  const cmp = (a, b) => String(a).localeCompare(String(b), 'pt');
 
   // ---------- Estado ----------
   let ALL = [];
-  const S = { q:'', cat:'', team:'', size:'', sort:'az' };
-  let current = null, pickedSize = '', lastFocus = null;
+  let DESCONTOS = [];
+  const S = { q:'', liga:'', versao:'', cat:'', team:'', size:'', sort:'az' };
+  let current = null, lastFocus = null;
 
   function prep(p) {
     const n = norm(p.nome);
-    const team = TEAMS.find(t => t.re.test(n));
-    p._team = team ? team.label : '';
-    p._hay = n + ' ' + (team ? team.alias.join(' ') : '') + ' ' + norm(CAT[p.categoria] || '');
-    p._sizes = (Array.isArray(p.tamanhos) ? p.tamanhos : []).slice().sort((a, b) => rank(a.tamanho) - rank(b.tamanho));
+    const isB = p.categoria === 'nba';
+    const team = (isB ? TEAMS_BASQUETE : TEAMS_CLUBES).find(t => t.re.test(n));
+    p._liga = isB ? 'Basquete' : (team ? team.liga : 'Outros');
+    p._team = team ? (isB && team.liga === 'Seleções' ? team.label + ' (basquete)' : team.label) : '';
+    const pad = padroniza(p.nome, p.categoria, team);
+    p._titulo = (p.nome_manual && p.nome_manual.trim()) || pad.titulo; p._det = pad.det;
+    // Versão: torcedor ou jogador, quando se aplica
+    const mv = /\b(torcedor|jogador|player)\b/.exec(norm(p.nome));
+    p._versao = mv ? (mv[1] === 'torcedor' ? 'Torcedor' : 'Jogador') : (p.categoria === 'torcedor' ? 'Torcedor' : p.categoria === 'player' ? 'Jogador' : '');
+    p._hay = n + ' ' + norm(p._titulo) + ' ' + (team ? team.alias.join(' ') : '') + ' ' + norm(LIGA_BUSCA[p._liga] || p._liga) + ' ' + norm(CAT[p.categoria] || '') + ' ' + norm(p._versao);
+    p._sizes = (Array.isArray(p.tamanhos) ? p.tamanhos : []).slice().sort((a, b) => sizeRank(a.tamanho) - sizeRank(b.tamanho));
     p._avail = p._sizes.filter(s => s.disponivel);
     const qs = p._avail.filter(s => s.qtd != null);
     p._low = qs.length > 0 && qs.reduce((t, s) => t + s.qtd, 0) <= LOW_STOCK;
@@ -208,74 +531,126 @@ a{color:inherit}
   function visible() {
     const toks = norm(S.q).split(' ').filter(Boolean);
     const out = ALL.filter(p =>
+      (!S.liga || p._liga === S.liga) &&
+      (!S.versao || p._versao === S.versao) &&
       (!S.cat || p.categoria === S.cat) &&
       (!S.team || p._team === S.team) &&
       (!S.size || p._avail.some(s => s.tamanho === S.size)) &&
       toks.every(t => p._hay.includes(t)));
     const price = p => p.preco == null ? Infinity : Number(p.preco);
-    if (S.sort === 'menor') out.sort((a, b) => price(a) - price(b) || a.nome.localeCompare(b.nome, 'pt'));
-    else if (S.sort === 'maior') out.sort((a, b) => (price(b) === Infinity ? -1 : price(b)) - (price(a) === Infinity ? -1 : price(a)) || a.nome.localeCompare(b.nome, 'pt'));
-    else out.sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+    const az = (a, b) => cmp(a._titulo, b._titulo) || cmp(a.nome, b.nome);
+    if (S.sort === 'menor') out.sort((a, b) => price(a) - price(b) || az(a, b));
+    else if (S.sort === 'maior') out.sort((a, b) => (price(b) === Infinity ? -1 : price(b)) - (price(a) === Infinity ? -1 : price(a)) || az(a, b));
+    else out.sort((a, b) => (b.destaque ? 1 : 0) - (a.destaque ? 1 : 0) || az(a, b));
     return out;
   }
 
   function card(p) {
     const img = p.imagens[0] ? `<img src="${esc(imgUrl(p.imagens[0], 480))}" alt="" loading="lazy" decoding="async">` : '';
     const price = p.preco != null ? money(p.preco) : 'Consulte';
-    const sizes = p._sizes.map(s => `<span class="${s.disponivel ? '' : 'off'}">${esc(s.tamanho)}</span>`).join('');
-    return `<button class="card" data-h="${esc(p.handle)}"><div class="ph">${img}<span class="tag">${esc(price)}</span>${p._low ? '<span class="low">Últimas peças</span>' : ''}</div>` +
-           `<p class="team">${esc(p._team || CAT[p.categoria] || '')}</p><p class="name">${esc(p.nome)}</p><div class="sz">${sizes}</div></button>`;
+    const sizes = p._sizes.map(s => `<span class="${s.disponivel ? '' : 'off'}">${esc(String(s.tamanho).split(' - ')[0])}</span>`).join('');
+    return `<button class="card" data-h="${esc(p.handle)}"><div class="ph">${img}${p._low ? '<span class="low">Últimas peças</span>' : ''}</div>` +
+           `<div class="row"><p class="name">${esc(p._titulo)}</p><p class="pr">${esc(price)}</p></div><p class="det">${esc(p._det)}</p><div class="sz">${sizes}</div></button>`;
+  }
+
+  function activeFilters() {
+    const f = [];
+    if (S.liga) f.push(['liga', S.liga]);
+    if (S.team) f.push(['team', S.team]);
+    if (S.versao) f.push(['versao', S.versao]);
+    if (S.cat) f.push(['cat', CAT[S.cat]]);
+    if (S.size) f.push(['size', 'Tamanho ' + S.size]);
+    return f;
   }
 
   function render() {
     const list = visible();
-    $('#count').textContent = list.length + (list.length === 1 ? ' produto' : ' produtos');
-    $('#clear').hidden = !(S.q || S.cat || S.team || S.size);
-    $('#grid').innerHTML = list.map(card).join('');
-    const st = $('#state');
+    const af = activeFilters();
+    $q('#count').textContent = list.length + (list.length === 1 ? ' produto' : ' produtos');
+    $q('#clear').hidden = !(af.length || S.q);
+    $q('#active').innerHTML = af.map(([k, l]) => `<button class="tagx" data-k="${k}" aria-label="Remover filtro ${esc(l)}">${esc(l)} ×</button>`).join('');
+    const fc = $q('#fcount'); fc.hidden = !af.length; fc.textContent = af.length;
+    $q('#apply').textContent = list.length === 0 ? 'Nenhum produto' : 'Ver ' + list.length + (list.length === 1 ? ' produto' : ' produtos');
+    $q('#grid').innerHTML = list.map(card).join('');
+    const st = $q('#state');
     if (!list.length) { st.hidden = false; st.innerHTML = 'Nenhum produto com esses filtros.<button class="link" id="clear2">Limpar filtros</button>'; }
     else st.hidden = true;
     syncHash();
   }
 
-  function buildControls() {
-    const counts = {};
-    ALL.forEach(p => counts[p.categoria] = (counts[p.categoria] || 0) + 1);
-    const chips = [`<button class="chip" data-c="" aria-pressed="${!S.cat}">Tudo<small>${ALL.length}</small></button>`]
-      .concat(CAT_ORDER.filter(c => counts[c]).map(c => `<button class="chip" data-c="${c}" aria-pressed="${S.cat === c}">${CAT[c]}<small>${counts[c]}</small></button>`));
-    $('#chips').innerHTML = chips.join('');
+  const chip = (attr, val, label, n, on) => `<button class="chip" data-${attr}="${esc(val)}" aria-pressed="${on}">${esc(label)}<small>${n}</small></button>`;
 
-    const tc = {};
-    ALL.forEach(p => { if (p._team) tc[p._team] = (tc[p._team] || 0) + 1; });
-    const teams = Object.keys(tc).sort((a, b) => tc[b] - tc[a] || a.localeCompare(b, 'pt'));
-    $('#team').innerHTML = '<option value="">Todos os times</option>' + teams.map(t => `<option value="${esc(t)}">${esc(t)} (${tc[t]})</option>`).join('');
-    $('#team').value = S.team;
-
-    const sz = new Set();
-    ALL.forEach(p => p._avail.forEach(s => sz.add(s.tamanho)));
-    const sizes = [...sz].sort((a, b) => rank(a) - rank(b));
-    $('#size').innerHTML = '<option value="">Qualquer tamanho</option>' + sizes.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
-    $('#size').value = S.size;
-    $('#sort').value = S.sort;
-    $('#q').value = S.q;
+  function ligaRank(l, lc) {
+    if (l === 'Outros') return 1e6;
+    const i = LIGA_ORDER.indexOf(l);
+    return i >= 0 ? i : 50 + (1000 - (lc[l] || 0)) / 1000;
   }
 
-  function setCat(c) {
-    S.cat = c;
-    document.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.c === c)));
+  function buildTeamSelect() {
+    const by = {};
+    ALL.forEach(p => {
+      if (!p._team || (S.liga && p._liga !== S.liga)) return;
+      const g = by[p._liga] || (by[p._liga] = {});
+      g[p._team] = (g[p._team] || 0) + 1;
+    });
+    const lc = {}; ALL.forEach(p => lc[p._liga] = (lc[p._liga] || 0) + 1);
+    const opts = g => Object.keys(g).sort(cmp).map(t => `<option value="${esc(t)}">${esc(t)} (${g[t]})</option>`).join('');
+    let html = '<option value="">Todos os times</option>';
+    if (S.liga) html += opts(by[S.liga] || {});
+    else html += Object.keys(by).sort((a, b) => ligaRank(a, lc) - ligaRank(b, lc)).map(l => `<optgroup label="${esc(l)}">${opts(by[l])}</optgroup>`).join('');
+    $q('#team').innerHTML = html;
+    $q('#team').value = S.team;
+  }
+
+  function buildControls() {
+    const lc = {}; ALL.forEach(p => lc[p._liga] = (lc[p._liga] || 0) + 1);
+    const ligas = Object.keys(lc).sort((a, b) => ligaRank(a, lc) - ligaRank(b, lc));
+    const ligaHtml = chip('l', '', 'Todas', ALL.length, !S.liga) + ligas.map(l => chip('l', l, l, lc[l], S.liga === l)).join('');
+    $q('#ligas').innerHTML = ligaHtml; $q('#ligasSide').innerHTML = ligaHtml;
+
+    const vc = {}; ALL.forEach(p => { if (p._versao) vc[p._versao] = (vc[p._versao] || 0) + 1; });
+    $q('#versoes').innerHTML = chip('v', '', 'Todas', ALL.length, !S.versao) + ['Torcedor', 'Jogador'].filter(v => vc[v]).map(v => chip('v', v, v, vc[v], S.versao === v)).join('');
+
+    const tc = {}; ALL.forEach(p => tc[p.categoria] = (tc[p.categoria] || 0) + 1);
+    $q('#tipos').innerHTML = chip('c', '', 'Todos', ALL.length, !S.cat) + TIPO_CHIPS.filter(c => tc[c]).map(c => chip('c', c, CAT[c], tc[c], S.cat === c)).join('');
+
+    buildTeamSelect();
+    const sz = new Set(); ALL.forEach(p => p._avail.forEach(s => sz.add(s.tamanho)));
+    $q('#size').innerHTML = '<option value="">Qualquer tamanho</option>' + [...sz].sort((a, b) => sizeRank(a) - sizeRank(b)).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+    $q('#size').value = S.size;
+    $q('#sort').value = S.sort;
+    $q('#q').value = S.q;
+  }
+
+  function pressChips(sel, attr, val) {
+    document.querySelectorAll('.chip[data-' + attr + ']').forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === val)));
+  }
+  function setLiga(l) {
+    S.liga = l;
+    if (S.team && !ALL.some(p => p._team === S.team && p._liga === l) && l) S.team = '';
+    pressChips('#ligas', 'l', l); buildTeamSelect(); render();
+  }
+  function clearOne(k) {
+    if (k === 'liga') { S.liga = ''; pressChips('#ligas', 'l', ''); buildTeamSelect(); }
+    if (k === 'team') { S.team = ''; $q('#team').value = ''; }
+    if (k === 'versao') { S.versao = ''; pressChips('#versoes', 'v', ''); }
+    if (k === 'cat') { S.cat = ''; pressChips('#tipos', 'c', ''); }
+    if (k === 'size') { S.size = ''; $q('#size').value = ''; }
     render();
   }
   function clearAll() {
-    S.q = ''; S.cat = ''; S.team = ''; S.size = '';
-    $('#q').value = ''; $('#team').value = ''; $('#size').value = '';
-    document.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.c === '')));
-    render();
+    S.q = ''; S.liga = ''; S.versao = ''; S.cat = ''; S.team = ''; S.size = '';
+    $q('#q').value = '';
+    pressChips('#ligas', 'l', ''); pressChips('#versoes', 'v', ''); pressChips('#tipos', 'c', '');
+    buildTeamSelect(); $q('#size').value = ''; render();
   }
 
   // ---------- Endereço (compartilhar filtros e peças) ----------
   function syncHash() {
     const p = new URLSearchParams();
     if (S.q) p.set('q', S.q);
+    if (S.liga) p.set('liga', S.liga);
+    if (S.versao) p.set('versao', S.versao);
     if (S.cat) p.set('cat', S.cat);
     if (S.team) p.set('time', S.team);
     if (S.size) p.set('tam', S.size);
@@ -286,26 +661,27 @@ a{color:inherit}
   }
   function readHash() {
     const p = new URLSearchParams(location.hash.slice(1));
-    S.q = p.get('q') || ''; S.cat = p.get('cat') || ''; S.team = p.get('time') || '';
-    S.size = p.get('tam') || ''; S.sort = p.get('ord') || 'az';
+    S.q = p.get('q') || ''; S.liga = p.get('liga') || ''; S.versao = p.get('versao') || ''; S.cat = p.get('cat') || '';
+    S.team = p.get('time') || ''; S.size = p.get('tam') || ''; S.sort = p.get('ord') || 'az';
     return p.get('p');
   }
 
   // ---------- Peça aberta ----------
   function waLink(p, size) {
-    let msg = 'Olá! Tenho interesse na ' + p.nome;
+    let msg = 'Olá! Tenho interesse na ' + p._titulo;
+    if (p._det) msg += ' (' + p._det + ')';
     if (size && size !== 'Único') msg += ', tamanho ' + size;
-    msg += p.preco != null ? ' (' + money(p.preco) + '). Ainda está disponível?' : '. Qual o valor e a disponibilidade?';
+    msg += p.preco != null ? ' por ' + money(p.preco) + '. Ainda está disponível?' : '. Qual o valor e a disponibilidade?';
     if (/^https?:/.test(location.protocol)) msg += '\n' + location.origin + location.pathname + '#p=' + p.handle;
     return 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
   }
 
   function pick(size) {
-    pickedSize = size;
     document.querySelectorAll('.sb').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === size)));
     const s = current._sizes.find(x => x.tamanho === size);
-    $('#mStock').textContent = !s ? '' : (s.qtd != null && s.qtd <= LOW_STOCK ? (s.qtd === 1 ? 'Resta 1 peça neste tamanho.' : 'Restam ' + s.qtd + ' peças neste tamanho.') : 'Disponível.');
-    const buy = $('#mBuy');
+    $q('#mStock').classList.toggle('baixo', !!(s && s.qtd != null && s.qtd <= LOW_STOCK));
+    $q('#mStock').textContent = !s ? '' : (s.qtd != null && s.qtd <= LOW_STOCK ? (s.qtd === 1 ? 'Resta 1 peça neste tamanho.' : 'Restam ' + s.qtd + ' peças neste tamanho.') : 'Disponível.');
+    const buy = $q('#mBuy');
     buy.textContent = 'Pedir pelo WhatsApp';
     buy.href = waLink(current, size);
     buy.setAttribute('aria-disabled', 'false');
@@ -314,24 +690,28 @@ a{color:inherit}
   function openProduct(handle) {
     const p = ALL.find(x => x.handle === handle);
     if (!p) return;
-    current = p; pickedSize = ''; lastFocus = document.activeElement;
-    $('#mTitle').textContent = p.nome;
-    $('#mTeam').textContent = p._team || CAT[p.categoria] || '';
-    $('#mPrice').textContent = p.preco != null ? money(p.preco) : 'Consulte o valor';
-    $('#mGallery').innerHTML = (p.imagens.length ? p.imagens : []).slice(0, 8).map(u => `<img src="${esc(imgUrl(u, 900))}" alt="${esc(p.nome)}" loading="lazy">`).join('');
-    $('#mSizes').innerHTML = '<legend>Tamanho</legend>' + p._sizes.map(s =>
+    current = p; lastFocus = document.activeElement;
+    $q('#mTitle').textContent = p._titulo;
+    $q('#mDet').textContent = p._det;
+    $q('#mOrig').textContent = 'Nome no fornecedor: ' + p.nome;
+    $q('#mPrice').textContent = p.preco != null ? money(p.preco) : 'Consulte o valor';
+    const dl = $q('#mDesc');
+    dl.hidden = !(p.preco != null && DESCONTOS.length);
+    dl.innerHTML = p.preco == null ? '' : DESCONTOS.map(d => `<li>Leve ${d.qtd_min} ou mais: <strong>${money(Math.round(p.preco * (1 - d.percentual / 100) * 100) / 100)}</strong> cada</li>`).join('');
+    $q('#mGallery').innerHTML = p.imagens.slice(0, 8).map(u => `<img src="${esc(imgUrl(u, 900))}" alt="${esc(p._titulo)}" loading="lazy">`).join('');
+    $q('#mSizes').innerHTML = '<legend>Tamanho</legend>' + p._sizes.map(s =>
       `<button class="sb" data-s="${esc(s.tamanho)}" aria-pressed="false" ${s.disponivel ? '' : 'disabled'}>${esc(s.tamanho)}</button>`).join('');
-    $('#mStock').textContent = '';
-    const buy = $('#mBuy');
+    $q('#mStock').textContent = '';
+    const buy = $q('#mBuy');
     buy.textContent = 'Escolha um tamanho'; buy.href = '#'; buy.setAttribute('aria-disabled', 'true');
-    $('#modal').hidden = false;
+    $q('#modal').hidden = false;
     document.body.style.overflow = 'hidden';
-    $('#mClose').focus();
+    $q('#mClose').focus();
     if (p._avail.length === 1) pick(p._avail[0].tamanho);
     syncHash();
   }
   function closeProduct() {
-    $('#modal').hidden = true;
+    $q('#modal').hidden = true;
     document.body.style.overflow = '';
     current = null;
     if (lastFocus && lastFocus.focus) lastFocus.focus();
@@ -339,51 +719,75 @@ a{color:inherit}
   }
 
   // ---------- Eventos ----------
-  $('#chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) setCat(b.dataset.c); });
-  $('#q').addEventListener('input', e => { S.q = e.target.value; render(); });
-  $('#team').addEventListener('change', e => { S.team = e.target.value; render(); });
-  $('#size').addEventListener('change', e => { S.size = e.target.value; render(); });
-  $('#sort').addEventListener('change', e => { S.sort = e.target.value; render(); });
-  $('#clear').addEventListener('click', clearAll);
-  $('#state').addEventListener('click', e => { if (e.target.id === 'clear2') clearAll(); if (e.target.id === 'retry') load(); });
-  $('#grid').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) openProduct(c.dataset.h); });
-  $('#mSizes').addEventListener('click', e => { const b = e.target.closest('.sb'); if (b && !b.disabled) pick(b.dataset.s); });
-  $('#mClose').addEventListener('click', closeProduct);
-  $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) closeProduct(); });
+  const drawer = open => {
+    $q('#side').classList.toggle('open', open); $q('#scrim').hidden = !open;
+    $q('#fbtn').setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  $q('#fbtn').addEventListener('click', () => drawer(true));
+  $q('#sideClose').addEventListener('click', () => drawer(false));
+  $q('#apply').addEventListener('click', () => drawer(false));
+  $q('#scrim').addEventListener('click', () => drawer(false));
+  const onLiga = e => { const b = e.target.closest('.chip'); if (b) setLiga(b.dataset.l); };
+  $q('#ligas').addEventListener('click', onLiga);
+  $q('#ligasSide').addEventListener('click', onLiga);
+  $q('#versoes').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { S.versao = b.dataset.v; pressChips('#versoes', 'v', S.versao); render(); } });
+  $q('#tipos').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { S.cat = b.dataset.c; pressChips('#tipos', 'c', S.cat); render(); } });
+  $q('#q').addEventListener('input', e => { S.q = e.target.value; render(); });
+  $q('#team').addEventListener('change', e => { S.team = e.target.value; render(); });
+  $q('#size').addEventListener('change', e => { S.size = e.target.value; render(); });
+  $q('#sort').addEventListener('change', e => { S.sort = e.target.value; render(); });
+  $q('#clear').addEventListener('click', clearAll);
+  $q('#active').addEventListener('click', e => { const b = e.target.closest('.tagx'); if (b) clearOne(b.dataset.k); });
+  $q('#state').addEventListener('click', e => { if (e.target.id === 'clear2') clearAll(); if (e.target.id === 'retry') load(); });
+  $q('#grid').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) openProduct(c.dataset.h); });
+  $q('#mSizes').addEventListener('click', e => { const b = e.target.closest('.sb'); if (b && !b.disabled) pick(b.dataset.s); });
+  $q('#mClose').addEventListener('click', closeProduct);
+  $q('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
+  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (!$q('#modal').hidden) closeProduct(); else drawer(false); });
 
   // ---------- Carregamento ----------
   const DEMO = [
     { handle:'demo-1', nome:'Camisa Flamengo I 26/27 Torcedor - Rubro Negra', categoria:'torcedor', preco:150, imagens:[],
       tamanhos:[{tamanho:'P',qtd:3,disponivel:true},{tamanho:'M',qtd:0,disponivel:false},{tamanho:'G',qtd:12,disponivel:true},{tamanho:'GG',qtd:8,disponivel:true}] },
-    { handle:'demo-2', nome:'Camisa Brasil Retrô 1998 Nike Amarela', categoria:'retro', preco:225, imagens:[],
+    { handle:'demo-2', nome:'Camisa Flamengo Retrô 92/93 Vermelha e Preta Masculina - Umbro', categoria:'retro', preco:225, imagens:[],
       tamanhos:[{tamanho:'M',qtd:2,disponivel:true},{tamanho:'G',qtd:1,disponivel:true}] },
     { handle:'demo-3', nome:'Regata NBA Los Angeles Lakers - Amarela - LUKA DONČIĆ 77', categoria:'nba', preco:250, imagens:[],
       tamanhos:[{tamanho:'M',qtd:9,disponivel:true},{tamanho:'G',qtd:0,disponivel:false},{tamanho:'GG',qtd:6,disponivel:true}] },
     { handle:'demo-4', nome:'Infantil Corinthians II 26/27 Nike - Preta', categoria:'infantil', preco:150, imagens:[],
       tamanhos:[{tamanho:'4',qtd:5,disponivel:true},{tamanho:'6',qtd:7,disponivel:true},{tamanho:'8',qtd:0,disponivel:false}] },
-    { handle:'demo-5', nome:'Camisa Real Madrid II 26/27 Jogador Adidas - Verde', categoria:'player', preco:150, imagens:[],
+    { handle:'demo-5', nome:'Camisa Real Madrid II 26/27 Jogador Adidas Masculina - Verde', categoria:'player', preco:225, imagens:[],
       tamanhos:[{tamanho:'G',qtd:4,disponivel:true},{tamanho:'GG',qtd:10,disponivel:true}] },
     { handle:'demo-6', nome:'Chaveiro Camisa Barcelona', categoria:'acessorio', preco:null, imagens:[],
       tamanhos:[{tamanho:'Único',qtd:null,disponivel:true}] }
   ];
 
   async function load() {
-    const st = $('#state');
+    const st = $q('#state');
     st.hidden = false; st.textContent = 'Carregando o catálogo…';
     let data;
     try {
       if (new URLSearchParams(location.search).has('demo')) data = DEMO;
       else {
-        const url = CONFIG.supabaseUrl + '/rest/v1/catalogo?select=handle,nome,tipo,categoria,imagens,preco,tamanhos,disponivel&disponivel=eq.true&limit=1000';
-        const r = await fetch(url, { headers: { apikey: CONFIG.supabaseKey, Accept: 'application/json' } });
+        const H = { apikey: CONFIG.supabaseKey, Accept: 'application/json' };
+        const base = CONFIG.supabaseUrl + '/rest/v1/';
+        const get = async cols => fetch(base + 'catalogo?select=' + cols + '&disponivel=eq.true&limit=1000', { headers: H });
+        let r = await get('handle,nome,tipo,categoria,imagens,preco,tamanhos,disponivel,nome_manual,destaque');
+        if (!r.ok) r = await get('handle,nome,tipo,categoria,imagens,preco,tamanhos,disponivel');   // banco ainda sem as colunas novas
         if (!r.ok) throw new Error('HTTP ' + r.status);
         data = await r.json();
+        try {
+          const [c, d] = await Promise.all([fetch(base + 'config?select=chave,valor', { headers: H }), fetch(base + 'descontos?select=qtd_min,percentual&order=qtd_min', { headers: H })]);
+          if (c.ok) (await c.json()).forEach(x => { if (x.chave === 'nome' && x.valor) CONFIG.nome = x.valor; if (x.chave === 'whatsapp') CONFIG.whatsapp = x.valor || ''; });
+          if (d.ok) DESCONTOS = await d.json();
+        } catch (_) { /* segue sem config */ }
       }
     } catch (e) {
       st.innerHTML = 'Não consegui carregar o catálogo. Verifique a conexão e tente de novo.<button class="link" id="retry">Tentar de novo</button>';
       return;
     }
+    document.title = CONFIG.nome + ' | Camisas'; $q('#brand').textContent = CONFIG.nome;
+    if (CONFIG.whatsapp) { const a = $q('#waTop'); a.hidden = false; a.href = 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, ''); a.target = '_blank'; a.rel = 'noopener'; }
     ALL = data.filter(p => p.categoria !== 'patch').map(prep);
     const open = readHash();
     buildControls();
@@ -392,8 +796,8 @@ a{color:inherit}
   }
 
   document.title = CONFIG.nome + ' | Camisas';
-  $('#brand').textContent = CONFIG.nome;
-  if (CONFIG.whatsapp) { const a = $('#waTop'); a.hidden = false; a.href = 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, ''); a.target = '_blank'; a.rel = 'noopener'; }
+  $q('#brand').textContent = CONFIG.nome;
+  if (CONFIG.whatsapp) { const a = $q('#waTop'); a.hidden = false; a.href = 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, ''); a.target = '_blank'; a.rel = 'noopener'; }
   load();
 })();
 </script>

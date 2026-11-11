@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Painel</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--bg:#E8ECEA;--tile:#fff;--ink:#0F1A15;--muted:#5C6963;--line:#C9D1CD;--pitch:#0A7C3E;--amarelo:#FFD400;--vermelho:#C8202A;
+  --head:'Big Shoulders Display','Arial Narrow',sans-serif;--body:'Hanken Grotesk',system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.4 var(--body)}
+button,input,select{font-family:inherit;color:inherit}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.top{background:var(--ink);color:#fff}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px}
+.top h1{font:900 30px/1 var(--head);margin:0;letter-spacing:.02em}
+.top h1 small{font:500 14px var(--body);letter-spacing:0;opacity:.7;margin-left:10px}
+.ghost{background:none;border:1.5px solid #fff;color:#fff;border-radius:2px;padding:7px 14px;font:600 14px var(--body);cursor:pointer}
+nav{background:var(--bg);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav .wrap{display:flex;gap:22px;overflow-x:auto;scrollbar-width:none}
+nav button{flex:none;background:none;border:0;border-bottom:3px solid transparent;padding:14px 0 11px;font:600 16px var(--body);color:var(--muted);cursor:pointer}
+nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--pitch)}
+main{padding:28px 16px 90px}
+h2{font:800 28px/1 var(--head);margin:0 0 6px;letter-spacing:.01em}
+.lead{color:var(--muted);margin:0 0 18px;max-width:70ch}
+.btn{height:44px;padding:0 18px;border:0;border-radius:2px;background:var(--pitch);color:#fff;font:700 15px var(--body);cursor:pointer}
+.btn.sec{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.small{height:36px;padding:0 12px;font-size:14px}
+.btn.danger{background:#fff;color:var(--vermelho);border:1.5px solid var(--vermelho)}
+.btn:disabled{opacity:.5;cursor:default}
+input,select{height:42px;border:1.5px solid var(--line);border-radius:2px;background:#fff;padding:0 10px;font:500 15px var(--body);width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--pitch);outline-offset:1px}
+label.f{display:block;font:600 13px var(--body);color:var(--muted);margin-bottom:4px}
+.card{background:var(--tile);padding:18px}
+.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
+.login .card{display:grid;gap:14px}
+.err{color:var(--vermelho);font-weight:600;min-height:1.4em}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tools input{flex:1 1 240px;width:auto}
+.tools select{flex:0 1 220px;width:auto}
+.count{color:var(--muted);margin:0 0 10px;font-size:15px}
+
+/* produtos */
+.prod{display:grid;grid-template-columns:64px 1fr;gap:6px 14px;background:var(--tile);padding:12px;margin-bottom:8px;align-items:start}
+.prod.oculto{opacity:.55}
+.prod img{width:64px;height:80px;object-fit:contain;background:#fff;mix-blend-mode:multiply}
+.pt{font:600 16px/1.2 var(--body);margin:0}
+.ps{color:var(--muted);font-size:13px;margin:2px 0 0}
+.pf{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:6px}
+@media(min-width:900px){
+  .prod{grid-template-columns:64px minmax(200px,1.4fr) minmax(0,3fr)}
+  .pf{grid-column:auto;grid-template-columns:repeat(5,minmax(0,1fr));margin-top:0;align-items:end}
+}
+.val{font:800 24px/1 var(--head);letter-spacing:.01em}
+.val small{display:block;font:500 12px var(--body);color:var(--muted);letter-spacing:0;margin-top:2px}
+.pos{color:var(--pitch)}.neg{color:var(--vermelho)}
+.chk{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:14px;font-weight:600}
+.chk label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--pitch)}
+.alerta{display:inline-block;background:var(--amarelo);font:700 12px var(--body);padding:2px 7px;border-radius:2px;margin-left:6px}
+
+/* tabelas simples */
+.rows{display:grid;gap:8px}
+.r{background:var(--tile);padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end}
+@media(min-width:760px){.r.regra{grid-template-columns:70px 1.2fr 1fr 1fr 1fr 1.4fr auto}.r.desc{grid-template-columns:1fr 1fr 130px 1fr auto}.r.usr{grid-template-columns:1fr auto}}
+table{border-collapse:collapse;width:100%;background:var(--tile);font-size:14px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted)}
+.box{background:var(--tile);padding:18px;margin-bottom:18px}
+.box h3{margin:0 0 10px;font:700 18px var(--body)}
+.grid2{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:12px}
+.bar{height:10px;background:var(--line);margin:10px 0}
+.bar i{display:block;height:100%;background:var(--pitch);width:0;transition:width .2s}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:2px;font:600 14px var(--body);z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}.toast.erro{background:var(--vermelho)}
+</style>
+</head>
+<body>
+
+<section id="vLogin" class="login" hidden>
+  <h2 style="margin-bottom:14px">Entrar no painel</h2>
+  <form class="card" id="fLogin">
+    <div><label class="f" for="em">E-mail</label><input id="em" type="email" autocomplete="username" required></div>
+    <div><label class="f" for="sn">Senha</label><input id="sn" type="password" autocomplete="current-password" required></div>
+    <p class="err" id="eLogin" role="alert"></p>
+    <button class="btn" type="submit">Entrar</button>
+    <button class="btn sec" type="button" id="bReset">Esqueci a senha</button>
+  </form>
+</section>
+
+<section id="vNova" class="login" hidden>
+  <h2 style="margin-bottom:14px">Criar nova senha</h2>
+  <form class="card" id="fNova">
+    <div><label class="f" for="ns">Nova senha (mínimo 8 caracteres)</label><input id="ns" type="password" autocomplete="new-password" minlength="8" required></div>
+    <p class="err" id="eNova" role="alert"></p>
+    <button class="btn" type="submit">Salvar senha</button>
+  </form>
+</section>
+
+<section id="vSem" class="login" hidden>
+  <h2>Sem permissão</h2>
+  <p class="lead">Esse e-mail ainda não está na lista de administradores. Peça para quem administra o painel adicionar você.</p>
+  <button class="btn sec" id="bSair2">Sair</button>
+</section>
+
+<div id="vApp" hidden>
+  <header class="top"><div class="wrap"><h1>Painel<small id="quem"></small></h1><button class="ghost" id="bSair">Sair</button></div></header>
+  <nav><div class="wrap" role="tablist">
+    <button role="tab" data-t="prod" aria-selected="true">Produtos</button>
+    <button role="tab" data-t="regras" aria-selected="false">Faixas de preço</button>
+    <button role="tab" data-t="desc" aria-selected="false">Descontos</button>
+    <button role="tab" data-t="sis" aria-selected="false">Sistema</button>
+  </div></nav>
+
+  <main class="wrap">
+    <!-- PRODUTOS -->
+    <section id="tprod">
+      <h2>Produtos</h2>
+      <p class="lead">Preço em branco segue a faixa de preço pelo custo. Preencher "Seu preço" vale só para aquele produto. Acessórios não têm faixa: sem preço aqui, aparecem como "Consulte".</p>
+      <div class="tools">
+        <input id="pBusca" type="search" placeholder="Buscar produto" aria-label="Buscar produto">
+        <select id="pFiltro" aria-label="Filtrar">
+          <option value="">Todos</option>
+          <option value="sempreco">Sem preço</option>
+          <option value="acess">Acessórios</option>
+          <option value="oculto">Ocultos</option>
+          <option value="destaque">Em destaque</option>
+          <option value="manual">Com preço próprio</option>
+          <option value="semestoque">Sem estoque</option>
+        </select>
+      </div>
+      <p class="count" id="pCount"></p>
+      <div id="pLista"></div>
+    </section>
+
+    <!-- FAIXAS -->
+    <section id="tregras" hidden>
+      <h2>Faixas de preço</h2>
+      <p class="lead">Vale a primeira linha que combinar, de cima para baixo (pela ordem). "Custo maior que" e "custo até" deixam em branco quando não tem limite. Categoria em branco vale para qualquer uma.</p>
+      <div class="box">
+        <h3>Simulador</h3>
+        <div class="grid2">
+          <div><label class="f" for="sCusto">Custo do fornecedor (R$)</label><input id="sCusto" type="number" step="0.01" value="100"></div>
+          <div><label class="f" for="sCat">Categoria</label><select id="sCat"></select></div>
+          <div><label class="f">Preço de venda</label><div class="val" id="sPreco">–</div></div>
+        </div>
+      </div>
+      <div class="rows" id="rLista"></div>
+      <p><button class="btn" id="rAdd">Adicionar faixa</button></p>
+    </section>
+
+    <!-- DESCONTOS -->
+    <section id="tdesc" hidden>
+      <h2>Descontos por quantidade</h2>
+      <p class="lead">Aparecem na página de cada peça, por exemplo "Leve 3 e pague R$ 142,50 em cada". O desconto vale sobre o preço da peça.</p>
+      <div class="rows" id="dLista"></div>
+      <p><button class="btn" id="dAdd">Adicionar desconto</button></p>
+    </section>
+
+    <!-- SISTEMA -->
+    <section id="tsis" hidden>
+      <h2>Sistema</h2>
+      <div class="box">
+        <h3>Dados da loja</h3>
+        <div class="grid2">
+          <div><label class="f" for="cNome">Nome da marca</label><input id="cNome"></div>
+          <div><label class="f" for="cZap">WhatsApp dos pedidos (com 55 e DDD)</label><input id="cZap" inputmode="numeric" placeholder="5511999999999"></div>
+        </div>
+        <button class="btn" id="cSalvar">Salvar</button>
+      </div>
+      <div class="box">
+        <h3>Atualizar estoque</h3>
+        <p class="lead" style="margin-bottom:10px">O sistema atualiza sozinho. Use este botão se precisar do estoque agora.</p>
+        <button class="btn" id="sSync">Atualizar agora</button>
+        <div class="bar" id="sBarra" hidden><i></i></div>
+        <p class="count" id="sMsg"></p>
+        <div style="overflow-x:auto"><table><thead><tr><th>Quando</th><th>Produtos</th><th>Lidos</th><th>Erros</th><th>Detalhe</th></tr></thead><tbody id="sLog"></tbody></table></div>
+      </div>
+      <div class="box">
+        <h3>Quem acessa o painel</h3>
+        <p class="lead" style="margin-bottom:10px">Para liberar uma pessoa nova: primeiro crie o acesso dela no Supabase (Authentication, Users, Invite user) e depois coloque o e-mail aqui.</p>
+        <div class="rows" id="uLista"></div>
+        <div class="tools" style="margin:12px 0 0"><input id="uEmail" type="email" placeholder="email@exemplo.com" aria-label="E-mail novo"><button class="btn" id="uAdd">Adicionar</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+  const URL_ = 'https://sjcnnafmshtdymfvmunt.supabase.co';
+  const KEY = 'sb_publishable_tg6lE_gEx3EboWHYjORdXw_Sc38uot5';
+  const sb = supabase.createClient(URL_, KEY);
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const money = v => v == null ? '–' : 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: Number.isInteger(Number(v)) ? 0 : 2, maximumFractionDigits: 2 });
+  const num = v => { v = String(v).trim().replace(',', '.'); if (v === '') return null; const n = Number(v); return isNaN(n) ? undefined : n; };
+  const CATS = { torcedor:'Torcedor', player:'Jogador', retro:'Retrô', feminina:'Feminina', infantil:'Infantil', nba:'Basquete', treino:'Treino', acessorio:'Acessório', patch:'Patch' };
+  const SEMPRECO = c => c === 'acessorio' || c === 'patch';
+
+  let toastT;
+  function toast(msg, erro) {
+    const t = $('#toast'); t.textContent = msg; t.className = 'toast on' + (erro ? ' erro' : '');
+    clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), erro ? 4500 : 1600);
+  }
+  const falha = (e, ctx) => { console.error(e); toast((ctx || 'Erro') + ': ' + (e.message || e), true); };
+
+  const show = id => ['vLogin', 'vNova', 'vSem', 'vApp'].forEach(v => $('#' + v).hidden = v !== id);
+
+  // ---------- Acesso ----------
+  let recuperando = location.hash.includes('type=recovery');
+  sb.auth.onAuthStateChange((ev) => {
+    if (ev === 'PASSWORD_RECOVERY') { recuperando = true; show('vNova'); }
+  });
+  async function boot() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (recuperando) { show('vNova'); return; }
+    if (!session) { show('vLogin'); return; }
+    const { data, error } = await sb.rpc('is_admin');
+    if (error || data !== true) { show('vSem'); return; }
+    $('#quem').textContent = session.user.email;
+    show('vApp');
+    iniciar();
+  }
+  $('#fLogin').addEventListener('submit', async e => {
+    e.preventDefault(); $('#eLogin').textContent = '';
+    const { error } = await sb.auth.signInWithPassword({ email: $('#em').value.trim(), password: $('#sn').value });
+    if (error) { $('#eLogin').textContent = 'E-mail ou senha incorretos.'; return; }
+    boot();
+  });
+  $('#bReset').addEventListener('click', async () => {
+    const email = $('#em').value.trim();
+    if (!email) { $('#eLogin').textContent = 'Digite seu e-mail acima e toque de novo.'; return; }
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    $('#eLogin').textContent = error ? 'Não consegui enviar. Tente de novo.' : 'Se esse e-mail tem acesso, enviamos um link para criar a senha.';
+  });
+  $('#fNova').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { error } = await sb.auth.updateUser({ password: $('#ns').value });
+    if (error) { $('#eNova').textContent = error.message; return; }
+    recuperando = false; history.replaceState(null, '', location.pathname); boot();
+  });
+  const sair = async () => { await sb.auth.signOut(); location.reload(); };
+  $('#bSair').addEventListener('click', sair); $('#bSair2').addEventListener('click', sair);
+
+  // ---------- Abas ----------
+  const carregado = {};
+  document.querySelectorAll('nav [role=tab]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('nav [role=tab]').forEach(x => x.setAttribute('aria-selected', String(x === b)));
+    ['prod', 'regras', 'desc', 'sis'].forEach(t => $('#t' + t).hidden = t !== b.dataset.t);
+    if (!carregado[b.dataset.t]) { carregado[b.dataset.t] = true; ({ regras: carregarRegras, desc: carregarDescontos, sis: carregarSistema })[b.dataset.t]?.(); }
+  }));
+  function iniciar() { carregado.prod = true; carregarProdutos(); }
+
+  // ---------- Produtos ----------
+  let P = [];
+  const byH = h => P.find(p => p.handle === h);
+  async function carregarProdutos() {
+    $('#pLista').innerHTML = '<p class="count">Carregando…</p>';
+    const { data, error } = await sb.from('admin_produtos').select('*').eq('ativo', true).order('nome').limit(2000);
+    if (error) { falha(error, 'Não consegui carregar'); $('#pLista').innerHTML = ''; return; }
+    P = data; desenharProdutos();
+  }
+  function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  function filtrados() {
+    const q = norm($('#pBusca').value).split(/\s+/).filter(Boolean), f = $('#pFiltro').value;
+    return P.filter(p => {
+      if (q.length) { const t = norm(p.nome + ' ' + (p.nome_manual || '')); if (!q.every(w => t.includes(w))) return false; }
+      if (f === 'sempreco') return p.preco_final == null;
+      if (f === 'acess') return SEMPRECO(p.categoria);
+      if (f === 'oculto') return p.oculto;
+      if (f === 'destaque') return p.destaque;
+      if (f === 'manual') return p.preco_manual != null;
+      if (f === 'semestoque') return Number(p.tamanhos_disp) === 0;
+      return true;
+    });
+  }
+  function linha(p) {
+    const acess = SEMPRECO(p.categoria);
+    const margem = p.preco_final != null && p.custo != null ? p.preco_final - p.custo : null;
+    const pct = margem != null && p.preco_final ? Math.round(margem / p.preco_final * 100) : null;
+    const opts = '<option value="">Automática (' + esc(CATS[p.categoria_auto] || p.categoria_auto) + ')</option>' +
+      Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${p.categoria_manual === k ? 'selected' : ''}>${v}</option>`).join('');
+    return `<article class="prod ${p.oculto ? 'oculto' : ''}" data-h="${esc(p.handle)}">
+      ${p.foto ? `<img src="${esc(p.foto)}${p.foto.includes('?') ? '&' : '?'}width=160" alt="" loading="lazy">` : '<div></div>'}
+      <div><p class="pt">${esc(p.nome_manual || p.nome)}${p.preco_final == null ? '<span class="alerta">sem preço</span>' : ''}</p>
+        <p class="ps">${p.nome_manual ? 'Fornecedor: ' + esc(p.nome) + ' · ' : ''}${esc(p.estoque_total)} peças · ${esc(p.tamanhos_disp)} tamanhos</p>
+        <div class="chk" style="margin-top:8px">
+          <label><input type="checkbox" data-f="oculto" ${p.oculto ? 'checked' : ''}> Ocultar</label>
+          <label><input type="checkbox" data-f="destaque" ${p.destaque ? 'checked' : ''}> Destaque</label>
+        </div></div>
+      <div class="pf">
+        <div><label class="f">Nome no catálogo</label><input data-f="nome_manual" value="${esc(p.nome_manual || '')}" placeholder="Padrão automático"></div>
+        <div><label class="f">Categoria</label><select data-f="categoria_manual">${opts}</select></div>
+        <div><label class="f">Custo</label><div class="val">${money(p.custo)}</div></div>
+        <div><label class="f">Seu preço${acess ? '' : ' (opcional)'}</label><input data-f="preco_manual" inputmode="decimal" value="${p.preco_manual == null ? '' : esc(p.preco_manual)}" placeholder="${acess ? 'Defina o preço' : (p.preco_regra == null ? '' : 'Faixa: ' + Number(p.preco_regra))}"></div>
+        <div><label class="f">Vende por</label><div class="val ${margem != null && margem < 0 ? 'neg' : 'pos'}">${money(p.preco_final)}<small>${margem == null ? 'sem margem' : 'lucro ' + money(margem) + (pct != null ? ' (' + pct + '%)' : '')}</small></div></div>
+      </div></article>`;
+  }
+  function desenharProdutos() {
+    const l = filtrados();
+    $('#pCount').textContent = l.length + (l.length === 1 ? ' produto' : ' produtos') + (l.length < P.length ? ' de ' + P.length : '');
+    $('#pLista').innerHTML = l.slice(0, 150).map(linha).join('') + (l.length > 150 ? '<p class="count">Mostrando os 150 primeiros. Use a busca ou o filtro para achar os outros.</p>' : '');
+  }
+  $('#pBusca').addEventListener('input', desenharProdutos);
+  $('#pFiltro').addEventListener('change', desenharProdutos);
+  $('#pLista').addEventListener('change', async e => {
+    const el = e.target, art = el.closest('.prod'), f = el.dataset.f;
+    if (!art || !f) return;
+    let v = el.type === 'checkbox' ? el.checked : el.value.trim();
+    if (f === 'preco_manual') { v = num(v); if (v === undefined || (v !== null && v < 0)) { toast('Preço inválido', true); return; } }
+    else if (f === 'nome_manual' || f === 'categoria_manual') v = v === '' ? null : v;
+    const h = art.dataset.h;
+    const { error } = await sb.from('produtos').update({ [f]: v }).eq('handle', h);
+    if (error) { falha(error, 'Não salvou'); return; }
+    const { data } = await sb.from('admin_produtos').select('*').eq('handle', h).single();
+    if (data) { const i = P.findIndex(p => p.handle === h); P[i] = data; }
+    const novo = document.createElement('div'); novo.innerHTML = linha(byH(h));
+    art.replaceWith(novo.firstElementChild);
+    toast('Salvo');
+  });
+
+  // ---------- Faixas ----------
+  let R = [];
+  async function carregarRegras() {
+    const { data, error } = await sb.from('regras_preco').select('*').order('ordem');
+    if (error) { falha(error); return; }
+    R = data;
+    $('#sCat').innerHTML = '<option value="">Camisa atual (sem categoria especial)</option>' + Object.entries(CATS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+    desenharRegras(); simular();
+  }
+  function desenharRegras() {
+    $('#rLista').innerHTML = R.map(r => `<div class="r regra" data-id="${r.id}">
+      <div><label class="f">Ordem</label><input data-f="ordem" inputmode="numeric" value="${esc(r.ordem)}"></div>
+      <div><label class="f">Categoria</label><select data-f="categoria"><option value="">Qualquer</option>${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${r.categoria === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+      <div><label class="f">Custo maior que</label><input data-f="custo_min" inputmode="decimal" value="${r.custo_min == null ? '' : esc(r.custo_min)}"></div>
+      <div><label class="f">Custo até</label><input data-f="custo_max" inputmode="decimal" value="${r.custo_max == null ? '' : esc(r.custo_max)}"></div>
+      <div><label class="f">Vende por (R$)</label><input data-f="preco" inputmode="decimal" value="${esc(r.preco)}"></div>
+      <div><label class="f">Anotação</label><input data-f="nota" value="${esc(r.nota || '')}"></div>
+      <div><button class="btn danger small" data-del>Excluir</button></div></div>`).join('');
+  }
+  function precoRegra(custo, cat) {
+    const ok = r => (r.categoria == null || r.categoria === cat) && (r.custo_min == null || custo > Number(r.custo_min)) && (r.custo_max == null || custo <= Number(r.custo_max));
+    const r = R.slice().sort((a, b) => a.ordem - b.ordem).find(ok);
+    return r ? Number(r.preco) : null;
+  }
+  function simular() {
+    const c = num($('#sCusto').value);
+    const cat = $('#sCat').value;
+    if (SEMPRECO(cat)) { $('#sPreco').textContent = 'Preço manual'; return; }
+    $('#sPreco').textContent = c == null || c === undefined ? '–' : (precoRegra(c, cat) == null ? 'Nenhuma faixa' : money(precoRegra(c, cat)));
+  }
+  $('#sCusto').addEventListener('input', simular); $('#sCat').addEventListener('change', simular);
+  $('#rLista').addEventListener('change', async e => {
+    const el = e.target, row = el.closest('.r'), f = el.dataset.f; if (!row || !f) return;
+    let v = el.value.trim();
+    if (['ordem', 'custo_min', 'custo_max', 'preco'].includes(f)) { v = num(v); if (v === undefined || (v === null && (f === 'ordem' || f === 'preco'))) { toast('Número inválido', true); return; } }
+    else if (v === '') v = null;
+    const { error } = await sb.from('regras_preco').update({ [f]: v }).eq('id', row.dataset.id);
+    if (error) { falha(error, 'Não salvou'); return; }
+    R.find(r => String(r.id) === row.dataset.id)[f] = v; simular(); toast('Salvo. Vale no catálogo na hora.');
+  });
+  $('#rLista').addEventListener('click', async e => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    if (!confirm('Excluir esta faixa? Produtos que dependiam dela podem ficar sem preço.')) return;
+    const id = b.closest('.r').dataset.id;
+    const { error } = await sb.from('regras_preco').delete().eq('id', id);
+    if (error) { falha(error); return; }
+    R = R.filter(r => String(r.id) !== id); desenharRegras(); simular(); toast('Excluída');
+  });
+  $('#rAdd').addEventListener('click', async () => {
+    const ordem = R.reduce((m, r) => Math.max(m, r.ordem), 0) + 1;
+    const { data, error } = await sb.from('regras_preco').insert({ ordem, preco: 150, nota: 'Nova faixa' }).select().single();
+    if (error) { falha(error); return; }
+    R.push(data); desenharRegras(); simular(); toast('Faixa criada. Ajuste os valores.');
+  });
+
+  // ---------- Descontos ----------
+  let D = [];
+  async function carregarDescontos() {
+    const { data, error } = await sb.from('descontos').select('*').order('qtd_min');
+    if (error) { falha(error); return; }
+    D = data; desenharDescontos();
+  }
+  function desenharDescontos() {
+    $('#dLista').innerHTML = D.length ? D.map(d => `<div class="r desc" data-id="${d.id}">
+      <div><label class="f">A partir de (peças)</label><input data-f="qtd_min" inputmode="numeric" value="${esc(d.qtd_min)}"></div>
+      <div><label class="f">Desconto (%)</label><input data-f="percentual" inputmode="decimal" value="${esc(d.percentual)}"></div>
+      <div><label class="f">Exemplo em R$ 150</label><div class="val">${money(150 * (1 - d.percentual / 100))}</div></div>
+      <div class="chk"><label><input type="checkbox" data-f="ativo" ${d.ativo ? 'checked' : ''}> Ativo</label></div>
+      <div><button class="btn danger small" data-del>Excluir</button></div></div>`).join('') : '<p class="count">Nenhum desconto ainda.</p>';
+  }
+  $('#dLista').addEventListener('change', async e => {
+    const el = e.target, row = el.closest('.r'), f = el.dataset.f; if (!row || !f) return;
+    let v = el.type === 'checkbox' ? el.checked : num(el.value);
+    if (v === undefined || v === null) { toast('Número inválido', true); return; }
+    const { error } = await sb.from('descontos').update({ [f]: v }).eq('id', row.dataset.id);
+    if (error) { falha(error, 'Não salvou (qtd mínima 2, desconto entre 0 e 100)'); carregarDescontos(); return; }
+    D.find(d => String(d.id) === row.dataset.id)[f] = v; desenharDescontos(); toast('Salvo');
+  });
+  $('#dLista').addEventListener('click', async e => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    if (!confirm('Excluir este desconto?')) return;
+    const id = b.closest('.r').dataset.id;
+    const { error } = await sb.from('descontos').delete().eq('id', id);
+    if (error) { falha(error); return; }
+    D = D.filter(d => String(d.id) !== id); desenharDescontos(); toast('Excluído');
+  });
+  $('#dAdd').addEventListener('click', async () => {
+    const qtd = D.reduce((m, d) => Math.max(m, d.qtd_min), 1) + (D.length ? 3 : 2);
+    const { data, error } = await sb.from('descontos').insert({ qtd_min: qtd, percentual: 5 }).select().single();
+    if (error) { falha(error); return; }
+    D.push(data); D.sort((a, b) => a.qtd_min - b.qtd_min); desenharDescontos(); toast('Criado. Ajuste os valores.');
+  });
+
+  // ---------- Sistema ----------
+  async function carregarSistema() {
+    const [{ data: cfg }, { data: log }, { data: us }] = await Promise.all([
+      sb.from('config').select('*'),
+      sb.from('sync_log').select('*').order('criado_em', { ascending: false }).limit(8),
+      sb.from('admin_emails').select('*').order('email')
+    ]);
+    const c = Object.fromEntries((cfg || []).map(x => [x.chave, x.valor]));
+    $('#cNome').value = c.nome || ''; $('#cZap').value = c.whatsapp || '';
+    $('#sLog').innerHTML = (log || []).map(l => `<tr><td>${esc(new Date(l.criado_em).toLocaleString('pt-BR'))}</td><td>${esc(l.produtos)}</td><td>${esc(l.lidos)}</td><td class="${l.erros ? 'neg' : ''}">${esc(l.erros)}</td><td>${esc(l.detalhe || '')}</td></tr>`).join('') || '<tr><td colspan="5">Sem registros.</td></tr>';
+    desenharUsuarios(us || []);
+  }
+  $('#cSalvar').addEventListener('click', async () => {
+    const zap = $('#cZap').value.replace(/\D/g, '');
+    const { error } = await sb.from('config').upsert([{ chave: 'nome', valor: $('#cNome').value.trim() || 'Catálogo' }, { chave: 'whatsapp', valor: zap }]);
+    if (error) { falha(error, 'Não salvou'); return; }
+    $('#cZap').value = zap; toast('Salvo. O catálogo mostra na próxima abertura.');
+  });
+  $('#sSync').addEventListener('click', async () => {
+    const btn = $('#sSync'), barra = $('#sBarra'), msg = $('#sMsg');
+    btn.disabled = true; barra.hidden = false; msg.textContent = 'Preparando…';
+    try {
+      const { count } = await sb.from('produtos').select('handle', { count: 'exact', head: true }).eq('ativo', true);
+      const lotes = Math.max(1, Math.ceil((count || 40) / 40));
+      let erros = 0;
+      for (let i = 1; i <= lotes; i++) {
+        msg.textContent = `Atualizando lote ${i} de ${lotes}…`;
+        barra.firstElementChild.style.width = ((i - 1) / lotes * 100) + '%';
+        const { data: { session } } = await sb.auth.getSession();
+        const r = await fetch(`${URL_}/functions/v1/Sync?lote=40`, { method: 'POST', headers: { Authorization: 'Bearer ' + session.access_token, apikey: KEY } });
+        if (!r.ok) throw new Error('A função respondeu ' + r.status + (r.status === 403 ? ' (reimplante a função Sync atualizada)' : ''));
+        const j = await r.json(); erros += j.erros || 0;
+      }
+      barra.firstElementChild.style.width = '100%';
+      msg.textContent = erros ? `Concluído, com ${erros} erro(s). Veja a lista abaixo.` : 'Concluído sem erros.';
+      carregarSistema(); carregarProdutos();
+    } catch (e) { msg.textContent = ''; falha(e, 'Falhou'); }
+    btn.disabled = false;
+  });
+  function desenharUsuarios(us) {
+    const eu = $('#quem').textContent.toLowerCase();
+    $('#uLista').innerHTML = us.map(u => `<div class="r usr" data-e="${esc(u.email)}"><div>${esc(u.email)}${u.email.toLowerCase() === eu ? ' <span class="alerta">você</span>' : ''}</div>
+      ${u.email.toLowerCase() === eu ? '' : '<div><button class="btn danger small" data-del>Remover</button></div>'}</div>`).join('');
+  }
+  $('#uAdd').addEventListener('click', async () => {
+    const em = $('#uEmail').value.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(em)) { toast('E-mail inválido', true); return; }
+    const { error } = await sb.from('admin_emails').insert({ email: em });
+    if (error) { falha(error); return; }
+    $('#uEmail').value = ''; carregarSistema(); toast('Adicionado');
+  });
+  $('#uLista').addEventListener('click', async e => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    const em = b.closest('.r').dataset.e;
+    if (!confirm('Remover o acesso de ' + em + '?')) return;
+    const { error } = await sb.from('admin_emails').delete().eq('email', em);
+    if (error) { falha(error); return; }
+    carregarSistema(); toast('Removido');
+  });
+
+  boot();
+})();
+</script>
+</body>
+</html>
