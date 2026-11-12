@@ -139,7 +139,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .card{display:flex;flex-direction:column;align-self:start;width:100%;text-align:left;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit}
 .ph{position:relative;aspect-ratio:4/5;background:var(--tile);overflow:hidden;width:100%}
 .ph img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;padding:4%;display:block;transition:transform .25s}
-.ph img[data-ok]{padding:0}
+.ph img[data-ok]{padding:0;mix-blend-mode:normal}
 .card:hover .ph img{transform:scale(1.04)}
 @media(prefers-reduced-motion:reduce){.card:hover .ph img{transform:none}}
 .low{position:absolute;left:12px;top:12px;padding:4px 8px;background:var(--amarelo);color:var(--ink);font:700 12px/1.2 var(--body);white-space:nowrap}
@@ -687,7 +687,7 @@ Basquete|Kings|kings,sacramento kings`;
     const r = st.getBoundingClientRect(), mid = r.left + r.width / 2;
     st.querySelectorAll('.hang').forEach(h => {
       const b = h.getBoundingClientRect(), d = Math.abs(b.left + b.width / 2 - mid) / (r.width / 2 || 1);
-      h.style.setProperty('--s', (1.04 - Math.min(.16, d * .14)).toFixed(3));
+      h.style.setProperty('--s', '1');
     });
   }
   function cabTick() {
@@ -927,7 +927,7 @@ Basquete|Kings|kings,sacramento kings`;
       const out = document.createElement('canvas'); out.width = 480; out.height = 600;
       const ox = out.getContext('2d'); ox.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`; ox.fillRect(0, 0, 480, 600);
       ox.drawImage(img, cx - cw / 2, cy - ch / 2, cw, ch, 0, 0, 480, 600);
-      img.dataset.ok = '1';
+      img.dataset.ok = '1'; img.parentElement.style.background = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
       img.src = out.toDataURL('image/jpeg', .9);
     } catch (_) { /* imagem sem CORS: segue sem recorte */ }
   }
