@@ -33,31 +33,28 @@ button{font-family:inherit;color:inherit}
 .wa[hidden]{display:none}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* vitrine Em alta */
-.hub{padding:36px 0 40px;background:var(--bg)}
+.hub{padding:26px 0 26px;background:var(--tile)}
 .hub[hidden]{display:none}
-.hub-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;margin-bottom:22px}
-.hub h2{margin:0;font:800 clamp(28px,4.4vw,48px)/1.02 var(--head);letter-spacing:-.045em}
-.hub-sub{margin:10px 0 0;color:var(--muted);max-width:46ch}
-.hub-stats{display:flex;gap:28px}
-.hub-stats div{font-size:13px;color:var(--muted)}
-.hub-stats b{display:block;font:800 28px/1.1 var(--head);letter-spacing:-.04em;color:var(--ink)}
-.hub-grid{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
-@media(min-width:720px){.hub-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
-@media(min-width:1100px){.hub-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.lg{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-height:176px;padding:18px 18px 16px;text-align:left;border:1px solid var(--line);border-radius:18px;background:var(--tile);color:var(--ink);cursor:pointer;font:inherit;overflow:hidden;transition:background .18s,color .18s,transform .18s}
+.hub-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;margin-bottom:14px}
+.hub h2{margin:0;font:800 clamp(20px,2.4vw,26px)/1.1 var(--head);letter-spacing:-.04em}
+.hub-stats{display:flex;gap:16px;font-size:13px;color:var(--muted)}
+.hub-stats b{color:var(--ink);font-weight:700}
+.hub-rail{overflow-x:auto;scrollbar-width:none;padding:2px 16px 4px;scroll-snap-type:x proximity;scroll-padding:0 16px}
+.hub-rail::-webkit-scrollbar{display:none}
+@media(min-width:960px){.hub-rail{scroll-padding:0 48px;padding:2px 48px 4px;max-width:1440px;margin:0 auto}}
+.hub-grid{display:flex;gap:10px;width:max-content;min-width:100%}
+.lg{position:relative;flex:1 0 auto;min-width:148px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:18px;height:112px;padding:14px 16px;text-align:left;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);cursor:pointer;font:inherit;overflow:hidden;scroll-snap-align:start;transition:background .18s,color .18s}
 .lg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amarelo);transform:scaleY(0);transform-origin:top;transition:transform .2s}
-.lg-n{font:800 18px/1.1 var(--head);letter-spacing:-.035em}
-.lg-c{margin-top:auto;font:800 42px/1 var(--head);letter-spacing:-.05em}
-.lg-t{font-size:13px;color:var(--muted);margin-top:2px}
-.lg-tm{margin-top:10px;font-size:13px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em;padding-right:26px}
-.lg-go{position:absolute;right:16px;bottom:14px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:15px}
+.lg-n{font:800 15px/1.15 var(--head);letter-spacing:-.03em;white-space:nowrap}
+.lg-c{font:800 30px/1 var(--head);letter-spacing:-.05em}
+.lg-t{display:inline;margin-left:6px;font:500 13px var(--body);color:var(--muted);letter-spacing:0}
+.lg-tm,.lg-go{display:none}
+.lg-row{display:flex;align-items:baseline}
 .lg:hover,.lg:focus-visible{background:var(--ink);color:#fff;border-color:var(--ink)}
 .lg:hover::before,.lg:focus-visible::before{transform:scaleY(1)}
-.lg:hover .lg-t,.lg:hover .lg-tm,.lg:focus-visible .lg-t,.lg:focus-visible .lg-tm{color:#B8B8B8}
-.lg:hover .lg-go,.lg:focus-visible .lg-go{background:var(--amarelo);color:var(--ink)}
+.lg:hover .lg-t,.lg:focus-visible .lg-t{color:#B8B8B8}
 .lg.all{background:var(--ink);color:#fff;border-color:var(--ink)}
-.lg.all .lg-t,.lg.all .lg-tm{color:#B8B8B8}
-.lg.all .lg-go{background:var(--amarelo);color:var(--ink)}
+.lg.all .lg-t{color:#B8B8B8}
 .lg.all:hover{background:#2A2A2A}
 @media(prefers-reduced-motion:reduce){.lg,.lg::before{transition:none}}
 .cab{background:var(--ink);color:#fff;padding:36px 0 12px;overflow:hidden}
@@ -233,15 +230,6 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
     <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
   </div>
 </header>
-<section class="hub" id="hub" aria-labelledby="hubT" hidden>
-  <div class="wrap">
-    <div class="hub-head">
-      <div><h2 id="hubT">Escolha sua liga</h2><p class="hub-sub">Camisas de clubes e seleções, separadas por campeonato. Toque numa liga para ver as peças.</p></div>
-      <div class="hub-stats" id="hubStats"></div>
-    </div>
-    <div class="hub-grid" id="hubGrid"></div>
-  </div>
-</section>
 <h1 class="sr">Catálogo de camisas</h1>
 <section class="cab" id="alta" aria-labelledby="altaT" hidden>
   <div class="wrap">
@@ -255,6 +243,12 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
   </div>
 </section>
 
+<section class="hub" id="hub" aria-labelledby="hubT" hidden>
+  <div class="wrap">
+    <div class="hub-head"><h2 id="hubT">Navegue por liga</h2><div class="hub-stats" id="hubStats"></div></div>
+  </div>
+  <div class="hub-rail"><div class="hub-grid" id="hubGrid"></div></div>
+</section>
 <div class="bar">
   <div class="wrap">
     <div class="searchrow">
@@ -847,9 +841,9 @@ Basquete|Kings|kings,sacramento kings`;
     });
     const ligas = Object.keys(lc).sort((a, b) => ligaRank(a, lc) - ligaRank(b, lc));
     if (ALL.length < 4 || !ligas.length) { $q('#hub').hidden = true; return; }
-    $q('#hubStats').innerHTML = `<div><b>${ALL.length}</b>camisas</div><div><b>${ligas.filter(l => l !== 'Outros').length}</b>ligas</div><div><b>${teams.size}</b>times</div>`;
-    const tile = (l, c, nome, sub, cls) => `<button class="lg ${cls || ''}" data-l="${esc(l)}"><span class="lg-n">${esc(nome)}</span><b class="lg-c">${c}</b><span class="lg-t">${c === 1 ? 'camisa' : 'camisas'}</span><span class="lg-tm">${esc(sub)}</span><span class="lg-go" aria-hidden="true">→</span></button>`;
-    $q('#hubGrid').innerHTML = tile('', ALL.length, 'Todas as camisas', 'Ver o catálogo inteiro', 'all') + ligas.map(l => {
+    $q('#hubStats').innerHTML = `<span><b>${ALL.length}</b> camisas</span><span><b>${teams.size}</b> times</span>`;
+    const tile = (l, c, nome, sub, cls) => `<button class="lg ${cls || ''}" data-l="${esc(l)}"><span class="lg-n">${esc(nome)}</span><span class="lg-row"><b class="lg-c">${c}</b><span class="lg-t">${c === 1 ? 'camisa' : 'camisas'}</span></span></button>`;
+    $q('#hubGrid').innerHTML = tile('', ALL.length, 'Todas', '', 'all') + ligas.map(l => {
       const names = Object.keys(tm[l] || {}).sort((a, b) => tm[l][b] - tm[l][a] || cmp(a, b));
       const sub = names.length ? names.slice(0, 3).join(' · ') + (names.length > 3 ? ' +' + (names.length - 3) : '') : 'Ver peças';
       return tile(l, lc[l], l === 'Outros' ? 'Outras' : l, sub);
