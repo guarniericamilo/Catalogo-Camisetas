@@ -46,7 +46,7 @@ button{font-family:inherit;color:inherit}
 .hub-grid{display:flex;gap:10px;width:max-content;min-width:100%}
 .lg{position:relative;flex:1 0 auto;min-width:148px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:18px;height:112px;padding:14px 16px;text-align:left;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);cursor:pointer;font:inherit;overflow:hidden;scroll-snap-align:start;transition:background .18s,color .18s}
 .lg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amarelo);transform:scaleY(0);transform-origin:top;transition:transform .2s}
-.lg-n{font:800 15px/1.15 var(--head);letter-spacing:-.03em;white-space:nowrap}
+.lg-n{font:800 15px/1.15 var(--head);letter-spacing:-.03em}
 .lg-c{font:800 30px/1 var(--head);letter-spacing:-.05em}
 .lg-t{display:inline;margin-left:6px;font:500 13px var(--body);color:var(--muted);letter-spacing:0}
 .lg-tm,.lg-go{display:none}
@@ -60,13 +60,15 @@ button{font-family:inherit;color:inherit}
 @media(prefers-reduced-motion:reduce){.lg,.lg::before{transition:none}}
 @media(min-width:960px){
   .hub-rail{overflow:visible}
-  .hub-grid{width:auto}
-  .lg{flex:1 1 0;min-width:0}
-  .lg-n{white-space:normal}
+  .hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));width:auto;min-width:0}
+  .lg{min-width:0;height:auto;min-height:86px;gap:10px;padding:12px 14px}
+  .lg-n{white-space:normal;font-size:13px}
+  .lg-c{font-size:24px}
+  .lg-t{display:none}
   .cab .stage .hang{width:clamp(150px,calc((100svh - 480px) / 1.25),236px)}
 }
 @media(min-width:960px) and (max-height:760px){
-  section.cab{padding:14px 0 0}section.cab h2{font-size:26px}section.cab .stage{padding-bottom:28px}.hub{padding:14px 0}.lg{height:80px;gap:6px;padding:10px 14px}.hub-head{margin-bottom:8px}.hub h2{font-size:18px}.hub-head{margin-bottom:10px}.lg-c{font-size:24px}
+  section.cab{padding:14px 0 0}section.cab h2{font-size:26px}section.cab .stage{padding-bottom:28px}.hub{padding:14px 0}.lg{min-height:70px;gap:4px;padding:10px 14px}.hub-head{margin-bottom:8px}.hub h2{font-size:18px}.hub-head{margin-bottom:10px}.lg-c{font-size:24px}
 }
 .cab{background:var(--ink);color:#fff;padding:36px 0 12px;overflow:hidden}
 .cab[hidden]{display:none}
@@ -80,10 +82,7 @@ button{font-family:inherit;color:inherit}
 .stage.drag .hang{pointer-events:none}
 .track{position:relative;display:flex;gap:22px;width:max-content;padding-top:16px;will-change:transform}
 .stage .hang{flex:none;width:min(62vw,236px);align-self:flex-start;transform-origin:50% 0;text-align:left;background:none;border:0;padding:0;color:#fff;font:inherit;cursor:inherit}
-.hang .sw{display:block;transform-origin:50% 0;animation:sway var(--t,5s) ease-in-out var(--dl,0s) infinite;animation-play-state:paused}
-.hang.on .sw{animation-play-state:running}
-@keyframes sway{0%,100%{transform:rotate(calc(var(--a,1.4deg)*-1))}50%{transform:rotate(var(--a,1.4deg))}}
-.hang:hover .sw,.hang:focus-visible .sw{animation-duration:calc(var(--t,5s)*1.8)}
+.hang .sw{display:block;transform-origin:50% 0;transform:rotate(var(--r,0deg))}
 .hk{display:block;width:70px;height:40px;margin:-6px auto -2px;overflow:visible}
 .hk path{fill:none;stroke:#C9C9C9;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .hang .ph{display:block;border-radius:10px;}
@@ -91,7 +90,6 @@ button{font-family:inherit;color:inherit}
 .hang .det{display:block;margin:2px 0 0;font-size:13px;color:#B8B8B8;min-height:0}
 .hang .pr{display:block;margin:8px 0 0;font:700 18px/1 var(--head);letter-spacing:-.03em;color:#fff}
 .cab-hint{margin:6px 0 0;font-size:12px;color:#8A8A8A}
-@media(prefers-reduced-motion:reduce){.hang .sw{animation:none}}
 
 /* busca e filtros */
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -692,7 +690,7 @@ Basquete|Kings|kings,sacramento kings`;
   function hang(p, i) {
     const img = p.imagens[0] ? `<img src="${esc(imgUrl(p.imagens[0], 480))}" alt="" loading="lazy" decoding="async" draggable="false" crossorigin="anonymous">` : '';
     const price = p.preco != null ? money(p.preco) : 'Consulte';
-    const st = `--a:${(1 + (i * 37 % 10) / 10).toFixed(2)}deg;--t:${(4.2 + (i * 53 % 20) / 10).toFixed(1)}s;--dl:-${(i * 29 % 50) / 10}s`;
+    const st = `--r:${((i % 2 ? 1 : -1) * (0.6 + (i * 37 % 10) / 10)).toFixed(2)}deg`;
     return `<button class="card hang" data-h="${esc(p.handle)}" style="${st}"><span class="sw">${HOOK}` +
            `<span class="ph">${img}${p._low ? '<span class="low">Últimas peças</span>' : ''}</span>` +
            `<span class="name">${esc(p._titulo)}</span><span class="det">${esc(p._det)}</span><span class="pr">${esc(price)}</span></span></button>`;
