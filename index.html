@@ -42,15 +42,30 @@ button{font-family:inherit;color:inherit}
 .tt:hover{border-color:var(--ink)}
 .tt small{margin-left:6px;color:var(--muted);font-weight:500}
 @media(prefers-reduced-motion:reduce){.tira{overflow-x:auto}.tira-in{animation:none}}
-.alta{padding-top:32px;padding-bottom:28px}
-.alta[hidden]{display:none}
-.alta-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;margin-bottom:18px}
-.alta h2{margin:0;font:800 clamp(26px,3.4vw,40px)/1.05 var(--head);letter-spacing:-.04em}
-.alta-head p{margin:0;color:var(--muted);font-size:15px;max-width:64ch}
-.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;scrollbar-width:none;margin:0 -16px;padding:0 16px}
-.rail::-webkit-scrollbar{display:none}
-.rail .card{flex:0 0 min(64vw,260px);scroll-snap-align:start}
-@media(min-width:960px){.rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;overflow:visible;margin:0;padding:0}.rail .card{flex:none}.rail .card:nth-child(n+5){display:none}}
+.cab{background:var(--ink);color:#fff;padding:36px 0 12px;overflow:hidden}
+.cab[hidden]{display:none}
+.alta-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;margin-bottom:8px}
+.cab h2{margin:0;font:800 clamp(26px,3.4vw,40px)/1.05 var(--head);letter-spacing:-.04em}
+.cab h2::after{content:".";color:var(--amarelo)}
+.alta-head p{margin:0;color:#B8B8B8;font-size:15px;max-width:64ch}
+.stage{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;cursor:grab;touch-action:pan-x pan-y;padding:0 24px 40px;--lag:0deg}
+.stage::-webkit-scrollbar{display:none}
+.stage.drag{cursor:grabbing}
+.stage.drag .hang{pointer-events:none}
+.track{position:relative;display:flex;gap:22px;width:max-content;margin:0 auto;padding-top:16px}
+.track::before{content:"";position:absolute;left:-24px;right:-24px;top:16px;height:4px;border-radius:2px;background:linear-gradient(#9A9A9A,#4A4A4A)}
+.stage .hang{flex:none;width:min(62vw,236px);align-self:flex-start;transform-origin:50% 0;transform:rotate(var(--lag)) scale(var(--s,1));will-change:transform;text-align:left;background:none;border:0;padding:0;color:#fff;font:inherit;cursor:inherit}
+.hang .sw{display:block;transform-origin:50% 0;animation:sway var(--t,5s) ease-in-out var(--dl,0s) infinite}
+@keyframes sway{0%,100%{transform:rotate(calc(var(--a,1.4deg)*-1))}50%{transform:rotate(var(--a,1.4deg))}}
+.hang:hover .sw,.hang:focus-visible .sw{animation-duration:calc(var(--t,5s)*1.8)}
+.hk{display:block;width:70px;height:40px;margin:-6px auto -2px;overflow:visible}
+.hk path{fill:none;stroke:#C9C9C9;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.hang .ph{display:block;border-radius:10px;box-shadow:0 14px 28px rgba(0,0,0,.45)}
+.hang .name{display:block;margin:14px 0 0;font:600 15px/1.3 var(--body);color:#fff}
+.hang .det{display:block;margin:2px 0 0;font-size:13px;color:#B8B8B8;min-height:0}
+.hang .pr{display:block;margin:8px 0 0;font:700 18px/1 var(--head);letter-spacing:-.03em;color:#fff}
+.cab-hint{margin:6px 0 0;font-size:12px;color:#8A8A8A}
+@media(prefers-reduced-motion:reduce){.hang .sw{animation:none}}
 
 /* busca e filtros */
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -200,12 +215,16 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 </header>
 <div class="tira" id="tira" aria-label="Times do catálogo" hidden><div class="tira-in" id="tiraIn"></div></div>
 <h1 class="sr">Catálogo de camisas</h1>
-<section class="alta wrap" id="alta" aria-labelledby="altaT" hidden>
-  <div class="alta-head">
-    <h2 id="altaT">Em alta</h2>
-    <p id="altaTxt" hidden></p>
+<section class="cab" id="alta" aria-labelledby="altaT" hidden>
+  <div class="wrap">
+    <div class="alta-head">
+      <h2 id="altaT">Em alta</h2>
+      <p id="altaTxt" hidden></p>
+    </div>
   </div>
-  <div class="rail" id="rail"></div>
+  <div class="stage" id="stage" tabindex="0" aria-label="Camisas em destaque. Arraste para o lado.">
+    <div class="track" id="rail"></div>
+  </div>
 </section>
 
 <div class="bar">
@@ -637,12 +656,62 @@ Basquete|Kings|kings,sacramento kings`;
     return f;
   }
 
+  const HOOK = '<svg class="hk" viewBox="0 0 100 44" aria-hidden="true"><path d="M50 16V12a6 6 0 1 0-6-6"/><path d="M50 16L6 40H94Z"/></svg>';
+  function hang(p, i) {
+    const img = p.imagens[0] ? `<img src="${esc(imgUrl(p.imagens[0], 480))}" alt="" loading="lazy" decoding="async" draggable="false">` : '';
+    const price = p.preco != null ? money(p.preco) : 'Consulte';
+    const st = `--a:${(1 + (i * 37 % 10) / 10).toFixed(2)}deg;--t:${(4.2 + (i * 53 % 20) / 10).toFixed(1)}s;--dl:-${(i * 29 % 50) / 10}s`;
+    return `<button class="card hang" data-h="${esc(p.handle)}" style="${st}"><span class="sw">${HOOK}` +
+           `<span class="ph">${img}${p._low ? '<span class="low">Últimas peças</span>' : ''}</span>` +
+           `<span class="name">${esc(p._titulo)}</span><span class="det">${esc(p._det)}</span><span class="pr">${esc(price)}</span></span></button>`;
+  }
+
   function renderAlta() {
     const livre = !(S.q || S.liga || S.versao || S.cat || S.team || S.size);   // some quando há busca ou filtro
-    const picks = livre ? ALL.filter(p => p.destaque).sort((a, b) => cmp(a._titulo, b._titulo)).slice(0, 8) : [];
+    let picks = [], titulo = CONFIG.altaTitulo;
+    if (livre) {
+      picks = ALL.filter(p => p.destaque).sort((a, b) => cmp(a._titulo, b._titulo)).slice(0, 12);
+      if (!picks.length) { picks = ALL.filter(p => p.imagens.length).slice(0, 10); titulo = 'Vestiário'; }   // sem destaque marcado
+    }
     $q('#alta').hidden = !picks.length;
-    $q('#rail').innerHTML = picks.map(card).join('');
+    $q('#altaT').textContent = titulo;
+    $q('#rail').innerHTML = picks.map(hang).join('');
+    const st = $q('#stage'); st.scrollLeft = 0; cabUpdate();
   }
+
+  // cabideiro: arrastar com o mouse, camisas do centro maiores, balanço extra ao arrastar
+  const cab = { lag: 0, last: 0, x: 0, drag: false, moved: 0, sl: 0, raf: 0 };
+  function cabUpdate() {
+    const st = $q('#stage'); if (!st) return;
+    const r = st.getBoundingClientRect(), mid = r.left + r.width / 2;
+    st.querySelectorAll('.hang').forEach(h => {
+      const b = h.getBoundingClientRect(), d = Math.abs(b.left + b.width / 2 - mid) / (r.width / 2 || 1);
+      h.style.setProperty('--s', (1.04 - Math.min(.16, d * .14)).toFixed(3));
+    });
+  }
+  function cabTick() {
+    const st = $q('#stage'), x = st.scrollLeft, v = x - cab.last; cab.last = x;
+    cab.lag += (Math.max(-6, Math.min(6, -v * .35)) - cab.lag) * .12;
+    st.style.setProperty('--lag', cab.lag.toFixed(2) + 'deg');
+    if (v) cabUpdate();
+    cab.raf = requestAnimationFrame(cabTick);
+  }
+  function cabInit() {
+    const st = $q('#stage');
+    st.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' || e.button) return; cab.drag = true; cab.moved = 0; cab.x = e.clientX; cab.sl = st.scrollLeft; });
+    window.addEventListener('pointermove', e => {
+      if (!cab.drag) return;
+      const dx = e.clientX - cab.x; cab.moved = Math.max(cab.moved, Math.abs(dx));
+      if (cab.moved > 5) { st.classList.add('drag'); st.scrollLeft = cab.sl - dx; }
+    });
+    const end = () => { if (!cab.drag) return; cab.drag = false; setTimeout(() => st.classList.remove('drag'), 0); };
+    window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
+    st.addEventListener('click', e => { if (cab.moved > 5) { e.stopPropagation(); e.preventDefault(); cab.moved = 0; } }, true);
+    st.addEventListener('keydown', e => { if (e.key === 'ArrowRight') st.scrollBy({ left: 260, behavior: 'smooth' }); if (e.key === 'ArrowLeft') st.scrollBy({ left: -260, behavior: 'smooth' }); });
+    window.addEventListener('resize', cabUpdate);
+    if (!REDUCE_MOTION) cab.raf = requestAnimationFrame(cabTick);
+  }
+  const REDUCE_MOTION = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function render() {
     const list = visible();
@@ -896,7 +965,6 @@ Basquete|Kings|kings,sacramento kings`;
   function applyBrand() {
     document.title = CONFIG.nome + ' | Camisas';
     $q('#brand').textContent = CONFIG.nome; $q('#brand2').textContent = CONFIG.nome;
-    $q('#altaT').textContent = CONFIG.altaTitulo;
     const at = $q('#altaTxt'); at.textContent = CONFIG.altaTexto; at.hidden = !CONFIG.altaTexto;
     $q('#copy').textContent = '© ' + new Date().getFullYear() + ' ' + CONFIG.nome.toLowerCase();
     ['#waTop', '#waFoot'].forEach(id => {
@@ -939,6 +1007,7 @@ Basquete|Kings|kings,sacramento kings`;
   }
 
   applyBrand();
+  cabInit();
   load();
 })();
 </script>
