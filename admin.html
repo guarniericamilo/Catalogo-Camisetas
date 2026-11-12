@@ -123,7 +123,7 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
     <!-- PRODUTOS -->
     <section id="tprod">
       <h2>Produtos</h2>
-      <p class="lead">Preço em branco segue a faixa de preço pelo custo. Preencher "Seu preço" vale só para aquele produto. Acessórios não têm faixa: sem preço aqui, aparecem como "Consulte".</p>
+      <p class="lead">Preço em branco segue a faixa de preço pelo custo. Preencher "Seu preço" vale só para aquele produto. Acessórios não têm faixa: sem preço aqui, aparecem como "Consulte". Marcar "Destaque" coloca a peça na vitrine "Em alta" do topo do catálogo (até 8 peças).</p>
       <div class="tools">
         <input id="pBusca" type="search" placeholder="Buscar produto" aria-label="Buscar produto">
         <select id="pFiltro" aria-label="Filtrar">
@@ -172,6 +172,8 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
         <div class="grid2">
           <div><label class="f" for="cNome">Nome da marca</label><input id="cNome"></div>
           <div><label class="f" for="cZap">WhatsApp dos pedidos (com 55 e DDD)</label><input id="cZap" inputmode="numeric" placeholder="5511999999999"></div>
+          <div><label class="f" for="cAltaT">Título da vitrine do topo</label><input id="cAltaT" placeholder="Em alta"></div>
+          <div style="grid-column:1/-1"><label class="f" for="cAltaX">Texto da vitrine (opcional)</label><input id="cAltaX" placeholder="Ex.: Venceram no fim de semana: Flamengo, Palmeiras e Vasco"></div>
         </div>
         <button class="btn" id="cSalvar">Salvar</button>
       </div>
@@ -435,6 +437,7 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
     ]);
     const c = Object.fromEntries((cfg || []).map(x => [x.chave, x.valor]));
     $('#cNome').value = c.nome || ''; $('#cZap').value = c.whatsapp || '';
+    $('#cAltaT').value = c.em_alta_titulo || ''; $('#cAltaX').value = c.em_alta_texto || '';
     $('#sLog').innerHTML = (log || []).map(l => `<tr><td>${esc(new Date(l.criado_em).toLocaleString('pt-BR'))}</td><td>${esc(l.produtos)}</td><td>${esc(l.lidos)}</td><td class="${l.erros ? 'neg' : ''}">${esc(l.erros)}</td><td>${esc(l.detalhe || '')}</td></tr>`).join('') || '<tr><td colspan="5">Sem registros.</td></tr>';
     desenharUsuarios(us || []);
   }
@@ -442,7 +445,10 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
     const zap = $('#cZap').value.replace(/\D/g, '');
     const { error } = await sb.from('config').upsert([{ chave: 'nome', valor: $('#cNome').value.trim() || 'Camizz' }, { chave: 'whatsapp', valor: zap }]);
     if (error) { falha(error, 'Não salvou'); return; }
-    $('#cZap').value = zap; toast('Salvo. O catálogo mostra na próxima abertura.');
+    $('#cZap').value = zap;
+    const r2 = await sb.from('config').upsert([{ chave: 'em_alta_titulo', valor: $('#cAltaT').value.trim() }, { chave: 'em_alta_texto', valor: $('#cAltaX').value.trim() }]);
+    if (r2.error) { falha(r2.error, 'Nome e WhatsApp salvos, mas o texto da vitrine não'); return; }
+    toast('Salvo. O catálogo mostra na próxima abertura.');
   });
   $('#sSync').addEventListener('click', async () => {
     const btn = $('#sSync'), barra = $('#sBarra'), msg = $('#sMsg');

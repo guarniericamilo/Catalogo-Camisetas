@@ -31,10 +31,17 @@ button{font-family:inherit;color:inherit}
 .brand{font:800 26px/1 var(--head);letter-spacing:-.04em;text-transform:lowercase;text-decoration:none}
 .wa{font:700 14px var(--body);color:#fff;background:var(--ink);text-decoration:none;padding:12px 20px;border-radius:999px}
 .wa[hidden]{display:none}
-.hero{padding-top:36px;padding-bottom:24px}
-h1{font:800 clamp(34px,7vw,84px)/1.04 var(--head);margin:0;letter-spacing:-.04em}
-.hero p{margin:14px 0 0;max-width:340px;color:var(--muted);font-size:15px;line-height:1.45}
-@media(min-width:960px){.hero{padding-top:64px;padding-bottom:40px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}.hero p{margin:0;font-size:16px}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* vitrine Em alta */
+.alta{padding-top:32px;padding-bottom:28px}
+.alta[hidden]{display:none}
+.alta-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;margin-bottom:18px}
+.alta h2{margin:0;font:800 clamp(26px,3.4vw,40px)/1.05 var(--head);letter-spacing:-.04em}
+.alta-head p{margin:0;color:var(--muted);font-size:15px;max-width:64ch}
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+.rail::-webkit-scrollbar{display:none}
+.rail .card{flex:0 0 min(64vw,260px);scroll-snap-align:start}
+@media(min-width:960px){.rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;overflow:visible;margin:0;padding:0}.rail .card{flex:none}.rail .card:nth-child(n+5){display:none}}
 
 /* busca e filtros */
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -169,9 +176,13 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
     <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
   </div>
 </header>
-<section class="hero wrap">
-  <h1>Camisas<br>de time.</h1>
-  <p>Veja o estoque por tamanho e peça pelo WhatsApp.</p>
+<h1 class="sr">Catálogo de camisas</h1>
+<section class="alta wrap" id="alta" aria-labelledby="altaT" hidden>
+  <div class="alta-head">
+    <h2 id="altaT">Em alta</h2>
+    <p id="altaTxt" hidden></p>
+  </div>
+  <div class="rail" id="rail"></div>
 </section>
 
 <div class="bar">
@@ -242,6 +253,8 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
   const CONFIG = {
     nome: 'Camizz',                        // nome da marca; o painel (Sistema) sobrescreve
     whatsapp: '5511971576189',               // pedidos; o painel (Sistema) sobrescreve
+    altaTitulo: 'Em alta',                   // título da vitrine do topo; o painel (Sistema) sobrescreve
+    altaTexto: '',                           // texto curto sob o título (opcional)
     supabaseUrl: 'https://sjcnnafmshtdymfvmunt.supabase.co',
     supabaseKey: 'sb_publishable_tg6lE_gEx3EboWHYjORdXw_Sc38uot5'
   };
@@ -590,6 +603,13 @@ Basquete|Kings|kings,sacramento kings`;
     return f;
   }
 
+  function renderAlta() {
+    const livre = !(S.q || S.liga || S.versao || S.cat || S.team || S.size);   // some quando há busca ou filtro
+    const picks = livre ? ALL.filter(p => p.destaque).sort((a, b) => cmp(a._titulo, b._titulo)).slice(0, 8) : [];
+    $q('#alta').hidden = !picks.length;
+    $q('#rail').innerHTML = picks.map(card).join('');
+  }
+
   function render() {
     const list = visible();
     const af = activeFilters();
@@ -602,6 +622,7 @@ Basquete|Kings|kings,sacramento kings`;
     const st = $q('#state');
     if (!list.length) { st.hidden = false; st.innerHTML = 'Nenhum produto com esses filtros.<button class="link" id="clear2">Limpar filtros</button>'; }
     else st.hidden = true;
+    renderAlta();
     syncHash();
   }
 
@@ -767,7 +788,9 @@ Basquete|Kings|kings,sacramento kings`;
   $q('#clear').addEventListener('click', clearAll);
   $q('#active').addEventListener('click', e => { const b = e.target.closest('.tagx'); if (b) clearOne(b.dataset.k); });
   $q('#state').addEventListener('click', e => { if (e.target.id === 'clear2') clearAll(); if (e.target.id === 'retry') load(); });
-  $q('#grid').addEventListener('click', e => { const c = e.target.closest('.card'); if (c) openProduct(c.dataset.h); });
+  const onCard = e => { const c = e.target.closest('.card'); if (c) openProduct(c.dataset.h); };
+  $q('#grid').addEventListener('click', onCard);
+  $q('#rail').addEventListener('click', onCard);
   $q('#mSizes').addEventListener('click', e => { const b = e.target.closest('.sb'); if (b && !b.disabled) pick(b.dataset.s); });
   $q('#mClose').addEventListener('click', closeProduct);
   $q('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
@@ -775,11 +798,11 @@ Basquete|Kings|kings,sacramento kings`;
 
   // ---------- Carregamento ----------
   const DEMO = [
-    { handle:'demo-1', nome:'Camisa Flamengo I 26/27 Torcedor - Rubro Negra', categoria:'torcedor', preco:150, imagens:[],
+    { handle:'demo-1', destaque:true, nome:'Camisa Flamengo I 26/27 Torcedor - Rubro Negra', categoria:'torcedor', preco:150, imagens:[],
       tamanhos:[{tamanho:'P',qtd:3,disponivel:true},{tamanho:'M',qtd:0,disponivel:false},{tamanho:'G',qtd:12,disponivel:true},{tamanho:'GG',qtd:8,disponivel:true}] },
-    { handle:'demo-2', nome:'Camisa Flamengo Retrô 92/93 Vermelha e Preta Masculina - Umbro', categoria:'retro', preco:225, imagens:[],
+    { handle:'demo-2', destaque:true, nome:'Camisa Flamengo Retrô 92/93 Vermelha e Preta Masculina - Umbro', categoria:'retro', preco:225, imagens:[],
       tamanhos:[{tamanho:'M',qtd:2,disponivel:true},{tamanho:'G',qtd:1,disponivel:true}] },
-    { handle:'demo-3', nome:'Regata NBA Los Angeles Lakers - Amarela - LUKA DONČIĆ 77', categoria:'nba', preco:250, imagens:[],
+    { handle:'demo-3', destaque:true, nome:'Regata NBA Los Angeles Lakers - Amarela - LUKA DONČIĆ 77', categoria:'nba', preco:250, imagens:[],
       tamanhos:[{tamanho:'M',qtd:9,disponivel:true},{tamanho:'G',qtd:0,disponivel:false},{tamanho:'GG',qtd:6,disponivel:true}] },
     { handle:'demo-4', nome:'Infantil Corinthians II 26/27 Nike - Preta', categoria:'infantil', preco:150, imagens:[],
       tamanhos:[{tamanho:'4',qtd:5,disponivel:true},{tamanho:'6',qtd:7,disponivel:true},{tamanho:'8',qtd:0,disponivel:false}] },
@@ -792,6 +815,8 @@ Basquete|Kings|kings,sacramento kings`;
   function applyBrand() {
     document.title = CONFIG.nome + ' | Camisas';
     $q('#brand').textContent = CONFIG.nome; $q('#brand2').textContent = CONFIG.nome;
+    $q('#altaT').textContent = CONFIG.altaTitulo;
+    const at = $q('#altaTxt'); at.textContent = CONFIG.altaTexto; at.hidden = !CONFIG.altaTexto;
     $q('#copy').textContent = '© ' + new Date().getFullYear() + ' ' + CONFIG.nome.toLowerCase();
     ['#waTop', '#waFoot'].forEach(id => {
       const a = $q(id);
@@ -815,7 +840,7 @@ Basquete|Kings|kings,sacramento kings`;
         data = await r.json();
         try {
           const [c, d] = await Promise.all([fetch(base + 'config?select=chave,valor', { headers: H }), fetch(base + 'descontos?select=qtd_min,percentual&order=qtd_min', { headers: H })]);
-          if (c.ok) (await c.json()).forEach(x => { if (x.chave === 'nome' && x.valor) CONFIG.nome = x.valor; if (x.chave === 'whatsapp') CONFIG.whatsapp = x.valor || ''; });
+          if (c.ok) (await c.json()).forEach(x => { if (x.chave === 'nome' && x.valor) CONFIG.nome = x.valor; if (x.chave === 'whatsapp') CONFIG.whatsapp = x.valor || ''; if (x.chave === 'em_alta_titulo' && x.valor) CONFIG.altaTitulo = x.valor; if (x.chave === 'em_alta_texto') CONFIG.altaTexto = x.valor || ''; });
           if (d.ok) DESCONTOS = await d.json();
         } catch (_) { /* segue sem config */ }
       }
