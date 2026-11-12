@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="only light">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Camizz | Camisas</title>
 <meta name="description" content="Camisas de futebol e basquete. Escolha o tamanho e peça pelo WhatsApp.">
@@ -11,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme:only light;
   --bg:#FFFFFF; --tile:#F4F4F2; --ink:#111111; --muted:#5C5C5C; --line:#E5E5E5; --line2:#CFCFCF;
   --pitch:#0A7C3E; --amarelo:#FFD400; --vermelho:#E3262B;
   --head:'Unbounded',system-ui,sans-serif;
@@ -997,7 +999,7 @@ Basquete|Kings|kings,sacramento kings`;
         ox.fillStyle = 'rgb(' + bg[0] + ',' + bg[1] + ',' + bg[2] + ')'; ox.fillRect(0, 0, W, H);
         ox.drawImage(bmp, cx - cw / 2, cy - ch / 2, cw, ch, 0, 0, W, H);
         const id = ox.getImageData(0, 0, W, H), q = id.data, seen = new Uint8Array(W * H), stack = new Int32Array(W * H);
-        let sp = 0;
+        let sp = 0, filled = 0;
         const push = p => { if (!seen[p]) { seen[p] = 1; stack[sp++] = p; } };
         for (let x = 0; x < W; x++) { push(x); push((H - 1) * W + x); }
         for (let y = 0; y < H; y++) { push(y * W); push(y * W + W - 1); }
@@ -1005,7 +1007,7 @@ Basquete|Kings|kings,sacramento kings`;
         while (sp) {
           const p = stack[--sp], i = p * 4, r = q[i], g = q[i + 1], b = q[i + 2];
           if (Math.abs(r - r0) + Math.abs(g - g0) + Math.abs(b - b0) > 48) continue;
-          q[i] = 244; q[i + 1] = 244; q[i + 2] = 242;   // marca como fundo (a cor nova nunca é vizinha de si mesma por causa de seen)
+          filled++; q[i] = 244; q[i + 1] = 244; q[i + 2] = 242;   // marca como fundo (a cor nova nunca é vizinha de si mesma por causa de seen)
           const x = p % W, y = (p / W) | 0;
           for (let n = 0; n < 4; n++) {
             const nx = x + (n === 0) - (n === 1), ny = y + (n === 2) - (n === 3);
@@ -1015,6 +1017,7 @@ Basquete|Kings|kings,sacramento kings`;
             if (Math.abs(q[j] - r) + Math.abs(q[j + 1] - g) + Math.abs(q[j + 2] - b) <= 14) { seen[np] = 1; stack[sp++] = np; }
           }
         }
+        if (filled > W * H * .82) { self.postMessage({ key }); return; }   // apagou a camisa (ex.: branca em fundo branco): mantém a foto original
         ox.putImageData(id, 0, 0);
         self.postMessage({ key, blob: await out.convertToBlob({ type: 'image/jpeg', quality: .88 }) });
       } catch (err) { self.postMessage({ key }); }
