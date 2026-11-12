@@ -142,21 +142,11 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .modal[hidden]{display:none}
 .sheet{background:#fff;width:100%;max-width:980px;max-height:94vh;overflow:auto;position:relative;animation:up .2s ease-out}
 @keyframes up{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
-@media(min-width:760px){.modal{align-items:center}.sheet{display:grid;grid-template-columns:1fr 1fr;max-height:88vh;background:linear-gradient(90deg,var(--tile) 50%,#fff 50%)}.sheet .media{align-self:start;position:sticky;top:0}.sheet .info{background:#fff}}
+@media(min-width:760px){.modal{align-items:center}.sheet{display:grid;grid-template-columns:1fr 1fr;max-height:88vh}}
 @media(prefers-reduced-motion:reduce){.sheet{animation:none}}
 .gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;background:var(--tile);scrollbar-width:none}
 .gallery::-webkit-scrollbar{display:none}
 .gallery img{flex:none;width:100%;aspect-ratio:1/1;max-height:62vh;object-fit:contain;mix-blend-mode:multiply;scroll-snap-align:center;padding:4%}
-.media{position:relative;background:var(--tile);min-width:0}
-.vt{position:absolute;top:12px;left:12px;z-index:2;display:flex;gap:2px;padding:3px;background:#fff;border:1px solid var(--line);border-radius:999px}
-.vt[hidden],.v3[hidden]{display:none}
-.vt button{height:34px;padding:0 14px;border:0;border-radius:999px;background:transparent;font:600 13px var(--body);color:var(--ink);cursor:pointer}
-.vt button[aria-pressed=true]{background:var(--ink);color:#fff}
-.v3{position:relative;width:100%;aspect-ratio:1/1;max-height:62vh}
-.v3 canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab}
-.v3 canvas:active{cursor:grabbing}
-.v3flip{position:absolute;right:12px;bottom:12px;height:38px;padding:0 16px;border:1px solid var(--line2);background:#fff;border-radius:999px;font:600 13px var(--body);color:var(--ink);cursor:pointer}
-.v3hint{position:absolute;left:12px;bottom:14px;max-width:calc(100% - 150px);margin:0;font-size:12px;line-height:1.35;color:var(--muted);pointer-events:none}
 .info{padding:28px 24px 32px}
 .x{position:absolute;top:12px;right:12px;z-index:2;width:44px;height:44px;border-radius:999px;border:0;background:var(--tile);font-size:22px;line-height:1;cursor:pointer}
 .info h2{font:800 26px/1.12 var(--head);letter-spacing:-.03em;margin:0 52px 0 0}
@@ -266,15 +256,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 <div class="modal" id="modal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <button class="x" id="mClose" aria-label="Fechar">×</button>
-    <div class="media">
-      <div class="vt" id="vt" role="group" aria-label="Modo de visualização"><button type="button" data-v="fotos" aria-pressed="true">Fotos</button><button type="button" data-v="3d" aria-pressed="false">Camisa 3D</button></div>
-      <div class="gallery" id="mGallery"></div>
-      <div class="v3" id="v3" hidden>
-        <canvas id="v3c" aria-label="Camisa em 3D. Arraste para girar."></canvas>
-        <p class="v3hint">Arraste para girar. Modelo ilustrativo: cores da peça, sem escudo nem patrocínio.</p>
-        <button type="button" class="v3flip" id="v3flip">Ver costas</button>
-      </div>
-    </div>
+    <div class="gallery" id="mGallery"></div>
     <div class="info">
       <h2 id="mTitle"></h2>
       <p class="m-det" id="mDet"></p>
@@ -804,7 +786,6 @@ Basquete|Kings|kings,sacramento kings`;
   function pvUpdate() {
     $q('#pvNome').textContent = CUSTOM.nome || 'SEU NOME';
     $q('#pvNum').textContent = CUSTOM.num || '10';
-    draw3DBack();
   }
   function pick(size) {
     selSize = size;
@@ -839,10 +820,6 @@ Basquete|Kings|kings,sacramento kings`;
     $q('#mStock').textContent = '';
     const buy = $q('#mBuy');
     buy.textContent = 'Escolha um tamanho'; buy.href = '#'; buy.setAttribute('aria-disabled', 'true');
-    V3.auto = true; V3.tw = null; V3.rot = 0;
-    $q('#vt').hidden = V3.fail;
-    setView(p.imagens.length || V3.fail ? 'fotos' : '3d');
-    if (!V3.fail) prepare3D(p);
     $q('#modal').hidden = false;
     document.body.style.overflow = 'hidden';
     $q('#mClose').focus();
@@ -850,177 +827,11 @@ Basquete|Kings|kings,sacramento kings`;
     syncHash();
   }
   function closeProduct() {
-    cancelAnimationFrame(V3.raf); V3.raf = 0;
     $q('#modal').hidden = true;
     document.body.style.overflow = '';
     current = null;
     if (lastFocus && lastFocus.focus) lastFocus.focus();
     syncHash();
-  }
-
-  // ---------- Camisa 3D ----------
-  const THREE_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-  const COR = [
-    [/rubro negr/, ['#D32127', '#151515']], [/alvinegr/, ['#F5F5F2', '#151515']], [/alviverde/, ['#0A7C3E', '#F5F5F2']],
-    [/azul marinho|marinho/, ['#0F2347']], [/azul celeste|celeste|azul claro/, ['#6CB4E4']],
-    [/branc/, ['#F5F5F2']], [/pret/, ['#151515']], [/vermelh/, ['#D32127']], [/azul/, ['#1C4FA0']], [/verde/, ['#0A7C3E']],
-    [/amarel/, ['#F2C400']], [/laranj/, ['#F28C1B']], [/roxo|lilas/, ['#552583']], [/grena|vinho|bordo/, ['#7A1230']],
-    [/dourad/, ['#C9A227']], [/cinza|prata/, ['#9A9A9A']], [/rosa/, ['#E88AB0']]
-  ];
-  const TEAMCOL = [
-    [/flamengo/, ['#D32127', '#151515']], [/vasco/, ['#151515', '#F5F5F2']], [/corinthians/, ['#F5F5F2', '#151515']],
-    [/palmeiras/, ['#0A7C3E', '#F5F5F2']], [/sao paulo/, ['#F5F5F2', '#D32127']], [/santos/, ['#F5F5F2', '#151515']],
-    [/gremio/, ['#6CB4E4', '#151515']], [/internacional/, ['#D32127', '#F5F5F2']], [/cruzeiro/, ['#1C4FA0', '#F5F5F2']],
-    [/botafogo/, ['#151515', '#F5F5F2']], [/fluminense/, ['#7A1230', '#0A7C3E']], [/barcelona/, ['#A50044', '#004D98']],
-    [/real madrid/, ['#F5F5F2', '#C9A227']], [/brasil/, ['#F2C400', '#0A6E3A']], [/argentina/, ['#6CB4E4', '#F5F5F2']],
-    [/lakers/, ['#552583', '#F2C400']]
-  ];
-  const REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const V3 = { ready:false, fail:false, on:false, rot:0, vel:0, auto:true, drag:false, tw:null, raf:0, txt:'#fff' };
-
-  function lum(c) { const n = parseInt(c.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255; }
-  function coresPeca(p) {
-    let t = ' ' + norm(p.nome) + ' ';
-    const hit = [];
-    COR.forEach(([re, cols]) => {
-      const m = re.exec(t);
-      if (m) { hit.push([m.index, cols]); t = t.slice(0, m.index) + ' '.repeat(m[0].length) + t.slice(m.index + m[0].length); }
-    });
-    let cols = hit.sort((a, b) => a[0] - b[0]).flatMap(h => h[1]).filter((c, i, a) => a.indexOf(c) === i);
-    if (!cols.length) { const tm = TEAMCOL.find(([re]) => re.test(norm(p._team || p.nome))); if (tm) cols = tm[1]; }
-    if (!cols.length) cols = ['#E9E9E4'];
-    const c1 = cols[0], c2 = cols[1] || (lum(c1) > .6 ? '#151515' : '#F5F5F2');
-    return { c1, c2, txt: lum(c1) > .6 ? '#151515' : '#FFFFFF' };
-  }
-
-  function loadThree() {
-    if (window.THREE) return Promise.resolve();
-    if (!loadThree.p) loadThree.p = new Promise((ok, no) => {
-      const sc = document.createElement('script');
-      sc.src = THREE_SRC; sc.onload = ok; sc.onerror = () => { loadThree.p = null; no(new Error('three')); };
-      document.head.appendChild(sc);
-    });
-    return loadThree.p;
-  }
-
-  function init3D() {
-    if (V3.ready) return;
-    const T = THREE, cv = $q('#v3c');
-    const r = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
-    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    const scene = new T.Scene();
-    const cam = new T.PerspectiveCamera(30, 1, .1, 50); cam.position.set(0, 0, 4.6);
-    scene.add(new T.HemisphereLight(0xffffff, 0xb8b8b8, 1.0));
-    const d1 = new T.DirectionalLight(0xffffff, .55); d1.position.set(2, 3, 4); scene.add(d1);
-    const d2 = new T.DirectionalLight(0xffffff, .45); d2.position.set(-2, 2, -4); scene.add(d2);
-    const mat = c => new T.MeshStandardMaterial({ color: c, roughness: .85, metalness: 0 });
-    const P = (x, y) => [x - 100, 100 - y];
-    const ext = (shape, depth, bt, bs) => {
-      const g = new T.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: bt, bevelSize: bs, bevelSegments: 4, curveSegments: 24 });
-      g.translate(0, 0, -depth / 2); return g;
-    };
-    const sb = new T.Shape(); sb.moveTo(...P(70, 20));
-    [[40, 32], [8, 70], [32, 92], [50, 78], [50, 180], [150, 180], [150, 78], [168, 92], [192, 70], [160, 32], [130, 20]].forEach(q => sb.lineTo(...P(...q)));
-    sb.bezierCurveTo(...P(124, 34), ...P(76, 34), ...P(70, 20));
-    const col = new T.Shape(); col.moveTo(...P(70, 20));
-    col.bezierCurveTo(...P(76, 34), ...P(124, 34), ...P(130, 20)); col.lineTo(...P(122, 17));
-    col.bezierCurveTo(...P(116, 27), ...P(84, 27), ...P(78, 17)); col.lineTo(...P(70, 20));
-    const cuff = pts => { const sh = new T.Shape(); sh.moveTo(...P(...pts[0])); pts.slice(1).forEach(q => sh.lineTo(...P(...q))); return sh; };
-    const pivot = new T.Group(), shirt = new T.Group(); shirt.scale.setScalar(.01); pivot.add(shirt); scene.add(pivot);
-    const body = new T.Mesh(ext(sb, 6, 3, 2), mat('#ffffff'));
-    const trim = mat('#151515');
-    const trims = [new T.Mesh(ext(col, 6.6, 3.3, .6), trim),
-                   new T.Mesh(ext(cuff([[8, 70], [32, 92], [40, 84], [16, 62]]), 6.6, 3.3, .6), trim),
-                   new T.Mesh(ext(cuff([[192, 70], [168, 92], [160, 84], [184, 62]]), 6.6, 3.3, .6), trim)];
-    const st = new T.Shape(); st.moveTo(...P(74, 16)); st.lineTo(...P(90, 16));
-    st.bezierCurveTo(...P(94, 44), ...P(106, 44), ...P(110, 16)); st.lineTo(...P(126, 16));
-    st.bezierCurveTo(...P(128, 52), ...P(146, 56), ...P(148, 76)); st.lineTo(...P(148, 180)); st.lineTo(...P(52, 180)); st.lineTo(...P(52, 76));
-    st.bezierCurveTo(...P(54, 56), ...P(72, 52), ...P(74, 16));
-    const tc = new T.Shape(); tc.moveTo(...P(90, 16)); tc.bezierCurveTo(...P(94, 44), ...P(106, 44), ...P(110, 16)); tc.lineTo(...P(105, 16));
-    tc.bezierCurveTo(...P(103, 36), ...P(97, 36), ...P(95, 16)); tc.lineTo(...P(90, 16));
-    const tank = new T.Mesh(ext(st, 6, 3, 2), body.material), tankTrim = new T.Mesh(ext(tc, 6.6, 3.3, .6), trim);
-    tank.visible = tankTrim.visible = false;
-    shirt.add(body, ...trims, tank, tankTrim);
-    const bc = document.createElement('canvas'); bc.width = bc.height = 512;
-    const bt = new T.CanvasTexture(bc); bt.anisotropy = 4;
-    const back = new T.Mesh(new T.PlaneGeometry(100, 100), new T.MeshBasicMaterial({ map: bt, transparent: true, depthWrite: false }));
-    back.position.set(0, 10, -6.2); back.rotation.y = Math.PI; back.visible = false; shirt.add(back);
-    Object.assign(V3, { r, scene, cam, pivot, body, trim, back, bt, bc, tank, tankTrim, trims, ready: true });
-
-    cv.addEventListener('pointerdown', e => { V3.drag = true; V3.auto = false; V3.tw = null; V3.lastX = e.clientX; V3.vel = 0; try { cv.setPointerCapture(e.pointerId); } catch (_) {} });
-    cv.addEventListener('pointermove', e => { if (!V3.drag) return; const dx = e.clientX - V3.lastX; V3.lastX = e.clientX; V3.rot += dx * .012; V3.vel = dx * .012; });
-    ['pointerup', 'pointercancel'].forEach(n => cv.addEventListener(n, () => { V3.drag = false; }));
-    window.addEventListener('resize', size3D);
-  }
-
-  function size3D() {
-    if (!V3.ready || !V3.on) return;
-    const box = $q('#v3'), w = box.clientWidth, h = box.clientHeight;
-    if (!w || !h) return;
-    V3.r.setSize(w, h, false); V3.cam.aspect = w / h; V3.cam.updateProjectionMatrix();
-  }
-
-  function draw3DBack() {
-    if (!V3.ready) return;
-    const c = V3.bc.getContext('2d'), nome = CUSTOM.on ? CUSTOM.nome : '', num = CUSTOM.on ? CUSTOM.num : '';
-    c.clearRect(0, 0, 512, 512);
-    V3.back.visible = !!(nome || num);
-    c.fillStyle = V3.txt; c.textAlign = 'center'; c.textBaseline = 'middle';
-    const fit = (txt, wt, size, max, y) => { let fs = size; c.font = wt + ' ' + fs + 'px Unbounded, sans-serif'; while (c.measureText(txt).width > max && fs > 16) { fs -= 2; c.font = wt + ' ' + fs + 'px Unbounded, sans-serif'; } c.fillText(txt, 256, y); };
-    if (nome) fit(nome, 700, 58, 470, 80);
-    if (num) fit(num, 800, 280, 400, 290);
-    V3.bt.needsUpdate = true;
-  }
-
-  function paint3D(p) {
-    if (!V3.ready) return;
-    const k = coresPeca(p);
-    const tk = /\bregata\b/.test(norm(p.nome)) || p.categoria === 'nba';
-    V3.body.visible = !tk; V3.trims.forEach(m => m.visible = !tk); V3.tank.visible = V3.tankTrim.visible = tk;
-    V3.body.material.color.set(k.c1); V3.trim.color.set(k.c2); V3.txt = k.txt;
-    Promise.all([document.fonts.load('700 20px Unbounded'), document.fonts.load('800 20px Unbounded')]).catch(() => {}).then(draw3DBack);
-    if (CUSTOM.on) flipTo(1);
-  }
-
-  function flipTo(back) {
-    if (!V3.ready) return;
-    const off = back ? Math.PI : 0, tau = Math.PI * 2;
-    V3.auto = false; V3.vel = 0;
-    V3.tw = { from: V3.rot, to: Math.round((V3.rot - off) / tau) * tau + off, k: 0 };
-  }
-
-  function tick3D(t) {
-    V3.raf = requestAnimationFrame(tick3D);
-    const dt = Math.min((t - (V3.t || t)) / 1000, .05); V3.t = t;
-    if (V3.tw) {
-      V3.tw.k = Math.min(1, V3.tw.k + dt / .6);
-      V3.rot = V3.tw.from + (V3.tw.to - V3.tw.from) * (1 - Math.pow(1 - V3.tw.k, 3));
-      if (V3.tw.k >= 1) V3.tw = null;
-    } else if (V3.auto) V3.rot = REDUCE ? 0 : Math.sin(t / 1000 * .9) * .55;
-    else if (!V3.drag) { V3.rot += V3.vel; V3.vel *= .92; }
-    V3.pivot.rotation.y = V3.rot;
-    V3.r.render(V3.scene, V3.cam);
-    const front = Math.cos(V3.rot) >= 0, fb = $q('#v3flip'), lbl = front ? 'Ver costas' : 'Ver frente';
-    if (fb.textContent !== lbl) fb.textContent = lbl;
-  }
-
-  function setView(v) {
-    V3.on = v === '3d';
-    document.querySelectorAll('#vt button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
-    $q('#mGallery').hidden = V3.on; $q('#v3').hidden = !V3.on;
-    cancelAnimationFrame(V3.raf); V3.raf = 0;
-    if (V3.on && V3.ready) { size3D(); V3.t = 0; V3.raf = requestAnimationFrame(tick3D); }
-  }
-
-  function prepare3D(p) {
-    return loadThree().then(() => { init3D(); }).then(() => {
-      if (current !== p) return;
-      paint3D(p);
-      if (V3.on) setView('3d');
-    }).catch(() => {
-      V3.fail = true; $q('#vt').hidden = true;
-      if (current === p) setView('fotos');
-    });
   }
 
   // ---------- Eventos ----------
@@ -1049,7 +860,7 @@ Basquete|Kings|kings,sacramento kings`;
   $q('#grid').addEventListener('click', onCard);
   $q('#rail').addEventListener('click', onCard);
   $q('#mSizes').addEventListener('click', e => { const b = e.target.closest('.sb'); if (b && !b.disabled) pick(b.dataset.s); });
-  $q('#cOn').addEventListener('change', e => { CUSTOM.on = e.target.checked; $q('#cFields').hidden = !CUSTOM.on; refreshBuy(); draw3DBack(); if (!V3.fail) { if (CUSTOM.on) setView('3d'); flipTo(CUSTOM.on ? 1 : 0); } });
+  $q('#cOn').addEventListener('change', e => { CUSTOM.on = e.target.checked; $q('#cFields').hidden = !CUSTOM.on; refreshBuy(); });
   $q('#cNome').addEventListener('input', e => { const v = e.target.value.toUpperCase().replace(/[^A-ZÀ-Ü .'-]/g, '').slice(0, 10); e.target.value = v; CUSTOM.nome = v.trim(); pvUpdate(); refreshBuy(); });
   $q('#cNum').addEventListener('input', e => { const v = e.target.value.replace(/\D/g, '').slice(0, 2); e.target.value = v; CUSTOM.num = v; pvUpdate(); refreshBuy(); });
   $q('#mShare').addEventListener('click', async () => {
@@ -1062,8 +873,6 @@ Basquete|Kings|kings,sacramento kings`;
     } catch (_) { b.textContent = url; }
   });
   $q('#tiraIn').addEventListener('click', e => { const b = e.target.closest('.tt'); if (b) goTeam(b.dataset.t); });
-  $q('#vt').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setView(b.dataset.v); });
-  $q('#v3flip').addEventListener('click', () => flipTo(Math.cos(V3.rot) >= 0 ? 1 : 0));
   $q('#mClose').addEventListener('click', closeProduct);
   $q('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
   document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (!$q('#modal').hidden) closeProduct(); else drawer(false); });
@@ -1126,7 +935,6 @@ Basquete|Kings|kings,sacramento kings`;
     buildControls();
     buildTira();
     render();
-    setTimeout(() => loadThree().catch(() => {}), 1500);
     if (open) openProduct(open);
   }
 
