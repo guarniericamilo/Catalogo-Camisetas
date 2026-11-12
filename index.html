@@ -33,6 +33,15 @@ button{font-family:inherit;color:inherit}
 .wa[hidden]{display:none}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* vitrine Em alta */
+.tira{background:var(--tile);border-bottom:1px solid var(--line);overflow:hidden}
+.tira[hidden]{display:none}
+.tira-in{display:flex;gap:8px;width:max-content;padding:10px 0 10px 8px;animation:tira 70s linear infinite}
+.tira:hover .tira-in,.tira:focus-within .tira-in{animation-play-state:paused}
+@keyframes tira{to{transform:translateX(-50%)}}
+.tt{flex:none;height:36px;padding:0 16px;border:1px solid var(--line2);background:#fff;border-radius:999px;font:600 13px var(--body);color:var(--ink);cursor:pointer;white-space:nowrap}
+.tt:hover{border-color:var(--ink)}
+.tt small{margin-left:6px;color:var(--muted);font-weight:500}
+@media(prefers-reduced-motion:reduce){.tira{overflow-x:auto}.tira-in{animation:none}}
 .alta{padding-top:32px;padding-bottom:28px}
 .alta[hidden]{display:none}
 .alta-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;margin-bottom:18px}
@@ -157,6 +166,19 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .stock.baixo::before{content:"";flex:none;width:14px;height:19px;background:var(--amarelo);border-radius:2px;transform:rotate(-6deg)}
 .buy{display:flex;align-items:center;justify-content:center;height:56px;background:var(--pitch);color:#fff;border-radius:999px;font:700 16px var(--body);text-decoration:none}
 .buy[aria-disabled=true]{background:var(--tile);color:var(--muted);pointer-events:none}
+.cust{margin:18px 0 4px;padding:14px 16px;background:var(--tile);border-radius:12px}
+.cust[hidden],.cust-f[hidden]{display:none}
+.cust-t{display:flex;align-items:center;gap:10px;font:700 15px var(--body);cursor:pointer}
+.cust-t input{width:20px;height:20px;accent-color:var(--ink)}
+.cust-f{display:grid;grid-template-columns:1fr 84px;gap:12px;margin-top:14px}
+.cust-in label{display:block;margin-bottom:6px;font:600 12px var(--body);color:var(--muted)}
+.cust-in input{width:100%;height:44px;border:1px solid var(--line2);border-radius:8px;padding:0 12px;font:600 16px var(--body);background:#fff;text-transform:uppercase}
+.cust-pv{grid-column:1/-1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 10px 10px;text-align:center;font-family:var(--head);color:var(--ink);overflow:hidden}
+.cust-pv span{display:block;font-weight:700;font-size:15px;letter-spacing:.1em;white-space:nowrap}
+.cust-pv b{display:block;font-weight:800;font-size:64px;line-height:1.05;letter-spacing:-.04em}
+.cust-note{grid-column:1/-1;margin:0;font-size:13px;color:var(--muted)}
+.share{display:flex;align-items:center;justify-content:center;width:100%;height:44px;margin-top:10px;border:1px solid var(--line2);background:#fff;border-radius:999px;font:600 14px var(--body);color:var(--ink);cursor:pointer}
+.share:hover{border-color:var(--ink)}
 :focus-visible{outline:3px solid var(--pitch);outline-offset:2px}
 
 /* rodapé */
@@ -176,6 +198,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
     <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
   </div>
 </header>
+<div class="tira" id="tira" aria-label="Times do catálogo" hidden><div class="tira-in" id="tiraIn"></div></div>
 <h1 class="sr">Catálogo de camisas</h1>
 <section class="alta wrap" id="alta" aria-labelledby="altaT" hidden>
   <div class="alta-head">
@@ -241,7 +264,17 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
       <ul class="desc" id="mDesc" hidden></ul>
       <fieldset class="sizes" id="mSizes"><legend>Tamanho</legend></fieldset>
       <p class="stock" id="mStock" aria-live="polite"></p>
+      <div class="cust" id="cust" hidden>
+        <label class="cust-t"><input type="checkbox" id="cOn"> Personalizar com nome e número</label>
+        <div class="cust-f" id="cFields" hidden>
+          <div class="cust-in"><label for="cNome">Nome (até 10 letras)</label><input id="cNome" maxlength="10" autocomplete="off" autocapitalize="characters"></div>
+          <div class="cust-in"><label for="cNum">Número</label><input id="cNum" maxlength="2" inputmode="numeric" autocomplete="off"></div>
+          <div class="cust-pv" aria-hidden="true"><span id="pvNome">SEU NOME</span><b id="pvNum">10</b></div>
+          <p class="cust-note">Prévia das costas. O valor da personalização é combinado pelo WhatsApp.</p>
+        </div>
+      </div>
       <a class="buy" id="mBuy" href="#" target="_blank" rel="noopener" aria-disabled="true">Escolha um tamanho</a>
+      <button class="share" id="mShare" type="button">Copiar link da peça</button>
       <p class="m-orig" id="mOrig"></p>
     </div>
   </div>
@@ -545,7 +578,8 @@ Basquete|Kings|kings,sacramento kings`;
   let ALL = [];
   let DESCONTOS = [];
   const S = { q:'', liga:'', versao:'', cat:'', team:'', size:'', sort:'az' };
-  let current = null, lastFocus = null;
+  let current = null, lastFocus = null, selSize = '';
+  const CUSTOM = { on:false, nome:'', num:'' };
 
   function prep(p) {
     const n = norm(p.nome);
@@ -670,6 +704,25 @@ Basquete|Kings|kings,sacramento kings`;
     $q('#q').value = S.q;
   }
 
+  function buildTira() {
+    const tc = {}; ALL.forEach(p => { if (p._team) tc[p._team] = (tc[p._team] || 0) + 1; });
+    const top = Object.keys(tc).sort((a, b) => tc[b] - tc[a] || cmp(a, b)).slice(0, 24);
+    const el = $q('#tira');
+    if (top.length < 4) { el.hidden = true; return; }
+    const one = top.map(t => `<button class="tt" data-t="${esc(t)}">${esc(t)}<small>${tc[t]}</small></button>`).join('');
+    const inn = $q('#tiraIn');
+    el.hidden = false; inn.style.animation = 'none'; inn.innerHTML = one;
+    const k = Math.max(1, Math.ceil(window.innerWidth / Math.max(inn.scrollWidth, 1)));   // repete só o necessário para encher a largura
+    const half = one.repeat(k);
+    inn.innerHTML = half + '<span style="display:contents" aria-hidden="true">' + half.replace(/<button /g, '<button tabindex="-1" ') + '</span>';
+    inn.style.animation = ''; inn.style.animationDuration = Math.max(30, Math.round(inn.scrollWidth / 2 / 40)) + 's';
+  }
+  function goTeam(t) {
+    S.q = ''; $q('#q').value = ''; S.liga = ''; S.team = t;
+    pressChips('#ligas', 'l', ''); buildTeamSelect(); render();
+    const bar = $q('.bar'); if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function pressChips(sel, attr, val) {
     document.querySelectorAll('.chip[data-' + attr + ']').forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === val)));
   }
@@ -719,12 +772,23 @@ Basquete|Kings|kings,sacramento kings`;
     let msg = 'Olá! Tenho interesse na ' + p._titulo;
     if (p._det) msg += ' (' + p._det + ')';
     if (size && size !== 'Único') msg += ', tamanho ' + size;
+    const cz = [CUSTOM.on && CUSTOM.nome, CUSTOM.on && CUSTOM.num].filter(Boolean).join(' ');
+    if (cz) msg += ', personalizada com "' + cz + '"';
     msg += p.preco != null ? ' por ' + money(p.preco) + '. Ainda está disponível?' : '. Qual o valor e a disponibilidade?';
     if (/^https?:/.test(location.protocol)) msg += '\n' + location.origin + location.pathname + '#p=' + p.handle;
     return 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, '') + '?text=' + encodeURIComponent(msg);
   }
 
+  function refreshBuy() {
+    if (!current || !selSize) return;
+    $q('#mBuy').href = waLink(current, selSize);
+  }
+  function pvUpdate() {
+    $q('#pvNome').textContent = CUSTOM.nome || 'SEU NOME';
+    $q('#pvNum').textContent = CUSTOM.num || '10';
+  }
   function pick(size) {
+    selSize = size;
     document.querySelectorAll('.sb').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.s === size)));
     const s = current._sizes.find(x => x.tamanho === size);
     $q('#mStock').classList.toggle('baixo', !!(s && s.qtd != null && s.qtd <= LOW_STOCK));
@@ -738,7 +802,11 @@ Basquete|Kings|kings,sacramento kings`;
   function openProduct(handle) {
     const p = ALL.find(x => x.handle === handle);
     if (!p) return;
-    current = p; lastFocus = document.activeElement;
+    current = p; lastFocus = document.activeElement; selSize = '';
+    CUSTOM.on = false; CUSTOM.nome = ''; CUSTOM.num = '';
+    $q('#cOn').checked = false; $q('#cNome').value = ''; $q('#cNum').value = ''; $q('#cFields').hidden = true; pvUpdate();
+    $q('#cust').hidden = p.categoria === 'acessorio';
+    $q('#mShare').textContent = 'Copiar link da peça';
     $q('#mTitle').textContent = p._titulo;
     $q('#mDet').textContent = p._det;
     $q('#mOrig').textContent = 'Nome no fornecedor: ' + p.nome;
@@ -792,6 +860,19 @@ Basquete|Kings|kings,sacramento kings`;
   $q('#grid').addEventListener('click', onCard);
   $q('#rail').addEventListener('click', onCard);
   $q('#mSizes').addEventListener('click', e => { const b = e.target.closest('.sb'); if (b && !b.disabled) pick(b.dataset.s); });
+  $q('#cOn').addEventListener('change', e => { CUSTOM.on = e.target.checked; $q('#cFields').hidden = !CUSTOM.on; refreshBuy(); });
+  $q('#cNome').addEventListener('input', e => { const v = e.target.value.toUpperCase().replace(/[^A-ZÀ-Ü .'-]/g, '').slice(0, 10); e.target.value = v; CUSTOM.nome = v.trim(); pvUpdate(); refreshBuy(); });
+  $q('#cNum').addEventListener('input', e => { const v = e.target.value.replace(/\D/g, '').slice(0, 2); e.target.value = v; CUSTOM.num = v; pvUpdate(); refreshBuy(); });
+  $q('#mShare').addEventListener('click', async () => {
+    if (!current) return;
+    const url = location.origin + location.pathname + '#p=' + current.handle;
+    const b = $q('#mShare');
+    try {
+      if (navigator.share) { await navigator.share({ title: current._titulo, url }); return; }
+      await navigator.clipboard.writeText(url); b.textContent = 'Link copiado';
+    } catch (_) { b.textContent = url; }
+  });
+  $q('#tiraIn').addEventListener('click', e => { const b = e.target.closest('.tt'); if (b) goTeam(b.dataset.t); });
   $q('#mClose').addEventListener('click', closeProduct);
   $q('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
   document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (!$q('#modal').hidden) closeProduct(); else drawer(false); });
@@ -852,6 +933,7 @@ Basquete|Kings|kings,sacramento kings`;
     ALL = data.filter(p => p.categoria !== 'patch').map(prep);
     const open = readHash();
     buildControls();
+    buildTira();
     render();
     if (open) openProduct(open);
   }
