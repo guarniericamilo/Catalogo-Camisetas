@@ -33,15 +33,33 @@ button{font-family:inherit;color:inherit}
 .wa[hidden]{display:none}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* vitrine Em alta */
-.tira{background:var(--tile);border-bottom:1px solid var(--line);overflow:hidden}
-.tira[hidden]{display:none}
-.tira-in{display:flex;gap:8px;width:max-content;padding:10px 0 10px 8px;animation:tira 70s linear infinite}
-.tira:hover .tira-in,.tira:focus-within .tira-in{animation-play-state:paused}
-@keyframes tira{to{transform:translateX(-50%)}}
-.tt{flex:none;height:36px;padding:0 16px;border:1px solid var(--line2);background:#fff;border-radius:999px;font:600 13px var(--body);color:var(--ink);cursor:pointer;white-space:nowrap}
-.tt:hover{border-color:var(--ink)}
-.tt small{margin-left:6px;color:var(--muted);font-weight:500}
-@media(prefers-reduced-motion:reduce){.tira{overflow-x:auto}.tira-in{animation:none}}
+.hub{padding:36px 0 40px;background:var(--bg)}
+.hub[hidden]{display:none}
+.hub-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;margin-bottom:22px}
+.hub h2{margin:0;font:800 clamp(28px,4.4vw,48px)/1.02 var(--head);letter-spacing:-.045em}
+.hub-sub{margin:10px 0 0;color:var(--muted);max-width:46ch}
+.hub-stats{display:flex;gap:28px}
+.hub-stats div{font-size:13px;color:var(--muted)}
+.hub-stats b{display:block;font:800 28px/1.1 var(--head);letter-spacing:-.04em;color:var(--ink)}
+.hub-grid{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:720px){.hub-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
+@media(min-width:1100px){.hub-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.lg{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-height:176px;padding:18px 18px 16px;text-align:left;border:1px solid var(--line);border-radius:18px;background:var(--tile);color:var(--ink);cursor:pointer;font:inherit;overflow:hidden;transition:background .18s,color .18s,transform .18s}
+.lg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amarelo);transform:scaleY(0);transform-origin:top;transition:transform .2s}
+.lg-n{font:800 18px/1.1 var(--head);letter-spacing:-.035em}
+.lg-c{margin-top:auto;font:800 42px/1 var(--head);letter-spacing:-.05em}
+.lg-t{font-size:13px;color:var(--muted);margin-top:2px}
+.lg-tm{margin-top:10px;font-size:13px;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em;padding-right:26px}
+.lg-go{position:absolute;right:16px;bottom:14px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:15px}
+.lg:hover,.lg:focus-visible{background:var(--ink);color:#fff;border-color:var(--ink)}
+.lg:hover::before,.lg:focus-visible::before{transform:scaleY(1)}
+.lg:hover .lg-t,.lg:hover .lg-tm,.lg:focus-visible .lg-t,.lg:focus-visible .lg-tm{color:#B8B8B8}
+.lg:hover .lg-go,.lg:focus-visible .lg-go{background:var(--amarelo);color:var(--ink)}
+.lg.all{background:var(--ink);color:#fff;border-color:var(--ink)}
+.lg.all .lg-t,.lg.all .lg-tm{color:#B8B8B8}
+.lg.all .lg-go{background:var(--amarelo);color:var(--ink)}
+.lg.all:hover{background:#2A2A2A}
+@media(prefers-reduced-motion:reduce){.lg,.lg::before{transition:none}}
 .cab{background:var(--ink);color:#fff;padding:36px 0 12px;overflow:hidden}
 .cab[hidden]{display:none}
 .alta-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;margin-bottom:8px}
@@ -215,7 +233,15 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
     <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
   </div>
 </header>
-<div class="tira" id="tira" aria-label="Times do catálogo" hidden><div class="tira-in" id="tiraIn"></div></div>
+<section class="hub" id="hub" aria-labelledby="hubT" hidden>
+  <div class="wrap">
+    <div class="hub-head">
+      <div><h2 id="hubT">Escolha sua liga</h2><p class="hub-sub">Camisas de clubes e seleções, separadas por campeonato. Toque numa liga para ver as peças.</p></div>
+      <div class="hub-stats" id="hubStats"></div>
+    </div>
+    <div class="hub-grid" id="hubGrid"></div>
+  </div>
+</section>
 <h1 class="sr">Catálogo de camisas</h1>
 <section class="cab" id="alta" aria-labelledby="altaT" hidden>
   <div class="wrap">
@@ -670,6 +696,7 @@ Basquete|Kings|kings,sacramento kings`;
 
   function renderAlta() {
     const livre = !(S.q || S.liga || S.versao || S.cat || S.team || S.size);   // some quando há busca ou filtro
+    $q('#hub').hidden = !livre || !$q('#hubGrid').firstChild;
     let picks = [], titulo = CONFIG.altaTitulo;
     if (livre) {
       picks = ALL.filter(p => p.destaque).sort((a, b) => cmp(a._titulo, b._titulo)).slice(0, 12);
@@ -812,25 +839,22 @@ Basquete|Kings|kings,sacramento kings`;
     $q('#q').value = S.q;
   }
 
-  function buildTira() {
-    const tc = {}; ALL.forEach(p => { if (p._team) tc[p._team] = (tc[p._team] || 0) + 1; });
-    const top = Object.keys(tc).sort((a, b) => tc[b] - tc[a] || cmp(a, b)).slice(0, 24);
-    const el = $q('#tira');
-    if (top.length < 4) { el.hidden = true; return; }
-    const one = top.map(t => `<button class="tt" data-t="${esc(t)}">${esc(t)}<small>${tc[t]}</small></button>`).join('');
-    const inn = $q('#tiraIn');
-    el.hidden = false; inn.style.animation = 'none'; inn.innerHTML = one;
-    const k = Math.max(1, Math.ceil(window.innerWidth / Math.max(inn.scrollWidth, 1)));   // repete só o necessário para encher a largura
-    const half = one.repeat(k);
-    inn.innerHTML = half + '<span style="display:contents" aria-hidden="true">' + half.replace(/<button /g, '<button tabindex="-1" ') + '</span>';
-    inn.style.animation = ''; inn.style.animationDuration = Math.max(30, Math.round(inn.scrollWidth / 2 / 40)) + 's';
+  function buildHub() {
+    const lc = {}, tm = {}, teams = new Set();
+    ALL.forEach(p => {
+      lc[p._liga] = (lc[p._liga] || 0) + 1;
+      if (p._team) { teams.add(p._team); (tm[p._liga] || (tm[p._liga] = {}))[p._team] = ((tm[p._liga] || {})[p._team] || 0) + 1; }
+    });
+    const ligas = Object.keys(lc).sort((a, b) => ligaRank(a, lc) - ligaRank(b, lc));
+    if (ALL.length < 4 || !ligas.length) { $q('#hub').hidden = true; return; }
+    $q('#hubStats').innerHTML = `<div><b>${ALL.length}</b>camisas</div><div><b>${ligas.filter(l => l !== 'Outros').length}</b>ligas</div><div><b>${teams.size}</b>times</div>`;
+    const tile = (l, c, nome, sub, cls) => `<button class="lg ${cls || ''}" data-l="${esc(l)}"><span class="lg-n">${esc(nome)}</span><b class="lg-c">${c}</b><span class="lg-t">${c === 1 ? 'camisa' : 'camisas'}</span><span class="lg-tm">${esc(sub)}</span><span class="lg-go" aria-hidden="true">→</span></button>`;
+    $q('#hubGrid').innerHTML = tile('', ALL.length, 'Todas as camisas', 'Ver o catálogo inteiro', 'all') + ligas.map(l => {
+      const names = Object.keys(tm[l] || {}).sort((a, b) => tm[l][b] - tm[l][a] || cmp(a, b));
+      const sub = names.length ? names.slice(0, 3).join(' · ') + (names.length > 3 ? ' +' + (names.length - 3) : '') : 'Ver peças';
+      return tile(l, lc[l], l === 'Outros' ? 'Outras' : l, sub);
+    }).join('');
   }
-  function goTeam(t) {
-    S.q = ''; $q('#q').value = ''; S.liga = ''; S.team = t;
-    pressChips('#ligas', 'l', ''); buildTeamSelect(); render();
-    const bar = $q('.bar'); if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
   function pressChips(sel, attr, val) {
     document.querySelectorAll('.chip[data-' + attr + ']').forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === val)));
   }
@@ -1115,7 +1139,11 @@ Basquete|Kings|kings,sacramento kings`;
       await navigator.clipboard.writeText(url); b.textContent = 'Link copiado';
     } catch (_) { b.textContent = url; }
   });
-  $q('#tiraIn').addEventListener('click', e => { const b = e.target.closest('.tt'); if (b) goTeam(b.dataset.t); });
+  $q('#hubGrid').addEventListener('click', e => {
+    const b = e.target.closest('.lg'); if (!b) return;
+    if (b.dataset.l) setLiga(b.dataset.l);
+    requestAnimationFrame(() => { const bar = $q('.bar'); if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  });
   $q('#mClose').addEventListener('click', closeProduct);
   $q('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
   document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (!$q('#modal').hidden) closeProduct(); else drawer(false); });
@@ -1175,7 +1203,7 @@ Basquete|Kings|kings,sacramento kings`;
     ALL = data.filter(p => p.categoria !== 'patch').map(prep);
     const open = readHash();
     buildControls();
-    buildTira();
+    buildHub();
     render();
     if (open) openProduct(open);
   }
