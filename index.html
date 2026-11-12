@@ -52,15 +52,15 @@ button{font-family:inherit;color:inherit}
 .stage::-webkit-scrollbar{display:none}
 .stage.drag{cursor:grabbing}
 .stage.drag .hang{pointer-events:none}
-.track{position:relative;display:flex;gap:22px;width:max-content;margin:0 auto;padding-top:16px}
+.track{position:relative;display:flex;gap:22px;width:max-content;margin:0 auto;padding-top:16px;will-change:transform}
 .track::before{content:"";position:absolute;left:-24px;right:-24px;top:16px;height:4px;border-radius:2px;background:linear-gradient(#9A9A9A,#4A4A4A)}
-.stage .hang{flex:none;width:min(62vw,236px);align-self:flex-start;transform-origin:50% 0;transform:rotate(var(--lag)) scale(var(--s,1));will-change:transform;text-align:left;background:none;border:0;padding:0;color:#fff;font:inherit;cursor:inherit}
+.stage .hang{flex:none;width:min(62vw,236px);align-self:flex-start;transform-origin:50% 0;text-align:left;background:none;border:0;padding:0;color:#fff;font:inherit;cursor:inherit}
 .hang .sw{display:block;transform-origin:50% 0;animation:sway var(--t,5s) ease-in-out var(--dl,0s) infinite}
 @keyframes sway{0%,100%{transform:rotate(calc(var(--a,1.4deg)*-1))}50%{transform:rotate(var(--a,1.4deg))}}
 .hang:hover .sw,.hang:focus-visible .sw{animation-duration:calc(var(--t,5s)*1.8)}
 .hk{display:block;width:70px;height:40px;margin:-6px auto -2px;overflow:visible}
 .hk path{fill:none;stroke:#C9C9C9;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.hang .ph{display:block;border-radius:10px;box-shadow:0 14px 28px rgba(0,0,0,.45)}
+.hang .ph{display:block;border-radius:10px;box-shadow:0 8px 16px rgba(0,0,0,.4)}
 .hang .name{display:block;margin:14px 0 0;font:600 15px/1.3 var(--body);color:#fff}
 .hang .det{display:block;margin:2px 0 0;font-size:13px;color:#B8B8B8;min-height:0}
 .hang .pr{display:block;margin:8px 0 0;font:700 18px/1 var(--head);letter-spacing:-.03em;color:#fff}
@@ -680,11 +680,12 @@ Basquete|Kings|kings,sacramento kings`;
     cabLayout();
   }
 
-  // cabideiro: varal infinito que anda sozinho; arrastar com o mouse; balanço extra ao mexer
-  const cab = { html: '', P: 0, pos: 0, last: 0, t: 0, x: 0, drag: false, moved: 0, sl: 0, raf: 0, hover: false, vis: true, pauseUntil: 0 };
+  // cabideiro: varal infinito (uma camada só, movida pelo GPU); arrastar com o mouse; pausa ao interagir
+  const cab = { html: '', P: 0, drift: 0, t: 0, x: 0, drag: false, moved: 0, sl: 0, raf: 0, hover: false, vis: true, pauseUntil: 0, self: false, idle: 0 };
   const CAB_SPEED = 32;   // px por segundo
   function cabLayout() {
     const rail = $q('#rail'), st = $q('#stage');
+    rail.style.transform = ''; cab.drift = 0;
     if (!cab.html) { rail.innerHTML = ''; cab.P = 0; return; }
     rail.innerHTML = cab.html;
     const kids = rail.children, gap = parseFloat(getComputedStyle(rail).columnGap) || 22;
@@ -693,37 +694,41 @@ Basquete|Kings|kings,sacramento kings`;
     const reps = Math.ceil(st.clientWidth / cab.P) + 3;
     const clone = cab.html.replace(/<button class="card hang"/g, '<button tabindex="-1" aria-hidden="true" class="card hang"');
     rail.innerHTML = cab.html + clone.repeat(reps - 1);
-    cab.pos = cab.P; st.scrollLeft = cab.P; cab.last = st.scrollLeft;
+    cab.self = true; st.scrollLeft = cab.P;
   }
   function cabTick(t) {
     cab.raf = requestAnimationFrame(cabTick);
-    const st = $q('#stage'), dt = Math.min((t - (cab.t || t)) / 1000, .05); cab.t = t;
+    const dt = Math.min((t - (cab.t || t)) / 1000, .05); cab.t = t;
     if (!cab.P) return;
-    let step = 0, wrapped = false;
-    if (Math.abs(st.scrollLeft - cab.pos) > 2) { cab.pos = st.scrollLeft; cab.pauseUntil = t + 2500; }   // a pessoa mexeu
-    const paused = cab.hover || cab.drag || t < cab.pauseUntil || !cab.vis || document.hidden || !$q('#modal').hidden;
-    if (!paused) { step = CAB_SPEED * dt; cab.pos += step; }
-    if (cab.pos >= 2 * cab.P) { cab.pos -= cab.P; wrapped = true; } else if (cab.pos <= 0) { cab.pos += cab.P; wrapped = true; }
-    if (step || wrapped) st.scrollLeft = cab.pos;
-    const x = st.scrollLeft, v = wrapped ? 0 : x - cab.last - step; cab.last = x;
-    cab.lag += (Math.max(-6, Math.min(6, -v * .35)) - cab.lag) * .12;
-    st.style.setProperty('--lag', cab.lag.toFixed(2) + 'deg');
+    if (cab.hover || cab.drag || t < cab.pauseUntil || !cab.vis || document.hidden || !$q('#modal').hidden) return;
+    cab.drift += CAB_SPEED * dt; if (cab.drift >= cab.P) cab.drift -= cab.P;
+    $q('#rail').style.transform = 'translate3d(' + (-cab.drift).toFixed(1) + 'px,0,0)';
   }
-  cab.lag = 0;
   function cabInit() {
     const st = $q('#stage');
+    st.addEventListener('scroll', () => {
+      if (cab.self) { cab.self = false; return; }
+      cab.pauseUntil = performance.now() + 2500;
+      clearTimeout(cab.idle);
+      cab.idle = setTimeout(() => {   // volta ao miolo da lista sem a pessoa perceber (as cópias são iguais)
+        if (!cab.P) return;
+        if (st.scrollLeft < cab.P * .5) { cab.self = true; st.scrollLeft += cab.P; }
+        else if (st.scrollLeft > cab.P * 1.5) { cab.self = true; st.scrollLeft -= cab.P; }
+      }, 180);
+    }, { passive: true });
     st.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' || e.button) return; cab.drag = true; cab.moved = 0; cab.x = e.clientX; cab.sl = st.scrollLeft; });
     window.addEventListener('pointermove', e => {
       if (!cab.drag) return;
       const dx = e.clientX - cab.x; cab.moved = Math.max(cab.moved, Math.abs(dx));
-      if (cab.moved > 5) { st.classList.add('drag'); st.scrollLeft = cab.sl - dx; cab.pos = st.scrollLeft; }
+      if (cab.moved > 5) { st.classList.add('drag'); st.scrollLeft = cab.sl - dx; }
     });
     const end = () => { if (!cab.drag) return; cab.drag = false; setTimeout(() => st.classList.remove('drag'), 0); };
     window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
     st.addEventListener('click', e => { if (cab.moved > 5) { e.stopPropagation(); e.preventDefault(); cab.moved = 0; } }, true);
     st.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') cab.hover = true; });
     st.addEventListener('pointerleave', () => { cab.hover = false; });
-    st.addEventListener('focusin', e => { if (e.target.matches && e.target.matches(':focus-visible')) cab.hover = true; }); st.addEventListener('focusout', () => { cab.hover = false; });
+    st.addEventListener('focusin', e => { if (e.target.matches && e.target.matches(':focus-visible')) cab.hover = true; });
+    st.addEventListener('focusout', () => { cab.hover = false; });
     st.addEventListener('keydown', e => { if (e.key === 'ArrowRight') st.scrollBy({ left: 260, behavior: 'smooth' }); if (e.key === 'ArrowLeft') st.scrollBy({ left: -260, behavior: 'smooth' }); });
     if ('IntersectionObserver' in window) new IntersectionObserver(en => { cab.vis = en[0].isIntersecting; }).observe($q('#alta'));
     let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (!$q('#alta').hidden) cabLayout(); }, 200); });
@@ -922,12 +927,24 @@ Basquete|Kings|kings,sacramento kings`;
   }
 
   // ---------- Fotos padronizadas: recorta em volta da camisa e centraliza num quadro 4:5 ----------
-  const NCACHE = new Map();
-  function normaliza(img) {
+  const NCACHE = new Map(), NQ = [];
+  let nRun = 0;
+  function enfileira(img) {
     if (img.dataset.n || !img.naturalWidth) return;
     img.dataset.n = '1';
-    const key = img.currentSrc || img.src, hit = NCACHE.get(key);
+    const hit = NCACHE.get(img.currentSrc || img.src);
     if (hit) { img.dataset.ok = '1'; img.parentElement.style.background = 'rgb(244,244,242)'; img.src = hit; return; }
+    NQ.push(img);
+    if (!nRun) nRun = requestAnimationFrame(proximo);
+  }
+  function proximo() {
+    nRun = 0;
+    const img = NQ.shift();
+    if (img && img.isConnected) normaliza(img);
+    if (NQ.length) nRun = requestAnimationFrame(proximo);
+  }
+  function normaliza(img) {
+    const key = img.currentSrc || img.src;
     try {
       const nw = img.naturalWidth, nh = img.naturalHeight, k = Math.min(1, 100 / Math.max(nw, nh));
       const w = Math.max(8, Math.round(nw * k)), h = Math.max(8, Math.round(nh * k));
@@ -944,35 +961,37 @@ Basquete|Kings|kings,sacramento kings`;
       if (x1 < 0 || (x1 - x0) < w * .15 || (y1 - y0) < h * .15) return;   // nada reconhecível: deixa como veio
       const bw = (x1 - x0 + 1) / k, bh = (y1 - y0 + 1) / k, cx = (x0 + x1 + 1) / 2 / k, cy = (y0 + y1 + 1) / 2 / k;
       const cw = Math.max(bw, bh * .8) * 1.14, ch = cw / .8;
-      const out = document.createElement('canvas'); out.width = 480; out.height = 600;
-      const ox = out.getContext('2d'); ox.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`; ox.fillRect(0, 0, 480, 600);
-      ox.drawImage(img, cx - cw / 2, cy - ch / 2, cw, ch, 0, 0, 480, 600);
+      const W = 400, H = 500;
+      const out = document.createElement('canvas'); out.width = W; out.height = H;
+      const ox = out.getContext('2d', { willReadFrequently: true }); ox.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`; ox.fillRect(0, 0, W, H);
+      ox.drawImage(img, cx - cw / 2, cy - ch / 2, cw, ch, 0, 0, W, H);
       // fundo único: apaga o fundo liso (a partir das bordas) e pinta com a cor do cartão
-      const W = 480, H = 600, id = ox.getImageData(0, 0, W, H), q = id.data, seen = new Uint8Array(W * H), stack = [];
-      const T = [244, 244, 242];
-      const near = (i, ref) => Math.abs(q[i] - ref[0]) + Math.abs(q[i + 1] - ref[1]) + Math.abs(q[i + 2] - ref[2]);
-      const push = (x, y) => { const p = y * W + x; if (!seen[p]) { seen[p] = 1; stack.push(p); } };
-      for (let x = 0; x < W; x++) { push(x, 0); push(x, H - 1); }
-      for (let y = 0; y < H; y++) { push(0, y); push(W - 1, y); }
-      const ok = [];
-      while (stack.length) {
-        const p = stack.pop(), i = p * 4;
-        if (near(i, bg) > 48) continue;       // longe da cor de fundo: é camisa
-        ok.push(p);
-        const x = p % W, y = (p / W) | 0, ref = [q[i], q[i + 1], q[i + 2]];
-        [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => {
-          const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) return;
-          const np = ny * W + nx; if (seen[np]) return;
-          if (near(np * 4, ref) <= 14) { seen[np] = 1; stack.push(np); }   // só segue se a mudança for suave
-        });
+      const id = ox.getImageData(0, 0, W, H), q = id.data, seen = new Uint8Array(W * H), stack = new Int32Array(W * H), sel = [];
+      let sp = 0;
+      const push = p => { if (!seen[p]) { seen[p] = 1; stack[sp++] = p; } };
+      for (let x = 0; x < W; x++) { push(x); push((H - 1) * W + x); }
+      for (let y = 0; y < H; y++) { push(y * W); push(y * W + W - 1); }
+      const r0 = bg[0], g0 = bg[1], b0 = bg[2];
+      while (sp) {
+        const p = stack[--sp], i = p * 4, r = q[i], g = q[i + 1], b = q[i + 2];
+        if (Math.abs(r - r0) + Math.abs(g - g0) + Math.abs(b - b0) > 48) continue;   // longe do fundo: é camisa
+        sel.push(p);
+        const x = p % W, y = (p / W) | 0;
+        for (let n = 0; n < 4; n++) {
+          const nx = x + (n === 0) - (n === 1), ny = y + (n === 2) - (n === 3);
+          if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+          const np = ny * W + nx; if (seen[np]) continue;
+          const j = np * 4;
+          if (Math.abs(q[j] - r) + Math.abs(q[j + 1] - g) + Math.abs(q[j + 2] - b) <= 14) { seen[np] = 1; stack[sp++] = np; }   // só segue se a mudança for suave
+        }
       }
-      ok.forEach(p => { const i = p * 4; q[i] = T[0]; q[i + 1] = T[1]; q[i + 2] = T[2]; });
+      for (let n = 0; n < sel.length; n++) { const i = sel[n] * 4; q[i] = 244; q[i + 1] = 244; q[i + 2] = 242; }
       ox.putImageData(id, 0, 0);
       img.dataset.ok = '1'; img.parentElement.style.background = 'rgb(244,244,242)';
-      const du = out.toDataURL('image/jpeg', .9); NCACHE.set(key, du); img.src = du;
+      const du = out.toDataURL('image/jpeg', .88); NCACHE.set(key, du); img.src = du;
     } catch (_) { /* imagem sem CORS: segue sem recorte */ }
   }
-  document.addEventListener('load', e => { if (e.target.tagName === 'IMG' && e.target.closest('.ph')) normaliza(e.target); }, true);
+  document.addEventListener('load', e => { if (e.target.tagName === 'IMG' && e.target.closest('.ph')) enfileira(e.target); }, true);
   document.addEventListener('error', e => {   // servidor sem CORS: recarrega a foto do jeito antigo
     const im = e.target;
     if (im.tagName === 'IMG' && im.closest && im.closest('.ph') && im.hasAttribute('crossorigin') && !im.dataset.c) { im.dataset.c = '1'; im.removeAttribute('crossorigin'); const u = im.src; im.src = ''; im.src = u; }
