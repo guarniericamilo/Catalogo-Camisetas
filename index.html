@@ -27,7 +27,9 @@ a{color:inherit}
 button{font-family:inherit;color:inherit}
 
 /* faixa e topo */
-.top{background:#fff;border-bottom:1px solid var(--line)}
+.top{background:var(--ink);color:#fff}
+.top .brand::after{content:".";color:var(--amarelo)}
+.top .wa{background:#fff;color:var(--ink)}
 .top .wrap{display:flex;justify-content:space-between;align-items:center;height:64px}
 .brand{font:800 26px/1 var(--head);letter-spacing:-.04em;text-transform:lowercase;text-decoration:none}
 .wa{font:700 14px var(--body);color:#fff;background:var(--ink);text-decoration:none;padding:12px 20px;border-radius:999px}
