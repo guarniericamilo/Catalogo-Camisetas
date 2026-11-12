@@ -170,7 +170,6 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
       <div class="box">
         <h3>Dados da loja</h3>
         <div class="grid2">
-          <div><label class="f" for="cNome">Nome da marca</label><input id="cNome"></div>
           <div><label class="f" for="cZap">WhatsApp dos pedidos (com 55 e DDD)</label><input id="cZap" inputmode="numeric" placeholder="5511999999999"></div>
           <div><label class="f" for="cAltaT">Título da vitrine do topo</label><input id="cAltaT" placeholder="Em alta"></div>
           <div style="grid-column:1/-1"><label class="f" for="cAltaX">Texto da vitrine (opcional)</label><input id="cAltaX" placeholder="Ex.: Venceram no fim de semana: Flamengo, Palmeiras e Vasco"></div>
@@ -262,9 +261,6 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
   }));
   function iniciar() {
     carregado.prod = true; carregarProdutos();
-    sb.from('config').select('valor').eq('chave', 'nome').maybeSingle().then(({ data }) => {
-      if (data && data.valor) { $('#marca').textContent = data.valor; document.title = 'Painel | ' + data.valor; }
-    });
   }
 
   // ---------- Produtos ----------
@@ -436,18 +432,18 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
       sb.from('admin_emails').select('*').order('email')
     ]);
     const c = Object.fromEntries((cfg || []).map(x => [x.chave, x.valor]));
-    $('#cNome').value = c.nome || ''; $('#cZap').value = c.whatsapp || '';
+    $('#cZap').value = c.whatsapp || '';
     $('#cAltaT').value = c.em_alta_titulo || ''; $('#cAltaX').value = c.em_alta_texto || '';
     $('#sLog').innerHTML = (log || []).map(l => `<tr><td>${esc(new Date(l.criado_em).toLocaleString('pt-BR'))}</td><td>${esc(l.produtos)}</td><td>${esc(l.lidos)}</td><td class="${l.erros ? 'neg' : ''}">${esc(l.erros)}</td><td>${esc(l.detalhe || '')}</td></tr>`).join('') || '<tr><td colspan="5">Sem registros.</td></tr>';
     desenharUsuarios(us || []);
   }
   $('#cSalvar').addEventListener('click', async () => {
     const zap = $('#cZap').value.replace(/\D/g, '');
-    const { error } = await sb.from('config').upsert([{ chave: 'nome', valor: $('#cNome').value.trim() || 'Camizz' }, { chave: 'whatsapp', valor: zap }]);
+    const { error } = await sb.from('config').upsert([{ chave: 'whatsapp', valor: zap }]);
     if (error) { falha(error, 'Não salvou'); return; }
     $('#cZap').value = zap;
     const r2 = await sb.from('config').upsert([{ chave: 'em_alta_titulo', valor: $('#cAltaT').value.trim() }, { chave: 'em_alta_texto', valor: $('#cAltaX').value.trim() }]);
-    if (r2.error) { falha(r2.error, 'Nome e WhatsApp salvos, mas o texto da vitrine não'); return; }
+    if (r2.error) { falha(r2.error, 'WhatsApp salvo, mas o texto da vitrine não'); return; }
     toast('Salvo. O catálogo mostra na próxima abertura.');
   });
   $('#sSync').addEventListener('click', async () => {

@@ -48,19 +48,19 @@ button{font-family:inherit;color:inherit}
 .cab h2{margin:0;font:800 clamp(26px,3.4vw,40px)/1.05 var(--head);letter-spacing:-.04em}
 .cab h2::after{content:".";color:var(--amarelo)}
 .alta-head p{margin:0;color:#B8B8B8;font-size:15px;max-width:64ch}
-.stage{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;cursor:grab;touch-action:pan-x pan-y;padding:0 24px 40px;--lag:0deg}
-.stage::-webkit-scrollbar{display:none}
+.stage{position:relative;overflow:hidden;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;padding:0 24px 40px}
+.stage::before{content:"";position:absolute;left:0;right:0;top:16px;height:4px;border-radius:2px;background:linear-gradient(#9A9A9A,#4A4A4A)}
 .stage.drag{cursor:grabbing}
 .stage.drag .hang{pointer-events:none}
-.track{position:relative;display:flex;gap:22px;width:max-content;margin:0 auto;padding-top:16px;will-change:transform}
-.track::before{content:"";position:absolute;left:-24px;right:-24px;top:16px;height:4px;border-radius:2px;background:linear-gradient(#9A9A9A,#4A4A4A)}
+.track{position:relative;display:flex;gap:22px;width:max-content;padding-top:16px;will-change:transform}
 .stage .hang{flex:none;width:min(62vw,236px);align-self:flex-start;transform-origin:50% 0;text-align:left;background:none;border:0;padding:0;color:#fff;font:inherit;cursor:inherit}
-.hang .sw{display:block;transform-origin:50% 0;animation:sway var(--t,5s) ease-in-out var(--dl,0s) infinite}
+.hang .sw{display:block;transform-origin:50% 0;animation:sway var(--t,5s) ease-in-out var(--dl,0s) infinite;animation-play-state:paused}
+.hang.on .sw{animation-play-state:running}
 @keyframes sway{0%,100%{transform:rotate(calc(var(--a,1.4deg)*-1))}50%{transform:rotate(var(--a,1.4deg))}}
 .hang:hover .sw,.hang:focus-visible .sw{animation-duration:calc(var(--t,5s)*1.8)}
 .hk{display:block;width:70px;height:40px;margin:-6px auto -2px;overflow:visible}
 .hk path{fill:none;stroke:#C9C9C9;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.hang .ph{display:block;border-radius:10px;box-shadow:0 8px 16px rgba(0,0,0,.4)}
+.hang .ph{display:block;border-radius:10px;}
 .hang .name{display:block;margin:14px 0 0;font:600 15px/1.3 var(--body);color:#fff}
 .hang .det{display:block;margin:2px 0 0;font-size:13px;color:#B8B8B8;min-height:0}
 .hang .pr{display:block;margin:8px 0 0;font:700 18px/1 var(--head);letter-spacing:-.03em;color:#fff}
@@ -140,6 +140,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .ph{position:relative;aspect-ratio:4/5;background:var(--tile);overflow:hidden;width:100%}
 .ph img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;padding:4%;display:block;transition:transform .25s}
 .ph img[data-ok]{padding:0;mix-blend-mode:normal}
+.hang .ph img{mix-blend-mode:normal}
 .card:hover .ph img{transform:scale(1.04)}
 @media(prefers-reduced-motion:reduce){.card:hover .ph img{transform:none}}
 .low{position:absolute;left:12px;top:12px;padding:4px 8px;background:var(--amarelo);color:var(--ink);font:700 12px/1.2 var(--body);white-space:nowrap}
@@ -304,7 +305,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 (() => {
   // ---------- Configuração ----------
   const CONFIG = {
-    nome: 'Camizz',                        // nome da marca; o painel (Sistema) sobrescreve
+    nome: 'Camizz',                        // marca fixa
     whatsapp: '5511971576189',               // pedidos; o painel (Sistema) sobrescreve
     altaTitulo: 'Em alta',                   // título da vitrine do topo; o painel (Sistema) sobrescreve
     altaTexto: '',                           // texto curto sob o título (opcional)
@@ -680,57 +681,72 @@ Basquete|Kings|kings,sacramento kings`;
     cabLayout();
   }
 
-  // cabideiro: varal infinito (uma camada só, movida pelo GPU); arrastar com o mouse; pausa ao interagir
-  const cab = { html: '', P: 0, drift: 0, t: 0, x: 0, drag: false, moved: 0, sl: 0, raf: 0, hover: false, vis: true, pauseUntil: 0, self: false, idle: 0 };
+  // cabideiro: varal infinito. Uma posição só (drift) move tudo por uma camada GPU; as camisas da ponta são recicladas
+  const cab = { html: '', S: 0, drift: 0, vel: 0, v: 0, t: 0, x: 0, lx: 0, lt: 0, drag: false, moved: 0, id: null, raf: 0, hover: false, vis: true, pauseUntil: 0 };
   const CAB_SPEED = 32;   // px por segundo
+  function cabPaint() { $q('#rail').style.transform = 'translate3d(' + (-cab.drift).toFixed(1) + 'px,0,0)'; }
+  function cabWrap() {
+    const rail = $q('#rail'); let n = 0;
+    while (cab.drift >= cab.S && n++ < 60) { rail.appendChild(rail.firstElementChild); cab.drift -= cab.S; }
+    while (cab.drift < 0 && n++ < 60) { rail.insertBefore(rail.lastElementChild, rail.firstElementChild); cab.drift += cab.S; }
+  }
   function cabLayout() {
     const rail = $q('#rail'), st = $q('#stage');
-    rail.style.transform = ''; cab.drift = 0;
-    if (!cab.html) { rail.innerHTML = ''; cab.P = 0; return; }
+    rail.style.transform = ''; cab.drift = 0; cab.vel = 0;
+    if (!cab.html) { rail.innerHTML = ''; cab.S = 0; return; }
     rail.innerHTML = cab.html;
-    const kids = rail.children, gap = parseFloat(getComputedStyle(rail).columnGap) || 22;
-    const first = kids[0], last = kids[kids.length - 1];
-    cab.P = Math.max(1, (last.offsetLeft + last.offsetWidth - first.offsetLeft) + gap);
-    const reps = Math.ceil(st.clientWidth / cab.P) + 3;
-    const clone = cab.html.replace(/<button class="card hang"/g, '<button tabindex="-1" aria-hidden="true" class="card hang"');
-    rail.innerHTML = cab.html + clone.repeat(reps - 1);
-    cab.self = true; st.scrollLeft = cab.P;
+    const gap = parseFloat(getComputedStyle(rail).columnGap) || 22;
+    cab.S = rail.firstElementChild.offsetWidth + gap;
+    const have = rail.children.length * cab.S, need = st.clientWidth + 3 * cab.S;
+    if (have < need) {   // poucas peças: repete só o necessário para encher a tela
+      const clone = cab.html.replace(/<button class="card hang"/g, '<button tabindex="-1" aria-hidden="true" class="card hang"');
+      rail.innerHTML = cab.html + clone.repeat(Math.ceil(need / have) - 1);
+    }
+    if (cab.io) { cab.io.disconnect(); [...rail.children].forEach(k => cab.io.observe(k)); } else [...rail.children].forEach(k => k.classList.add('on'));
   }
   function cabTick(t) {
     cab.raf = requestAnimationFrame(cabTick);
     const dt = Math.min((t - (cab.t || t)) / 1000, .05); cab.t = t;
-    if (!cab.P) return;
-    if (cab.hover || cab.drag || t < cab.pauseUntil || !cab.vis || document.hidden || !$q('#modal').hidden) return;
-    cab.drift += CAB_SPEED * dt; if (cab.drift >= cab.P) cab.drift -= cab.P;
-    $q('#rail').style.transform = 'translate3d(' + (-cab.drift).toFixed(1) + 'px,0,0)';
+    if (!cab.S || cab.drag) return;
+    if (Math.abs(cab.vel) > 6) { cab.drift += cab.vel * dt; cab.vel *= Math.pow(.05, dt); }   // inércia depois de soltar
+    else if (cab.hover || t < cab.pauseUntil || !cab.vis || document.hidden || !$q('#modal').hidden) return;
+    else cab.drift += CAB_SPEED * dt;
+    cabWrap(); cabPaint();
   }
   function cabInit() {
     const st = $q('#stage');
-    st.addEventListener('scroll', () => {
-      if (cab.self) { cab.self = false; return; }
-      cab.pauseUntil = performance.now() + 2500;
-      clearTimeout(cab.idle);
-      cab.idle = setTimeout(() => {   // volta ao miolo da lista sem a pessoa perceber (as cópias são iguais)
-        if (!cab.P) return;
-        if (st.scrollLeft < cab.P * .5) { cab.self = true; st.scrollLeft += cab.P; }
-        else if (st.scrollLeft > cab.P * 1.5) { cab.self = true; st.scrollLeft -= cab.P; }
-      }, 180);
-    }, { passive: true });
-    st.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' || e.button) return; cab.drag = true; cab.moved = 0; cab.x = e.clientX; cab.sl = st.scrollLeft; });
+    st.addEventListener('pointerdown', e => { if (e.button || !cab.S) return; cab.drag = true; cab.moved = 0; cab.x = cab.lx = e.clientX; cab.lt = e.timeStamp; cab.vel = 0; cab.v = 0; cab.id = e.pointerId; });
     window.addEventListener('pointermove', e => {
-      if (!cab.drag) return;
-      const dx = e.clientX - cab.x; cab.moved = Math.max(cab.moved, Math.abs(dx));
-      if (cab.moved > 5) { st.classList.add('drag'); st.scrollLeft = cab.sl - dx; }
+      if (!cab.drag || e.pointerId !== cab.id) return;
+      const dx = e.clientX - cab.lx; cab.moved = Math.max(cab.moved, Math.abs(e.clientX - cab.x));
+      if (cab.moved > 5) {
+        st.classList.add('drag'); cab.drift -= dx; cabWrap(); cabPaint();
+        const dtm = Math.max(1, e.timeStamp - cab.lt); cab.v = cab.v * .6 + (-dx / dtm * 1000) * .4;
+      }
+      cab.lx = e.clientX; cab.lt = e.timeStamp;
     });
-    const end = () => { if (!cab.drag) return; cab.drag = false; setTimeout(() => st.classList.remove('drag'), 0); };
+    const end = e => {
+      if (!cab.drag || (e && e.pointerId !== cab.id)) return;
+      cab.drag = false;
+      if (cab.moved > 5) cab.vel = Math.max(-2200, Math.min(2200, cab.v));
+      cab.pauseUntil = performance.now() + 2500;
+      setTimeout(() => st.classList.remove('drag'), 0);
+    };
     window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
     st.addEventListener('click', e => { if (cab.moved > 5) { e.stopPropagation(); e.preventDefault(); cab.moved = 0; } }, true);
+    st.addEventListener('wheel', e => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || !cab.S) return;   // rolagem vertical segue normal
+      e.preventDefault(); cab.drift += e.deltaX; cabWrap(); cabPaint(); cab.pauseUntil = performance.now() + 2500;
+    }, { passive: false });
     st.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') cab.hover = true; });
     st.addEventListener('pointerleave', () => { cab.hover = false; });
     st.addEventListener('focusin', e => { if (e.target.matches && e.target.matches(':focus-visible')) cab.hover = true; });
     st.addEventListener('focusout', () => { cab.hover = false; });
-    st.addEventListener('keydown', e => { if (e.key === 'ArrowRight') st.scrollBy({ left: 260, behavior: 'smooth' }); if (e.key === 'ArrowLeft') st.scrollBy({ left: -260, behavior: 'smooth' }); });
-    if ('IntersectionObserver' in window) new IntersectionObserver(en => { cab.vis = en[0].isIntersecting; }).observe($q('#alta'));
+    st.addEventListener('keydown', e => { if (e.key === 'ArrowRight') cab.vel = 700; if (e.key === 'ArrowLeft') cab.vel = -700; });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(en => { cab.vis = en[0].isIntersecting; }).observe($q('#alta'));
+      cab.io = new IntersectionObserver(en => en.forEach(x => x.target.classList.toggle('on', x.isIntersecting)), { root: st, rootMargin: '0px 120px' });   // só balança quem está na tela
+    }
     let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (!$q('#alta').hidden) cabLayout(); }, 200); });
     if (!REDUCE_MOTION) cab.raf = requestAnimationFrame(cabTick);
   }
@@ -927,13 +943,77 @@ Basquete|Kings|kings,sacramento kings`;
   }
 
   // ---------- Fotos padronizadas: recorta em volta da camisa e centraliza num quadro 4:5 ----------
-  const NCACHE = new Map(), NQ = [];
-  let nRun = 0;
+  const NCACHE = new Map(), NQ = [], NPEND = new Map();
+  let nRun = 0, NW = null;
+
+  // O recorte roda num worker (fora da thread principal), para o varal não engasgar.
+  function workerMain() {
+    self.onmessage = async e => {
+      const key = e.data.key;
+      try {
+        const bmp = await createImageBitmap(await (await fetch(key, { mode: 'cors' })).blob());
+        const nw = bmp.width, nh = bmp.height, k = Math.min(1, 100 / Math.max(nw, nh));
+        const w = Math.max(8, Math.round(nw * k)), h = Math.max(8, Math.round(nh * k));
+        const sc = new OffscreenCanvas(w, h), sx = sc.getContext('2d', { willReadFrequently: true });
+        sx.drawImage(bmp, 0, 0, w, h);
+        const d = sx.getImageData(0, 0, w, h).data, px = (x, y) => { const i = (y * w + x) * 4; return [d[i], d[i + 1], d[i + 2]]; };
+        const cs = [px(1, 1), px(w - 2, 1), px(1, h - 2), px(w - 2, h - 2)];
+        const bg = [0, 1, 2].map(c => Math.round(cs.reduce((t, v) => t + v[c], 0) / 4));
+        let x0 = w, y0 = h, x1 = -1, y1 = -1;
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+          const v = px(x, y);
+          if (Math.abs(v[0] - bg[0]) + Math.abs(v[1] - bg[1]) + Math.abs(v[2] - bg[2]) > 54) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+        }
+        if (x1 < 0 || (x1 - x0) < w * .15 || (y1 - y0) < h * .15) { self.postMessage({ key }); return; }
+        const bw = (x1 - x0 + 1) / k, bh = (y1 - y0 + 1) / k, cx = (x0 + x1 + 1) / 2 / k, cy = (y0 + y1 + 1) / 2 / k;
+        const cw = Math.max(bw, bh * .8) * 1.14, ch = cw / .8, W = 400, H = 500;
+        const out = new OffscreenCanvas(W, H), ox = out.getContext('2d', { willReadFrequently: true });
+        ox.fillStyle = 'rgb(' + bg[0] + ',' + bg[1] + ',' + bg[2] + ')'; ox.fillRect(0, 0, W, H);
+        ox.drawImage(bmp, cx - cw / 2, cy - ch / 2, cw, ch, 0, 0, W, H);
+        const id = ox.getImageData(0, 0, W, H), q = id.data, seen = new Uint8Array(W * H), stack = new Int32Array(W * H);
+        let sp = 0;
+        const push = p => { if (!seen[p]) { seen[p] = 1; stack[sp++] = p; } };
+        for (let x = 0; x < W; x++) { push(x); push((H - 1) * W + x); }
+        for (let y = 0; y < H; y++) { push(y * W); push(y * W + W - 1); }
+        const r0 = bg[0], g0 = bg[1], b0 = bg[2];
+        while (sp) {
+          const p = stack[--sp], i = p * 4, r = q[i], g = q[i + 1], b = q[i + 2];
+          if (Math.abs(r - r0) + Math.abs(g - g0) + Math.abs(b - b0) > 48) continue;
+          q[i] = 244; q[i + 1] = 244; q[i + 2] = 242;   // marca como fundo (a cor nova nunca é vizinha de si mesma por causa de seen)
+          const x = p % W, y = (p / W) | 0;
+          for (let n = 0; n < 4; n++) {
+            const nx = x + (n === 0) - (n === 1), ny = y + (n === 2) - (n === 3);
+            if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+            const np = ny * W + nx; if (seen[np]) continue;
+            const j = np * 4;
+            if (Math.abs(q[j] - r) + Math.abs(q[j + 1] - g) + Math.abs(q[j + 2] - b) <= 14) { seen[np] = 1; stack[sp++] = np; }
+          }
+        }
+        ox.putImageData(id, 0, 0);
+        self.postMessage({ key, blob: await out.convertToBlob({ type: 'image/jpeg', quality: .88 }) });
+      } catch (err) { self.postMessage({ key }); }
+    };
+  }
+  try {
+    if (window.Worker && typeof OffscreenCanvas !== 'undefined' && window.createImageBitmap) {
+      NW = new Worker(URL.createObjectURL(new Blob(['(' + workerMain.toString() + ')()'], { type: 'text/javascript' })));
+      NW.onmessage = e => {
+        const key = e.data.key, imgs = NPEND.get(key) || []; NPEND.delete(key);
+        if (!e.data.blob) return;
+        const u = URL.createObjectURL(e.data.blob); NCACHE.set(key, u);
+        imgs.forEach(im => aplica(im, u));
+      };
+      NW.onerror = () => { NW = null; };
+    }
+  } catch (_) { NW = null; }
+  function aplica(img, u) { img.dataset.ok = '1'; img.parentElement.style.background = 'rgb(244,244,242)'; img.src = u; }
+
   function enfileira(img) {
     if (img.dataset.n || !img.naturalWidth) return;
     img.dataset.n = '1';
-    const hit = NCACHE.get(img.currentSrc || img.src);
-    if (hit) { img.dataset.ok = '1'; img.parentElement.style.background = 'rgb(244,244,242)'; img.src = hit; return; }
+    const key = img.currentSrc || img.src, hit = NCACHE.get(key);
+    if (hit) { aplica(img, hit); return; }
+    if (NW) { const w = NPEND.get(key); if (w) w.push(img); else { NPEND.set(key, [img]); NW.postMessage({ key }); } return; }
     NQ.push(img);
     if (!nRun) nRun = requestAnimationFrame(proximo);
   }
@@ -1083,7 +1163,7 @@ Basquete|Kings|kings,sacramento kings`;
         data = await r.json();
         try {
           const [c, d] = await Promise.all([fetch(base + 'config?select=chave,valor', { headers: H }), fetch(base + 'descontos?select=qtd_min,percentual&order=qtd_min', { headers: H })]);
-          if (c.ok) (await c.json()).forEach(x => { if (x.chave === 'nome' && x.valor) CONFIG.nome = x.valor; if (x.chave === 'whatsapp') CONFIG.whatsapp = x.valor || ''; if (x.chave === 'em_alta_titulo' && x.valor) CONFIG.altaTitulo = x.valor; if (x.chave === 'em_alta_texto') CONFIG.altaTexto = x.valor || ''; });
+          if (c.ok) (await c.json()).forEach(x => { if (x.chave === 'whatsapp') CONFIG.whatsapp = x.valor || ''; if (x.chave === 'em_alta_titulo' && x.valor) CONFIG.altaTitulo = x.valor; if (x.chave === 'em_alta_texto') CONFIG.altaTexto = x.valor || ''; });
           if (d.ok) DESCONTOS = await d.json();
         } catch (_) { /* segue sem config */ }
       }
