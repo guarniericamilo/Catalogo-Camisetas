@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Painel | Titular</title>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Painel | Camizz</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--bg:#FFFFFF;--tile:#F4F4F2;--ink:#111111;--muted:#5C5C5C;--line:#E5E5E5;--line2:#CFCFCF;--pitch:#0A7C3E;--amarelo:#FFD400;--vermelho:#C8202A;
-  --head:'Big Shoulders Display','Arial Narrow',sans-serif;--body:'Hanken Grotesk',system-ui,sans-serif}
+  --head:'Unbounded',system-ui,sans-serif;--body:'Hanken Grotesk',system-ui,sans-serif}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.4 var(--body)}
 button,input,select{font-family:inherit;color:inherit}
@@ -18,8 +18,9 @@ button,input,select{font-family:inherit;color:inherit}
 @media(min-width:960px){.wrap{padding:0 48px}}
 .top{background:var(--ink);color:#fff}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:12px}
-.top h1{font:900 30px/1 var(--head);margin:0;letter-spacing:.02em;text-transform:uppercase;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
-.top h1 .tag{font:600 13px var(--body);letter-spacing:.08em;color:#B8B8B8}
+.top h1{font:800 24px/1 var(--head);margin:0;letter-spacing:-.04em;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+.top h1 .tag{font:600 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#B8B8B8}
+#marca{text-transform:lowercase}#marca::after{content:".";color:var(--amarelo)}
 .top h1 small{font:500 14px var(--body);letter-spacing:0;text-transform:none;color:#B8B8B8}
 .ghost{background:none;border:1px solid #555;color:#fff;border-radius:999px;padding:10px 18px;font:600 14px var(--body);cursor:pointer}
 nav{background:var(--bg);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
@@ -27,7 +28,7 @@ nav .wrap{display:flex;gap:32px;overflow-x:auto;scrollbar-width:none}
 nav button{flex:none;background:none;border:0;border-bottom:3px solid transparent;padding:18px 0 14px;font:600 15px var(--body);color:var(--muted);cursor:pointer}
 nav button[aria-selected=true]{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
 main.wrap{padding-top:32px;padding-bottom:90px}
-h2{font:900 44px/1 var(--head);margin:0 0 10px;letter-spacing:.005em;text-transform:uppercase}
+h2{font:800 30px/1.1 var(--head);margin:0 0 10px;letter-spacing:-.04em}
 .lead{color:var(--muted);margin:0 0 20px;max-width:70ch}
 .btn{height:44px;padding:0 22px;border:0;border-radius:999px;background:var(--ink);color:#fff;font:700 15px var(--body);cursor:pointer}
 .btn.sec{background:#fff;color:var(--ink);border:1px solid var(--line2)}
@@ -57,7 +58,7 @@ label.f{display:block;font:600 13px var(--body);color:var(--muted);margin-bottom
   .prod{grid-template-columns:64px minmax(200px,1.4fr) minmax(0,3fr)}
   .pf{grid-column:auto;grid-template-columns:repeat(5,minmax(0,1fr));margin-top:0;align-items:end}
 }
-.val{font:700 26px/1 var(--head);letter-spacing:.01em}
+.val{font:700 18px/1.1 var(--head);letter-spacing:-.03em}
 .val small{display:block;font:500 12px var(--body);color:var(--muted);letter-spacing:0;margin-top:2px}
 .pos{color:var(--pitch)}.neg{color:var(--vermelho)}
 .chk{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:14px;font-weight:600}
@@ -110,7 +111,7 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
 </section>
 
 <div id="vApp" hidden>
-  <header class="top"><div class="wrap"><h1><span id="marca">Titular</span><span class="tag">Painel</span><small id="quem"></small></h1><button class="ghost" id="bSair">Sair</button></div></header>
+  <header class="top"><div class="wrap"><h1><span id="marca">Camizz</span><span class="tag">Painel</span><small id="quem"></small></h1><button class="ghost" id="bSair">Sair</button></div></header>
   <nav><div class="wrap" role="tablist">
     <button role="tab" data-t="prod" aria-selected="true">Produtos</button>
     <button role="tab" data-t="regras" aria-selected="false">Faixas de preço</button>
@@ -439,7 +440,7 @@ th{font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color
   }
   $('#cSalvar').addEventListener('click', async () => {
     const zap = $('#cZap').value.replace(/\D/g, '');
-    const { error } = await sb.from('config').upsert([{ chave: 'nome', valor: $('#cNome').value.trim() || 'Titular' }, { chave: 'whatsapp', valor: zap }]);
+    const { error } = await sb.from('config').upsert([{ chave: 'nome', valor: $('#cNome').value.trim() || 'Camizz' }, { chave: 'whatsapp', valor: zap }]);
     if (error) { falha(error, 'Não salvou'); return; }
     $('#cZap').value = zap; toast('Salvo. O catálogo mostra na próxima abertura.');
   });

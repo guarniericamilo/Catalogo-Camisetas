@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Titular | Camisas</title>
+<title>Camizz | Camisas</title>
 <meta name="description" content="Camisas de futebol e basquete. Escolha o tamanho e peça pelo WhatsApp.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 fill=%27%23111%27/%3E%3Ctext x=%2732%27 y=%2748%27 font-size=%2746%27 font-weight=%27900%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial Narrow,Arial,sans-serif%27%3ET%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23111%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2732%27 font-weight=%27900%27 text-anchor=%27middle%27 fill=%27%23FFD400%27 font-family=%27Arial,sans-serif%27%3Ecz%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#FFFFFF; --tile:#F4F4F2; --ink:#111111; --muted:#5C5C5C; --line:#E5E5E5; --line2:#CFCFCF;
   --pitch:#0A7C3E; --amarelo:#FFD400; --vermelho:#E3262B;
-  --head:'Big Shoulders Display','Arial Narrow',sans-serif;
+  --head:'Unbounded',system-ui,sans-serif;
   --body:'Hanken Grotesk',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
@@ -28,11 +28,11 @@ button{font-family:inherit;color:inherit}
 .note{background:var(--ink);color:#fff;font:600 12px/1.3 var(--body);letter-spacing:.04em;text-align:center;padding:10px 16px}
 .top{background:#fff;border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;justify-content:space-between;align-items:center;height:64px}
-.brand{font:900 32px/1 var(--head);letter-spacing:.02em;text-transform:uppercase;text-decoration:none}
+.brand{font:800 26px/1 var(--head);letter-spacing:-.04em;text-transform:lowercase;text-decoration:none}
 .wa{font:700 14px var(--body);color:#fff;background:var(--ink);text-decoration:none;padding:12px 20px;border-radius:999px}
 .wa[hidden]{display:none}
 .hero{padding-top:36px;padding-bottom:24px}
-h1{font:900 clamp(56px,11vw,128px)/.88 var(--head);margin:0;text-transform:uppercase;letter-spacing:-.005em}
+h1{font:800 clamp(34px,7vw,84px)/1.04 var(--head);margin:0;letter-spacing:-.04em}
 .hero p{margin:14px 0 0;max-width:340px;color:var(--muted);font-size:15px;line-height:1.45}
 @media(min-width:960px){.hero{padding-top:64px;padding-bottom:40px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}.hero p{margin:0;font-size:16px}}
 
@@ -71,7 +71,7 @@ h1{font:900 clamp(56px,11vw,128px)/.88 var(--head);margin:0;text-transform:upper
 .side-head,.side-foot,.scrim{display:none}
 .side{position:fixed;z-index:30;top:0;bottom:0;left:0;width:min(88vw,360px);background:var(--bg);display:flex;flex-direction:column;transform:translateX(-102%);transition:transform .22s ease-out;box-shadow:0 0 0 100vmax rgba(0,0,0,0)}
 .side.open{transform:none}
-.side-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);font:900 28px var(--head);letter-spacing:.02em;text-transform:uppercase}
+.side-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);font:800 22px var(--head);letter-spacing:-.03em}
 .x2{width:44px;height:44px;border:0;background:var(--tile);border-radius:999px;font-size:22px;line-height:1;cursor:pointer}
 .side-body{flex:1;overflow:auto;padding:16px}
 .side-foot{padding:12px 16px;border-top:1px solid var(--line);background:var(--bg)}
@@ -114,7 +114,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .row{margin-top:12px}
 .name{margin:0;font:600 15px/1.3 var(--body)}
 .det{margin:2px 0 0;font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:1.3em}
-.pr{margin:8px 0 10px;font:700 28px/1 var(--head);letter-spacing:.01em}
+.pr{margin:8px 0 10px;font:700 19px/1 var(--head);letter-spacing:-.03em}
 .sz{display:flex;flex-wrap:wrap;gap:4px 10px;font:600 13px var(--body);letter-spacing:.02em}
 .sz .off{color:#8A8A8A;text-decoration:line-through;font-weight:500}
 
@@ -133,10 +133,10 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .gallery img{flex:none;width:100%;aspect-ratio:1/1;max-height:62vh;object-fit:contain;mix-blend-mode:multiply;scroll-snap-align:center;padding:4%}
 .info{padding:28px 24px 32px}
 .x{position:absolute;top:12px;right:12px;z-index:2;width:44px;height:44px;border-radius:999px;border:0;background:var(--tile);font-size:22px;line-height:1;cursor:pointer}
-.info h2{font:900 40px/.95 var(--head);text-transform:uppercase;margin:0 52px 0 0}
+.info h2{font:800 26px/1.12 var(--head);letter-spacing:-.03em;margin:0 52px 0 0}
 .m-det{color:var(--muted);margin:8px 0 0}
 .m-orig{color:var(--muted);font-size:13px;margin:16px 0 0}
-.m-price{font:700 48px/1 var(--head);margin:20px 0 16px;letter-spacing:.01em}
+.m-price{font:700 34px/1 var(--head);margin:20px 0 16px;letter-spacing:-.03em}
 .desc{list-style:none;margin:-4px 0 22px;padding:0;display:grid;gap:4px;font-size:15px;color:var(--muted)}
 .desc li{display:flex;gap:8px;align-items:center}
 .desc li::before{content:"";flex:none;width:6px;height:6px;background:var(--ink)}
@@ -155,7 +155,8 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 /* rodapé */
 .foot{background:var(--ink);color:#fff;padding:48px 0 32px}
 .foot .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px}
-.foot .brand{font-size:44px;display:block}
+.foot .brand{font-size:36px;display:block}
+.foot .brand::after{content:".";color:var(--amarelo)}
 .foot .wa{background:var(--pitch)}
 .foot small{display:block;width:100%;margin-top:16px;padding-top:20px;border-top:1px solid #333;font-size:12px;color:#B8B8B8}
 </style>
@@ -164,7 +165,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 <div class="note">Escolha a peça e o tamanho. O pedido sai pelo WhatsApp.</div>
 <header class="top">
   <div class="wrap">
-    <a class="brand" id="brand" href="./">Titular</a>
+    <a class="brand" id="brand" href="./">Camizz</a>
     <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
   </div>
 </header>
@@ -211,7 +212,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 </div>
 <footer class="foot">
   <div class="wrap">
-    <span class="brand" id="brand2">Titular</span>
+    <span class="brand" id="brand2">Camizz</span>
     <a id="waFoot" class="wa" href="#" hidden>Falar no WhatsApp</a>
     <small id="copy"></small>
   </div>
@@ -239,7 +240,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 (() => {
   // ---------- Configuração ----------
   const CONFIG = {
-    nome: 'Titular',                        // nome provisório da marca; o painel (Sistema) sobrescreve
+    nome: 'Camizz',                        // nome da marca; o painel (Sistema) sobrescreve
     whatsapp: '5511971576189',               // pedidos; o painel (Sistema) sobrescreve
     supabaseUrl: 'https://sjcnnafmshtdymfvmunt.supabase.co',
     supabaseKey: 'sb_publishable_tg6lE_gEx3EboWHYjORdXw_Sc38uot5'
@@ -791,7 +792,7 @@ Basquete|Kings|kings,sacramento kings`;
   function applyBrand() {
     document.title = CONFIG.nome + ' | Camisas';
     $q('#brand').textContent = CONFIG.nome; $q('#brand2').textContent = CONFIG.nome;
-    $q('#copy').textContent = '© ' + new Date().getFullYear() + ' ' + CONFIG.nome;
+    $q('#copy').textContent = '© ' + new Date().getFullYear() + ' ' + CONFIG.nome.toLowerCase();
     ['#waTop', '#waFoot'].forEach(id => {
       const a = $q(id);
       if (CONFIG.whatsapp) { a.hidden = false; a.href = 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, ''); a.target = '_blank'; a.rel = 'noopener'; }
