@@ -927,7 +927,28 @@ Basquete|Kings|kings,sacramento kings`;
       const out = document.createElement('canvas'); out.width = 480; out.height = 600;
       const ox = out.getContext('2d'); ox.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`; ox.fillRect(0, 0, 480, 600);
       ox.drawImage(img, cx - cw / 2, cy - ch / 2, cw, ch, 0, 0, 480, 600);
-      img.dataset.ok = '1'; img.parentElement.style.background = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
+      // fundo único: apaga o fundo liso (a partir das bordas) e pinta com a cor do cartão
+      const W = 480, H = 600, id = ox.getImageData(0, 0, W, H), q = id.data, seen = new Uint8Array(W * H), stack = [];
+      const T = [244, 244, 242];
+      const near = (i, ref) => Math.abs(q[i] - ref[0]) + Math.abs(q[i + 1] - ref[1]) + Math.abs(q[i + 2] - ref[2]);
+      const push = (x, y) => { const p = y * W + x; if (!seen[p]) { seen[p] = 1; stack.push(p); } };
+      for (let x = 0; x < W; x++) { push(x, 0); push(x, H - 1); }
+      for (let y = 0; y < H; y++) { push(0, y); push(W - 1, y); }
+      const ok = [];
+      while (stack.length) {
+        const p = stack.pop(), i = p * 4;
+        if (near(i, bg) > 48) continue;       // longe da cor de fundo: é camisa
+        ok.push(p);
+        const x = p % W, y = (p / W) | 0, ref = [q[i], q[i + 1], q[i + 2]];
+        [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => {
+          const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) return;
+          const np = ny * W + nx; if (seen[np]) return;
+          if (near(np * 4, ref) <= 14) { seen[np] = 1; stack.push(np); }   // só segue se a mudança for suave
+        });
+      }
+      ok.forEach(p => { const i = p * 4; q[i] = T[0]; q[i + 1] = T[1]; q[i + 2] = T[2]; });
+      ox.putImageData(id, 0, 0);
+      img.dataset.ok = '1'; img.parentElement.style.background = 'rgb(244,244,242)';
       img.src = out.toDataURL('image/jpeg', .9);
     } catch (_) { /* imagem sem CORS: segue sem recorte */ }
   }
