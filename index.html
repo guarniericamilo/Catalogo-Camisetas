@@ -32,50 +32,15 @@ button{font-family:inherit;color:inherit}
 .top .wa{background:#fff;color:var(--ink)}
 .top .wrap{display:flex;justify-content:space-between;align-items:center;height:64px}
 .brand{font:800 26px/1 var(--head);letter-spacing:-.04em;text-transform:lowercase;text-decoration:none}
-.wa{font:700 14px var(--body);color:#fff;background:var(--ink);text-decoration:none;padding:12px 20px;border-radius:999px}
+.wa{font:700 14px var(--body);color:#fff;background:var(--ink);text-decoration:none;padding:12px 20px;border-radius:10px}
 .wa[hidden]{display:none}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* vitrine Em alta */
-.hub{padding:26px 0 26px;background:var(--tile)}
-.hub[hidden]{display:none}
-.hub-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;margin-bottom:14px}
-.hub h2{margin:0;font:800 clamp(20px,2.4vw,26px)/1.1 var(--head);letter-spacing:-.04em}
-.hub-stats{display:flex;gap:16px;font-size:13px;color:var(--muted)}
-.hub-stats b{color:var(--ink);font-weight:700}
-.hub-rail{overflow-x:auto;scrollbar-width:none;padding:2px 16px 4px;scroll-snap-type:x proximity;scroll-padding:0 16px}
-.hub-rail::-webkit-scrollbar{display:none}
-@media(min-width:960px){.hub-rail{scroll-padding:0 48px;padding:2px 48px 4px;max-width:1440px;margin:0 auto}}
-.hub-grid{display:flex;gap:10px;width:max-content;min-width:100%}
-.lg{position:relative;flex:1 0 auto;min-width:148px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:18px;height:112px;padding:14px 16px;text-align:left;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);cursor:pointer;font:inherit;overflow:hidden;scroll-snap-align:start;transition:background .18s,color .18s}
-.lg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amarelo);transform:scaleY(0);transform-origin:top;transition:transform .2s}
-.lg-n{font:800 15px/1.15 var(--head);letter-spacing:-.03em}
-.lg-c{font:800 30px/1 var(--head);letter-spacing:-.05em}
-.lg-t{display:inline;margin-left:6px;font:500 13px var(--body);color:var(--muted);letter-spacing:0}
-.lg-tm,.lg-go{display:none}
-.lg-row{display:flex;align-items:baseline}
-.lg:hover,.lg:focus-visible{background:var(--ink);color:#fff;border-color:var(--ink)}
-.lg:hover::before,.lg:focus-visible::before{transform:scaleY(1)}
-.lg:hover .lg-t,.lg:focus-visible .lg-t{color:#B8B8B8}
-.lg.all{background:var(--ink);color:#fff;border-color:var(--ink)}
-.lg.all .lg-t{color:#B8B8B8}
-.lg.all:hover{background:#2A2A2A}
-@media(prefers-reduced-motion:reduce){.lg,.lg::before{transition:none}}
-@media(min-width:960px){
-  .hub-rail{overflow:visible}
-  .hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));width:auto;min-width:0}
-  .lg{min-width:0;height:auto;min-height:86px;gap:10px;padding:12px 14px}
-  .lg-n{white-space:normal;font-size:13px}
-  .lg-c{font-size:24px}
-  .lg-t{display:none}
-  .cab .stage .hang{width:clamp(150px,calc((100svh - 480px) / 1.25),236px)}
-}
-@media(min-width:960px) and (max-height:760px){
-  section.cab{padding:4px 0 0}section.cab .stage{padding-bottom:28px}.hub{padding:14px 0}.lg{min-height:70px;gap:4px;padding:10px 14px}.hub-head{margin-bottom:8px}.hub h2{font-size:18px}.hub-head{margin-bottom:10px}.lg-c{font-size:24px}
-}
-.cab{background:var(--ink);color:#fff;padding:6px 0 12px;overflow:hidden}
+@media(min-width:960px){.cab .stage .hang{width:clamp(150px,calc((100svh - 400px) / 1.25),236px)}}
+.cab{background:var(--ink);color:#fff;padding:22px 0 12px;overflow:hidden}
 .cab[hidden]{display:none}
 .alta-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;margin-bottom:4px}
-.cab h2{margin:0;font:700 13px/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--amarelo)}
+.cab h2{margin:0;font:800 clamp(20px,2.4vw,26px)/1.1 var(--head);letter-spacing:-.04em;color:#fff}
 .alta-head p{margin:0;color:#B8B8B8;font-size:15px;max-width:64ch}
 .stage{position:relative;overflow:hidden;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;padding:0 24px 40px}
 .stage::before{content:"";position:absolute;left:0;right:0;top:16px;height:4px;border-radius:2px;background:linear-gradient(#9A9A9A,#4A4A4A)}
@@ -96,19 +61,22 @@ button{font-family:inherit;color:inherit}
 .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .searchrow{display:flex;gap:8px;padding-bottom:4px}
 .search{flex:1;min-width:0}
-.search input{width:100%;height:48px;border:0;border-radius:999px;padding:0 22px;font:500 16px var(--body);background:var(--tile);color:var(--ink)}
+.search input{width:100%;height:48px;border:0;border-radius:10px;padding:0 22px;font:500 16px var(--body);background:var(--tile);color:var(--ink)}
 .search input::placeholder{color:#6B6B6B}
-.fbtn{flex:none;height:48px;padding:0 20px;border:1px solid var(--line2);border-radius:999px;background:#fff;font:600 15px var(--body);cursor:pointer;display:flex;align-items:center;gap:8px}
+.fbtn{flex:none;height:48px;padding:0 20px;border:1px solid var(--line2);border-radius:10px;background:#fff;font:600 15px var(--body);cursor:pointer;display:flex;align-items:center;gap:8px}
 .fbtn[aria-expanded=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
 .badge{min-width:22px;height:22px;border-radius:11px;background:var(--pitch);color:#fff;font:700 13px/22px var(--body);text-align:center;padding:0 6px}
 
-/* ligas = pílulas */
+/* modalidade = abas */
 .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.ligas{margin-top:6px;padding-bottom:12px}
-#ligas .chip{flex:none;border:1px solid var(--line2);border-radius:999px;background:#fff;padding:11px 18px;font:600 14px/20px var(--body);color:var(--ink);cursor:pointer;white-space:nowrap}
-#ligas .chip small{font-weight:500;font-size:12px;margin-left:6px;opacity:.7}
-#ligas .chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.mods{display:flex;gap:2px;margin-top:4px;overflow-x:auto;scrollbar-width:none}
+.mods::-webkit-scrollbar{display:none}
+.mod{flex:none;border:0;border-bottom:3px solid transparent;background:none;padding:12px 14px 10px;font:600 15px/20px var(--body);color:var(--muted);cursor:pointer;white-space:nowrap}
+.mod small{margin-left:6px;font-weight:500;font-size:12px}
+.mod:hover{color:var(--ink)}
+.mod[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--ink)}
+.mods .mod:first-child{padding-left:0}
 
 /* filtros laterais */
 .layout{display:block}
@@ -119,6 +87,12 @@ button{font-family:inherit;color:inherit}
 .list .chip:hover{background:var(--tile)}
 .list .chip[aria-pressed=true]{border-left-color:var(--ink);background:var(--tile);font-weight:700}
 .chip small{font-weight:500;font-size:12px;opacity:.7}
+.sub{display:flex;flex-direction:column;margin:2px 0 10px 13px;border-left:1px solid var(--line2)}
+.sub.flat{margin:0;border-left:0}
+.list>.chip[data-l]:not([data-l=""]) small::after{content:"";display:inline-block;width:6px;height:6px;margin-left:10px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);vertical-align:1px}
+.list>.chip[data-l][aria-pressed=true] small::after{transform:rotate(45deg);vertical-align:3px}
+.list .sub .chip{padding:7px 10px;font-size:14px;border-left-color:transparent}
+.list .sub .chip[aria-pressed=true]{border-left-color:var(--ink)}
 #versoes{display:flex;width:100%;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
 #versoes .chip{flex:1;border:0;background:#fff;padding:12px 6px;font:600 15px var(--body);cursor:pointer;border-right:1px solid var(--line2)}
 #versoes .chip:last-child{border-right:0}
@@ -131,19 +105,19 @@ button{font-family:inherit;color:inherit}
 .x2{width:44px;height:44px;border:0;background:var(--tile);border-radius:999px;font-size:22px;line-height:1;cursor:pointer}
 .side-body{flex:1;overflow:auto;padding:16px}
 .side-foot{padding:12px 16px;border-top:1px solid var(--line);background:var(--bg)}
-.apply{width:100%;height:52px;border:0;border-radius:999px;background:var(--ink);color:#fff;font:700 16px var(--body);cursor:pointer}
+.apply{width:100%;height:52px;border:0;border-radius:10px;background:var(--ink);color:#fff;font:700 16px var(--body);cursor:pointer}
 .scrim{position:fixed;inset:0;z-index:25;background:rgba(17,17,17,.55)}
 .side-head,.side-foot{display:flex}
 .scrim:not([hidden]){display:block}
 @media(prefers-reduced-motion:reduce){.side{transition:none}}
 @media(min-width:960px){
   .layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;align-items:start;padding-top:24px}
-  .side{position:sticky;top:96px;z-index:1;width:auto;transform:none;background:none;max-height:calc(100vh - 112px);transition:none}
+  .side{position:sticky;top:132px;z-index:1;width:auto;transform:none;background:none;max-height:calc(100vh - 148px);transition:none}
   .side-head,.side-foot{display:none}
   .side-body{padding:0 4px 24px 0}
-  .fbtn,.ligas{display:none}
+  .fbtn{display:none}
   .scrim{display:none!important}
-  .bar{padding-bottom:12px}
+  .bar{padding-bottom:0}
   .meta{padding-top:0}
 }
 .filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -152,7 +126,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 
 .active{display:flex;flex-wrap:wrap;gap:8px;padding-top:14px}
 .active:empty{display:none}
-.tagx{border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:8px 14px;font:600 14px var(--body);cursor:pointer}
+.tagx{border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:8px;padding:8px 14px;font:600 14px var(--body);cursor:pointer}
 .meta{display:flex;justify-content:space-between;align-items:center;padding:14px 0 14px;color:var(--ink);font:700 15px var(--body)}
 .link{background:none;border:0;color:var(--ink);font:600 15px var(--body);text-decoration:underline;cursor:pointer;padding:0}
 
@@ -173,6 +147,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .name{margin:0;font:600 15px/1.3 var(--body)}
 .det{margin:2px 0 0;font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:1.3em}
 .pr{margin:8px 0 10px;font:700 19px/1 var(--head);letter-spacing:-.03em}
+.pr.ask{font:600 14px/1.2 var(--body);letter-spacing:0;color:var(--muted)}
 .sz{display:flex;flex-wrap:wrap;gap:4px 10px;font:600 13px var(--body);letter-spacing:.02em}
 .sz .off{color:#8A8A8A;text-decoration:line-through;font-weight:500}
 
@@ -206,7 +181,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .stock{min-height:26px;color:var(--muted);margin:2px 0 16px;display:flex;align-items:center;gap:8px;font-size:14px}
 .stock.baixo{color:var(--ink);font-weight:600}
 .stock.baixo::before{content:"";flex:none;width:14px;height:19px;background:var(--amarelo);border-radius:2px;transform:rotate(-6deg)}
-.buy{display:flex;align-items:center;justify-content:center;height:56px;background:var(--pitch);color:#fff;border-radius:999px;font:700 16px var(--body);text-decoration:none}
+.buy{display:flex;align-items:center;justify-content:center;height:56px;background:var(--pitch);color:#fff;border-radius:10px;font:700 16px var(--body);text-decoration:none}
 .buy[aria-disabled=true]{background:var(--tile);color:var(--muted);pointer-events:none}
 .cust{margin:18px 0 4px;padding:14px 16px;background:var(--tile);border-radius:12px}
 .cust[hidden],.cust-f[hidden]{display:none}
@@ -219,7 +194,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .cust-pv span{display:block;font-weight:700;font-size:15px;letter-spacing:.1em;white-space:nowrap}
 .cust-pv b{display:block;font-weight:800;font-size:64px;line-height:1.05;letter-spacing:-.04em}
 .cust-note{grid-column:1/-1;margin:0;font-size:13px;color:var(--muted)}
-.share{display:flex;align-items:center;justify-content:center;width:100%;height:44px;margin-top:10px;border:1px solid var(--line2);background:#fff;border-radius:999px;font:600 14px var(--body);color:var(--ink);cursor:pointer}
+.share{display:flex;align-items:center;justify-content:center;width:100%;height:44px;margin-top:10px;border:1px solid var(--line2);background:#fff;border-radius:10px;font:600 14px var(--body);color:var(--ink);cursor:pointer}
 .share:hover{border-color:var(--ink)}
 :focus-visible{outline:3px solid var(--pitch);outline-offset:2px}
 
@@ -228,23 +203,23 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .foot .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px}
 .foot .brand{font-size:36px;display:block}
 .foot .brand::after{content:".";color:var(--amarelo)}
-.foot .wa{background:var(--pitch)}
+.foot .wa{background:var(--pitch);color:#fff}
 .foot small{display:block;width:100%;margin-top:16px;padding-top:20px;border-top:1px solid #333;font-size:12px;color:#B8B8B8}
 
 /* carrinho e frete */
 .top .actions{display:flex;align-items:center;gap:10px}
-.cartbtn{display:inline-flex;align-items:center;gap:8px;font:700 14px var(--body);color:#fff;background:transparent;border:1px solid #555;border-radius:999px;padding:11px 16px;cursor:pointer}
+.cartbtn{display:inline-flex;align-items:center;gap:8px;font:700 14px var(--body);color:#fff;background:transparent;border:1px solid #555;border-radius:10px;padding:11px 16px;cursor:pointer}
 .cartbtn:hover{border-color:#fff}
 .cartbtn b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--amarelo);color:var(--ink);font-size:12px}
 .cartbtn b[data-n="0"]{background:#444;color:#bbb}
-.add{display:flex;align-items:center;justify-content:center;width:100%;height:56px;margin:0 0 10px;border:0;background:var(--pitch);color:#fff;border-radius:999px;font:700 16px var(--body);cursor:pointer}
+.add{display:flex;align-items:center;justify-content:center;width:100%;height:56px;margin:0 0 10px;border:0;background:var(--pitch);color:#fff;border-radius:10px;font:700 16px var(--body);cursor:pointer}
 .add[disabled]{background:var(--tile);color:var(--muted);cursor:default}
 .buy.alt{background:#fff;color:var(--ink);border:1px solid var(--line2);height:48px;font-size:15px}
 .fr{margin:0 0 16px;padding:14px 0 0;border-top:1px solid var(--line)}
 .fr-t{font:700 14px var(--body);margin:0 0 8px}
 .fr-row{display:flex;gap:8px}
-.fr-row input{flex:1;min-width:0;height:44px;padding:0 14px;border:1px solid var(--line2);border-radius:999px;font:500 16px var(--body)}
-.fr-row button{height:44px;padding:0 18px;border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:999px;font:700 14px var(--body);cursor:pointer}
+.fr-row input{flex:1;min-width:0;height:44px;padding:0 14px;border:1px solid var(--line2);border-radius:10px;font:500 16px var(--body)}
+.fr-row button{height:44px;padding:0 18px;border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:10px;font:700 14px var(--body);cursor:pointer}
 .fr-row button[disabled]{opacity:.5;cursor:default}
 .fr-msg{min-height:20px;margin:8px 0 0;font-size:14px;color:var(--muted)}
 .fr-msg.err{color:var(--vermelho)}
@@ -272,7 +247,7 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .ci-t{font:700 14px/1.3 var(--body);margin:0 0 2px}
 .ci-d{font-size:13px;color:var(--muted);margin:0 0 8px}
 .ci-r{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.qty{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:999px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:10px}
 .qty button{width:36px;height:36px;border:0;background:none;font-size:18px;cursor:pointer}
 .qty span{min-width:22px;text-align:center;font:700 14px var(--body)}
 .ci-p{font:700 15px var(--body)}
@@ -311,19 +286,13 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
   </div>
 </section>
 
-<section class="hub" id="hub" aria-labelledby="hubT" hidden>
-  <div class="wrap">
-    <div class="hub-head"><h2 id="hubT">Navegue por liga</h2><div class="hub-stats" id="hubStats"></div></div>
-  </div>
-  <div class="hub-rail"><div class="hub-grid" id="hubGrid"></div></div>
-</section>
 <div class="bar">
   <div class="wrap">
     <div class="searchrow">
-      <div class="search"><input id="q" type="search" placeholder="Buscar time, seleção ou liga" autocomplete="off" aria-label="Buscar"></div>
+      <div class="search"><input id="q" type="search" placeholder="Buscar time ou seleção" autocomplete="off" aria-label="Buscar"></div>
       <button class="fbtn" id="fbtn" aria-expanded="false" aria-controls="side">Filtros<span class="badge" id="fcount" hidden></span></button>
     </div>
-    <div class="chips ligas" id="ligas" role="group" aria-label="Seleções e ligas"></div>
+    <nav class="mods" id="mods" aria-label="Modalidade"></nav>
   </div>
 </div>
 
@@ -331,10 +300,8 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
   <aside class="side" id="side" aria-label="Filtros">
     <div class="side-head"><span>Filtros</span><button class="x2" id="sideClose" aria-label="Fechar filtros">×</button></div>
     <div class="side-body">
-      <div class="group"><p class="lbl">Seleções e ligas</p><div class="list" id="ligasSide" role="group" aria-label="Seleções e ligas"></div></div>
+      <div class="group"><p class="lbl" id="lblLiga">Liga</p><div class="list" id="ligasSide" role="group" aria-label="Seleções e ligas"></div></div>
       <div class="group"><p class="lbl">Versão</p><div class="chips" id="versoes" role="group" aria-label="Versão"></div></div>
-      <div class="group"><p class="lbl">Tipo</p><div class="list" id="tipos" role="group" aria-label="Tipo"></div></div>
-      <div class="group"><label class="lbl" for="team">Time</label><select id="team"></select></div>
       <div class="group"><label class="lbl" for="size">Tamanho</label><select id="size"></select></div>
       <div class="group"><label class="lbl" for="sort">Ordenar</label>
         <select id="sort">
@@ -394,7 +361,6 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
       </div>
       <a class="buy alt" id="mBuy" href="#" target="_blank" rel="noopener" aria-disabled="true">Escolha um tamanho</a>
       <button class="share" id="mShare" type="button">Copiar link da peça</button>
-      <p class="m-orig" id="mOrig"></p>
     </div>
   </div>
 </div>
@@ -442,7 +408,9 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 
   const CAT = { torcedor:'Torcedor', player:'Jogador', retro:'Retrô', feminina:'Feminina',
                 infantil:'Infantil', nba:'Basquete', treino:'Treino', acessorio:'Acessórios' };
-  const TIPO_CHIPS = ['retro', 'feminina', 'infantil', 'treino', 'acessorio'];   // filtros de "Tipo"
+  const MODS = [['futebol', 'Futebol'], ['basquete', 'Basquete'], ['retro', 'Retrô'], ['infantil', 'Infantil'], ['feminina', 'Feminina'], ['treino', 'Treino'], ['acessorio', 'Acessórios']];
+  const MOD_NOME = Object.fromEntries(MODS);
+  const modOk = (p, m) => !m || (m === 'futebol' ? p.categoria !== 'nba' && p.categoria !== 'acessorio' : m === 'basquete' ? p.categoria === 'nba' : p.categoria === m);
   const LIGA_ORDER = ['Seleções','Brasileirão','Premier League','La Liga','Serie A','Bundesliga','Ligue 1','Basquete'];
   const LIGA_BUSCA = {
     'Seleções':'selecao selecoes pais', 'Brasileirão':'brasileirao brasileiro campeonato brasileiro nacional',
@@ -690,6 +658,7 @@ Basquete|Kings|kings,sacramento kings`;
       if (VERSAO[t]) { if (!versao) versao = VERSAO[t]; continue; }
       if (TIPOS[t]) { if (!tipo) tipo = TIPOS[t]; continue; }
       if (t === 'treino' && tipo === 'Conjunto') { tipo = 'Conjunto treino'; continue; }
+      if (t === 'treino' && categoria === 'treino') continue;
       extra.push(bonito(toks[i]));
     }
     if (!versao) versao = ({ torcedor:'Torcedor', player:'Jogador', feminina:'Feminina', infantil:'Infantil', retro:'Retrô', nba:'Basquete' })[categoria] || '';
@@ -698,6 +667,7 @@ Basquete|Kings|kings,sacramento kings`;
     const parts = [];
     if (tipo && tipo !== 'Camisa') parts.push(tipo);
     if (team) parts.push(team.label);
+    if (categoria === 'treino' && !/treino/i.test(tipo)) parts.push('Treino');
     if (ehRetro) parts.push('Retrô');
     if (unif) parts.push(unif);
     if (season) parts.push(season);
@@ -705,7 +675,8 @@ Basquete|Kings|kings,sacramento kings`;
     if (!team || !titulo) titulo = String(nome || '').replace(/^(camisa|kit infantil|infantil)\s+(d[oae]s?\s+)?/i, '').trim() || String(nome || '');
 
     const detalhes = [extra.join(' '), par.map(bonito).join(' ')].filter(Boolean).join(' ');
-    const det = team ? [ehRetro ? '' : versao, detalhes].filter(Boolean).join(' · ') : (ehRetro ? '' : versao);
+    const semVersao = ehRetro || categoria === 'treino';
+    const det = team ? [semVersao ? '' : versao, detalhes].filter(Boolean).join(' · ') : (semVersao ? '' : versao);
     return { titulo, det };
   }
 // </logica>
@@ -718,7 +689,7 @@ Basquete|Kings|kings,sacramento kings`;
   // ---------- Estado ----------
   let ALL = [];
   let DESCONTOS = [];
-  const S = { q:'', liga:'', versao:'', cat:'', team:'', size:'', sort:'az' };
+  const S = { q:'', liga:'', versao:'', mod:'', team:'', size:'', sort:'az' };
   let current = null, lastFocus = null, selSize = '';
   const CUSTOM = { on:false, nome:'', num:'' };
 
@@ -748,7 +719,8 @@ Basquete|Kings|kings,sacramento kings`;
     const out = ALL.filter(p =>
       (!S.liga || p._liga === S.liga) &&
       (!S.versao || p._versao === S.versao) &&
-      (!S.cat || p.categoria === S.cat) &&
+      modOk(p, S.mod) &&
+      (S.mod || toks.length || p.categoria !== 'acessorio') &&
       (!S.team || p._team === S.team) &&
       (!S.size || p._avail.some(s => s.tamanho === S.size)) &&
       toks.every(t => p._hay.includes(t)));
@@ -762,10 +734,10 @@ Basquete|Kings|kings,sacramento kings`;
 
   function card(p) {
     const img = p.imagens[0] ? `<img src="${esc(imgUrl(p.imagens[0], 480))}" alt="" loading="lazy" decoding="async" crossorigin="anonymous">` : '';
-    const price = p.preco != null ? money(p.preco) : 'Consulte';
+    const price = p.preco != null ? money(p.preco) : 'Preço no WhatsApp';
     const sizes = p._sizes.map(s => `<span class="${s.disponivel ? '' : 'off'}">${esc(String(s.tamanho).split(' - ')[0])}</span>`).join('');
     return `<button class="card" data-h="${esc(p.handle)}"><div class="ph">${img}${p._low ? '<span class="low">Últimas peças</span>' : ''}</div>` +
-           `<div class="row"><p class="name">${esc(p._titulo)}</p></div><p class="det">${esc(p._det)}</p><p class="pr">${esc(price)}</p><div class="sz">${sizes}</div></button>`;
+           `<div class="row"><p class="name">${esc(p._titulo)}</p></div><p class="det">${esc(p._det)}</p><p class="pr${p.preco == null ? ' ask' : ''}">${esc(price)}</p><div class="sz">${sizes}</div></button>`;
   }
 
   function activeFilters() {
@@ -773,7 +745,7 @@ Basquete|Kings|kings,sacramento kings`;
     if (S.liga) f.push(['liga', S.liga]);
     if (S.team) f.push(['team', S.team]);
     if (S.versao) f.push(['versao', S.versao]);
-    if (S.cat) f.push(['cat', CAT[S.cat]]);
+    if (S.mod) f.push(['mod', MOD_NOME[S.mod]]);
     if (S.size) f.push(['size', 'Tamanho ' + S.size]);
     return f;
   }
@@ -781,7 +753,7 @@ Basquete|Kings|kings,sacramento kings`;
   const HOOK = '<svg class="hk" viewBox="0 0 100 44" aria-hidden="true"><path d="M50 16V12a6 6 0 1 0-6-6"/><path d="M50 16L6 40H94Z"/></svg>';
   function hang(p, i) {
     const img = p.imagens[0] ? `<img src="${esc(imgUrl(p.imagens[0], 480))}" alt="" loading="lazy" decoding="async" draggable="false" crossorigin="anonymous">` : '';
-    const price = p.preco != null ? money(p.preco) : 'Consulte';
+    const price = p.preco != null ? money(p.preco) : 'Preço no WhatsApp';
     const st = `--r:${((i % 2 ? 1 : -1) * (0.6 + (i * 37 % 10) / 10)).toFixed(2)}deg`;
     return `<button class="card hang" data-h="${esc(p.handle)}" style="${st}"><span class="sw">${HOOK}` +
            `<span class="ph">${img}${p._low ? '<span class="low">Últimas peças</span>' : ''}</span>` +
@@ -789,8 +761,7 @@ Basquete|Kings|kings,sacramento kings`;
   }
 
   function renderAlta() {
-    const livre = !(S.q || S.liga || S.versao || S.cat || S.team || S.size);   // some quando há busca ou filtro
-    $q('#hub').hidden = !livre || !$q('#hubGrid').firstChild;
+    const livre = !(S.q || S.liga || S.versao || S.mod || S.team || S.size);   // some quando há busca ou filtro
     let picks = [], titulo = CONFIG.altaTitulo;
     if (livre) {
       picks = ALL.filter(p => p.destaque).sort((a, b) => cmp(a._titulo, b._titulo)).slice(0, 12);
@@ -897,35 +868,29 @@ Basquete|Kings|kings,sacramento kings`;
     return i >= 0 ? i : 50 + (1000 - (lc[l] || 0)) / 1000;
   }
 
-  function buildTeamSelect() {
-    const by = {};
-    ALL.forEach(p => {
-      if (!p._team || (S.liga && p._liga !== S.liga)) return;
-      const g = by[p._liga] || (by[p._liga] = {});
-      g[p._team] = (g[p._team] || 0) + 1;
-    });
-    const lc = {}; ALL.forEach(p => lc[p._liga] = (lc[p._liga] || 0) + 1);
-    const opts = g => Object.keys(g).sort(cmp).map(t => `<option value="${esc(t)}">${esc(t)} (${g[t]})</option>`).join('');
-    let html = '<option value="">Todos os times</option>';
-    if (S.liga) html += opts(by[S.liga] || {});
-    else html += Object.keys(by).sort((a, b) => ligaRank(a, lc) - ligaRank(b, lc)).map(l => `<optgroup label="${esc(l)}">${opts(by[l])}</optgroup>`).join('');
-    $q('#team').innerHTML = html;
-    $q('#team').value = S.team;
-  }
-
   function buildControls() {
     const lc = {}; ALL.forEach(p => lc[p._liga] = (lc[p._liga] || 0) + 1);
     const ligas = Object.keys(lc).sort((a, b) => ligaRank(a, lc) - ligaRank(b, lc));
-    const ligaHtml = chip('l', '', 'Todas', ALL.length, !S.liga) + ligas.map(l => chip('l', l, l, lc[l], S.liga === l)).join('');
-    $q('#ligas').innerHTML = ligaHtml; $q('#ligasSide').innerHTML = ligaHtml;
+    const lcm = {}; ALL.forEach(p => { if (modOk(p, S.mod)) lcm[p._liga] = (lcm[p._liga] || 0) + 1; });
+    const ligasMod = ligas.filter(l => l !== 'Basquete' && lcm[l]);
+    const nMod = ALL.filter(p => modOk(p, S.mod)).length;
+    const subTeams = (l, flat) => {
+      const g = {}; ALL.forEach(p => { if (p._liga === l && p._team && modOk(p, S.mod)) g[p._team] = (g[p._team] || 0) + 1; });
+      const ks = Object.keys(g).sort(cmp);
+      return ks.length ? '<div class="sub' + (flat ? ' flat' : '') + '" role="group" aria-label="Times">' + ks.map(k => chip('t', k, k, g[k], S.team === k)).join('') + '</div>' : '';
+    };
+    const soBasquete = S.mod === 'basquete';
+    $q('#lblLiga').textContent = soBasquete ? 'Time' : 'Liga';
+    $q('#ligasSide').innerHTML = soBasquete ? subTeams('Basquete', true)
+      : chip('l', '', 'Todas', nMod, !S.liga) + ligasMod.map(l => chip('l', l, l, lcm[l], S.liga === l) + (S.liga === l ? subTeams(l) : '')).join('');
+    $q('#ligasSide').parentElement.hidden = !soBasquete && ligasMod.length < 1;
+    const mc = {}; MODS.forEach(([k]) => mc[k] = ALL.filter(p => modOk(p, k)).length);
+    const base = ALL.filter(p => p.categoria !== 'acessorio').length;
+    $q('#mods').innerHTML = `<button class="mod" data-m="" aria-pressed="${!S.mod}">Todas<small>${base}</small></button>` + MODS.filter(([k]) => mc[k]).map(([k, l]) => `<button class="mod" data-m="${k}" aria-pressed="${S.mod === k}">${l}<small>${mc[k]}</small></button>`).join('');
 
     const vc = {}; ALL.forEach(p => { if (p._versao) vc[p._versao] = (vc[p._versao] || 0) + 1; });
     $q('#versoes').innerHTML = chip('v', '', 'Todas', ALL.length, !S.versao) + ['Torcedor', 'Jogador'].filter(v => vc[v]).map(v => chip('v', v, v, vc[v], S.versao === v)).join('');
 
-    const tc = {}; ALL.forEach(p => tc[p.categoria] = (tc[p.categoria] || 0) + 1);
-    $q('#tipos').innerHTML = chip('c', '', 'Todos', ALL.length, !S.cat) + TIPO_CHIPS.filter(c => tc[c]).map(c => chip('c', c, CAT[c], tc[c], S.cat === c)).join('');
-
-    buildTeamSelect();
     const sz = new Set(); ALL.forEach(p => p._avail.forEach(s => sz.add(s.tamanho)));
     $q('#size').innerHTML = '<option value="">Qualquer tamanho</option>' + [...sz].sort((a, b) => sizeRank(a) - sizeRank(b)).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
     $q('#size').value = S.size;
@@ -933,43 +898,36 @@ Basquete|Kings|kings,sacramento kings`;
     $q('#q').value = S.q;
   }
 
-  function buildHub() {
-    const lc = {}, tm = {}, teams = new Set();
-    ALL.forEach(p => {
-      lc[p._liga] = (lc[p._liga] || 0) + 1;
-      if (p._team) { teams.add(p._team); (tm[p._liga] || (tm[p._liga] = {}))[p._team] = ((tm[p._liga] || {})[p._team] || 0) + 1; }
-    });
-    const ligas = Object.keys(lc).sort((a, b) => ligaRank(a, lc) - ligaRank(b, lc));
-    if (ALL.length < 4 || !ligas.length) { $q('#hub').hidden = true; return; }
-    $q('#hubStats').innerHTML = `<span><b>${ALL.length}</b> camisas</span><span><b>${teams.size}</b> times</span>`;
-    const tile = (l, c, nome, sub, cls) => `<button class="lg ${cls || ''}" data-l="${esc(l)}"><span class="lg-n">${esc(nome)}</span><span class="lg-row"><b class="lg-c">${c}</b><span class="lg-t">${c === 1 ? 'camisa' : 'camisas'}</span></span></button>`;
-    $q('#hubGrid').innerHTML = tile('', ALL.length, 'Todas', '', 'all') + ligas.map(l => {
-      const names = Object.keys(tm[l] || {}).sort((a, b) => tm[l][b] - tm[l][a] || cmp(a, b));
-      const sub = names.length ? names.slice(0, 3).join(' · ') + (names.length > 3 ? ' +' + (names.length - 3) : '') : 'Ver peças';
-      return tile(l, lc[l], l === 'Outros' ? 'Outras' : l, sub);
-    }).join('');
-  }
   function pressChips(sel, attr, val) {
     document.querySelectorAll('.chip[data-' + attr + ']').forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === val)));
   }
   function setLiga(l) {
     S.liga = l;
+    if (!l) S.team = '';   // o time mora dentro da liga
     if (S.team && !ALL.some(p => p._team === S.team && p._liga === l) && l) S.team = '';
-    pressChips('#ligas', 'l', l); buildTeamSelect(); render();
+    if (l && (S.mod === 'basquete' || S.mod === 'acessorio')) { S.mod = ''; pressMods(); }
+    buildControls(); render();
+  }
+  function pressMods() { document.querySelectorAll('.mod').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === S.mod))); }
+  function setMod(m) {
+    S.mod = m;
+    if (S.liga && m && !ALL.some(p => p._liga === S.liga && modOk(p, m))) { S.liga = ''; pressChips('#ligasSide', 'l', ''); }
+    if (S.team && !ALL.some(p => p._team === S.team && modOk(p, m))) S.team = '';
+    buildControls(); render();
   }
   function clearOne(k) {
-    if (k === 'liga') { S.liga = ''; pressChips('#ligas', 'l', ''); buildTeamSelect(); }
-    if (k === 'team') { S.team = ''; $q('#team').value = ''; }
+    if (k === 'liga') { S.liga = ''; S.team = ''; pressChips('#ligasSide', 'l', ''); }
+    if (k === 'team') S.team = '';
     if (k === 'versao') { S.versao = ''; pressChips('#versoes', 'v', ''); }
-    if (k === 'cat') { S.cat = ''; pressChips('#tipos', 'c', ''); }
+    if (k === 'mod') { S.mod = ''; pressMods(); }
     if (k === 'size') { S.size = ''; $q('#size').value = ''; }
-    render();
+    buildControls(); render();
   }
   function clearAll() {
-    S.q = ''; S.liga = ''; S.versao = ''; S.cat = ''; S.team = ''; S.size = '';
+    S.q = ''; S.liga = ''; S.versao = ''; S.mod = ''; S.team = ''; S.size = '';
     $q('#q').value = '';
-    pressChips('#ligas', 'l', ''); pressChips('#versoes', 'v', ''); pressChips('#tipos', 'c', '');
-    buildTeamSelect(); $q('#size').value = ''; render();
+    pressChips('#ligasSide', 'l', ''); pressChips('#versoes', 'v', ''); pressMods();
+    buildControls(); render();
   }
 
   // ---------- Endereço (compartilhar filtros e peças) ----------
@@ -978,7 +936,7 @@ Basquete|Kings|kings,sacramento kings`;
     if (S.q) p.set('q', S.q);
     if (S.liga) p.set('liga', S.liga);
     if (S.versao) p.set('versao', S.versao);
-    if (S.cat) p.set('cat', S.cat);
+    if (S.mod) p.set('mod', S.mod);
     if (S.team) p.set('time', S.team);
     if (S.size) p.set('tam', S.size);
     if (S.sort !== 'az') p.set('ord', S.sort);
@@ -988,7 +946,8 @@ Basquete|Kings|kings,sacramento kings`;
   }
   function readHash() {
     const p = new URLSearchParams(location.hash.slice(1));
-    S.q = p.get('q') || ''; S.liga = p.get('liga') || ''; S.versao = p.get('versao') || ''; S.cat = p.get('cat') || '';
+    S.q = p.get('q') || ''; S.liga = p.get('liga') || ''; S.versao = p.get('versao') || ''; S.mod = p.get('mod') || p.get('cat') || '';
+    if (S.liga === 'Basquete') { S.liga = ''; S.mod = 'basquete'; }   // links antigos
     S.team = p.get('time') || ''; S.size = p.get('tam') || ''; S.sort = p.get('ord') || 'az';
     return p.get('p');
   }
@@ -1036,8 +995,7 @@ Basquete|Kings|kings,sacramento kings`;
     $q('#mShare').textContent = 'Copiar link da peça';
     $q('#mTitle').textContent = p._titulo;
     $q('#mDet').textContent = p._det;
-    $q('#mOrig').textContent = 'Nome no fornecedor: ' + p.nome;
-    $q('#mPrice').textContent = p.preco != null ? money(p.preco) : 'Consulte o valor';
+    $q('#mPrice').textContent = p.preco != null ? money(p.preco) : 'Valor pelo WhatsApp';
     const dl = $q('#mDesc');
     dl.hidden = !(p.preco != null && DESCONTOS.length);
     dl.innerHTML = p.preco == null ? '' : DESCONTOS.map(d => `<li>Leve ${d.qtd_min} ou mais: <strong>${money(Math.round(p.preco * (1 - d.percentual / 100) * 100) / 100)}</strong> cada</li>`).join('');
@@ -1209,13 +1167,15 @@ Basquete|Kings|kings,sacramento kings`;
   $q('#sideClose').addEventListener('click', () => drawer(false));
   $q('#apply').addEventListener('click', () => drawer(false));
   $q('#scrim').addEventListener('click', () => drawer(false));
-  const onLiga = e => { const b = e.target.closest('.chip'); if (b) setLiga(b.dataset.l); };
-  $q('#ligas').addEventListener('click', onLiga);
+  const onLiga = e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    if (b.dataset.t !== undefined) { S.team = S.team === b.dataset.t ? '' : b.dataset.t; buildControls(); render(); return; }
+    setLiga(b.dataset.l && S.liga === b.dataset.l ? '' : b.dataset.l);
+  };
+  $q('#mods').addEventListener('click', e => { const b = e.target.closest('.mod'); if (b) setMod(b.dataset.m); });
   $q('#ligasSide').addEventListener('click', onLiga);
   $q('#versoes').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { S.versao = b.dataset.v; pressChips('#versoes', 'v', S.versao); render(); } });
-  $q('#tipos').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { S.cat = b.dataset.c; pressChips('#tipos', 'c', S.cat); render(); } });
   $q('#q').addEventListener('input', e => { S.q = e.target.value; render(); });
-  $q('#team').addEventListener('change', e => { S.team = e.target.value; render(); });
   $q('#size').addEventListener('change', e => { S.size = e.target.value; render(); });
   $q('#sort').addEventListener('change', e => { S.sort = e.target.value; render(); });
   $q('#clear').addEventListener('click', clearAll);
@@ -1236,11 +1196,6 @@ Basquete|Kings|kings,sacramento kings`;
       if (navigator.share) { await navigator.share({ title: current._titulo, url }); return; }
       await navigator.clipboard.writeText(url); b.textContent = 'Link copiado';
     } catch (_) { b.textContent = url; }
-  });
-  $q('#hubGrid').addEventListener('click', e => {
-    const b = e.target.closest('.lg'); if (!b) return;
-    if (b.dataset.l) setLiga(b.dataset.l);
-    requestAnimationFrame(() => { const bar = $q('.bar'); if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   });
   $q('#mClose').addEventListener('click', closeProduct);
   $q('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
@@ -1316,7 +1271,7 @@ Basquete|Kings|kings,sacramento kings`;
       const k = esc(cartKey(l.it));
       const cz = [l.it.nome, l.it.num].filter(Boolean).join(' ');
       const img = l.p.imagens[0] ? `<img src="${esc(imgUrl(l.p.imagens[0], 200))}" alt="" loading="lazy">` : '';
-      const preco = l.unit == null ? 'Consulte' : money(l.unit * l.it.qtd);
+      const preco = l.unit == null ? 'Preço no WhatsApp' : money(l.unit * l.it.qtd);
       const riscado = l.unit != null && t.perc ? `<s>${money(Number(l.p.preco) * l.it.qtd)}</s>` : '';
       return `<div class="ci" data-k="${k}"><div class="ci-img">${img}</div><div>
         <p class="ci-t">${esc(l.p._titulo)}</p>
@@ -1531,7 +1486,6 @@ Basquete|Kings|kings,sacramento kings`;
     CART = CART.filter(i => ALL.some(p => p.handle === i.handle)); cartSave(); cartBadge();
     const open = readHash();
     buildControls();
-    buildHub();
     render();
     if (open) openProduct(open);
   }
