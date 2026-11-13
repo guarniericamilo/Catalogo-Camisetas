@@ -248,6 +248,11 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
 .sk{height:76px;border-top:1px solid var(--line);background:linear-gradient(90deg,#fff 0,#F4F4F2 50%,#fff 100%);background-size:200% 100%;animation:sk 1.2s linear infinite}
 @keyframes sk{to{background-position:-200% 0}}
 @media(prefers-reduced-motion:reduce){.sk{animation:none}.gv{animation:none}}
+#nLista .ck{visibility:hidden}
+#nPeriodo{width:auto;min-width:170px}
+.nd{margin:0;padding:14px 16px 6px;font:700 13px var(--body);color:var(--muted);border-top:1px solid var(--line);background:var(--bg)}
+.nd:first-child{border-top:0}
+.nd::first-letter{text-transform:uppercase}
 </style>
 </head>
 <body>
@@ -316,6 +321,7 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
     <nav>
       <button class="nv" data-t="inicio"><svg class="ic"><use href="#i-home"/></svg>Início</button>
       <button class="nv" data-t="produtos"><svg class="ic"><use href="#i-shirt"/></svg>Produtos<span class="bd" id="bdProd" hidden></span></button>
+      <button class="nv" data-t="novidades"><svg class="ic"><use href="#i-star"/></svg>Novidades<span class="bd" id="bdNovM2" hidden></span></button>
       <button class="nv" data-t="faixas"><svg class="ic"><use href="#i-faixa"/></svg>Faixas de preço</button>
       <button class="nv" data-t="descontos"><svg class="ic"><use href="#i-pct"/></svg>Descontos</button>
       <button class="nv" data-t="sistema"><svg class="ic"><use href="#i-cog"/></svg>Sistema</button>
@@ -330,6 +336,7 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
   <nav class="mnav" aria-label="Menu do painel">
     <button data-t="inicio"><svg class="ic"><use href="#i-home"/></svg>Início</button>
     <button data-t="produtos"><svg class="ic"><use href="#i-shirt"/></svg>Produtos<span class="bd" id="bdProdM" hidden></span></button>
+    <button data-t="novidades"><svg class="ic"><use href="#i-star"/></svg>Novas<span class="bd" id="bdNovM" hidden></span></button>
     <button data-t="faixas"><svg class="ic"><use href="#i-faixa"/></svg>Faixas</button>
     <button data-t="descontos"><svg class="ic"><use href="#i-pct"/></svg>Descontos</button>
     <button data-t="sistema"><svg class="ic"><use href="#i-cog"/></svg>Sistema</button>
@@ -373,6 +380,14 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
         <div id="pLista"></div>
       </div>
       <button class="btn sec mais" id="pMais" hidden></button>
+    </section>
+
+    <!-- NOVIDADES -->
+    <section id="tnovidades" hidden>
+      <div class="ph"><div><h2>Novidades</h2><p class="sub">Peças que o fornecedor colocou e entraram na sua loja. Defina o preço de cada uma aqui mesmo.</p></div>
+        <select id="nPeriodo" aria-label="Período"><option value="7">Últimos 7 dias</option><option value="14">Últimos 14 dias</option><option value="30">Últimos 30 dias</option><option value="90">Últimos 90 dias</option></select></div>
+      <div id="nAviso" class="card" hidden></div>
+      <div class="lista"><div id="nLista"></div></div>
     </section>
 
     <!-- FAIXAS -->
@@ -521,7 +536,7 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
   $('#bSair').addEventListener('click', sair); $('#bSairM').addEventListener('click', sair); $('#bSair2').addEventListener('click', sair);
 
   // ---------- navegação ----------
-  const TABS = ['inicio', 'produtos', 'faixas', 'descontos', 'sistema'];
+  const TABS = ['inicio', 'produtos', 'novidades', 'faixas', 'descontos', 'sistema'];
   const carregado = {};
   function ir(t, manter) {
     if (!TABS.includes(t)) t = 'inicio';
@@ -531,6 +546,7 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
     if (!manter) history.replaceState(null, '', '#' + t);
     if (t === 'inicio') desenharInicio();
     if (t === 'produtos') desenharProdutos();
+    if (t === 'novidades') abrirNovidades();
     if (!carregado[t]) { carregado[t] = true; ({ faixas: carregarRegras, descontos: carregarDescontos, sistema: carregarSistema })[t]?.(); }
     window.scrollTo(0, 0);
   }
@@ -547,8 +563,49 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
     $('#pLista').innerHTML = '<div class="sk"></div>'.repeat(6);
     const { data, error } = await sb.from('admin_produtos').select('*').eq('ativo', true).order('nome').limit(2000);
     if (error) { falha(error, 'Não consegui carregar'); $('#pLista').innerHTML = ''; return; }
-    P = data; atualizaTudo();
+    P = data;
+    await carregarNovidades();
+    atualizaTudo();
   }
+
+  // ---------- novidades ----------
+  // data em que cada produto entrou (coluna produtos.primeira_vez, ver novidades.sql)
+  let NOVO = {}, NOVO_OK = true;
+  const VISTO_KEY = 'camizz_novidades_visto';
+  const lerVisto = () => { try { return Number(localStorage.getItem(VISTO_KEY)) || 0; } catch (_) { return 0; } };
+  async function carregarNovidades() {
+    const { data, error } = await sb.from('produtos').select('handle,primeira_vez').not('primeira_vez', 'is', null).limit(5000);
+    if (error) { NOVO_OK = false; NOVO = {}; return; }
+    NOVO_OK = true; NOVO = Object.fromEntries((data || []).map(x => [x.handle, new Date(x.primeira_vez).getTime()]));
+  }
+  const novas = dias => P.filter(p => NOVO[p.handle] && Date.now() - NOVO[p.handle] <= dias * 864e5).sort((a, b) => NOVO[b.handle] - NOVO[a.handle]);
+  function badgeNovidades() {
+    const v = lerVisto(), n = P.filter(p => NOVO[p.handle] && NOVO[p.handle] > v).length;
+    ['#bdNovM', '#bdNovM2'].forEach(id => { const b = $(id); b.hidden = !n; b.textContent = n; b.title = 'Peças novas desde sua última visita'; });
+  }
+  let novidadesDesde = 0;
+  function abrirNovidades() {
+    novidadesDesde = lerVisto();
+    desenharNovidades();
+    try { localStorage.setItem(VISTO_KEY, String(Date.now())); } catch (_) {}
+    badgeNovidades();
+  }
+  function desenharNovidades() {
+    const av = $('#nAviso'), dias = Number($('#nPeriodo').value) || 7;
+    if (!NOVO_OK) { av.hidden = false; av.innerHTML = '<b>A coluna de datas ainda não existe no banco.</b><p class="sub">Rode o arquivo <code>novidades.sql</code> no SQL Editor do Supabase e recarregue o painel.</p>'; $('#nLista').innerHTML = ''; return; }
+    const l = novas(dias);
+    const comData = Object.keys(NOVO).length;
+    av.hidden = !!comData;
+    if (!comData) av.innerHTML = '<b>Ainda não há novidades registradas.</b><p class="sub">A partir de agora, cada peça nova que a leitura do fornecedor trouxer aparece aqui com a data.</p>';
+    let h = '', ult = '';
+    l.forEach(p => {
+      const d = new Date(NOVO[p.handle]), dia = d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+      if (dia !== ult) { ult = dia; h += `<p class="nd">${esc(dia)} · ${esc(ha(d))}</p>`; }
+      h += linha(p).replace('<div class="pr">', `<div class="pr">${NOVO[p.handle] > novidadesDesde ? '<span class="pill bad">novo</span> ' : ''}`);
+    });
+    $('#nLista').innerHTML = h || (comData ? `<div class="vazio"><b>Nada novo</b>Nenhuma peça nova nos últimos ${dias} dias.</div>` : '');
+  }
+  $('#nPeriodo').addEventListener('change', desenharNovidades);
   const margem = p => (p.preco_final != null && p.custo != null) ? p.preco_final - p.custo : null;
   const margemPct = p => { const m = margem(p); return m != null && p.preco_final ? Math.round(m / p.preco_final * 100) : null; };
   const baixo = p => Number(p.estoque_total) > 0 && Number(p.estoque_total) <= 3;
@@ -574,6 +631,8 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
     ['#bdProd', '#bdProdM'].forEach(id => { const b = $(id); b.hidden = !s.semPreco; b.textContent = s.semPreco; b.title = 'Peças sem preço'; });
     if (!$('#tinicio').hidden) desenharInicio();
     if (!$('#tprodutos').hidden) desenharProdutos();
+    if (!$('#tnovidades').hidden) desenharNovidades();
+    badgeNovidades();
   }
 
   // ---------- início ----------
@@ -712,7 +771,7 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
     if (!quieto) toast('Salvo');
     return true;
   }
-  $('#pLista').addEventListener('click', e => {
+  const onListaClick = e => {
     const art = e.target.closest('.lin'); if (!art) return;
     const h = art.dataset.h, tg = e.target.closest('[data-tg]');
     if (tg) {
@@ -721,15 +780,16 @@ dialog .ac{display:flex;gap:10px;justify-content:flex-end}
       salvar(h, { [f]: v }); return;
     }
     if (e.target.closest('[data-edit]')) abreGaveta(h);
-  });
-  $('#pLista').addEventListener('change', e => {
+  };
+  const onListaChange = e => {
     const el = e.target, art = el.closest('.lin'); if (!art) return;
     if (el.matches('[data-sel]')) { el.checked ? SEL.add(art.dataset.h) : SEL.delete(art.dataset.h); art.classList.toggle('sel', el.checked); barraLote(); return; }
     if (el.dataset.f === 'preco_manual') {
       const v = num(el.value); if (v === undefined || (v !== null && v < 0)) { toast('Preço inválido', true); return; }
       salvar(art.dataset.h, { preco_manual: v });
     }
-  });
+  };
+  ['#pLista', '#nLista'].forEach(id => { $(id).addEventListener('click', onListaClick); $(id).addEventListener('change', onListaChange); });
   $('#pTodos').addEventListener('change', e => {
     filtrados().slice(0, PF.n).forEach(p => e.target.checked ? SEL.add(p.handle) : SEL.delete(p.handle)); desenharProdutos();
   });
