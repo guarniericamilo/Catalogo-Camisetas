@@ -230,13 +230,72 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
 .foot .brand::after{content:".";color:var(--amarelo)}
 .foot .wa{background:var(--pitch)}
 .foot small{display:block;width:100%;margin-top:16px;padding-top:20px;border-top:1px solid #333;font-size:12px;color:#B8B8B8}
+
+/* carrinho e frete */
+.top .actions{display:flex;align-items:center;gap:10px}
+.cartbtn{display:inline-flex;align-items:center;gap:8px;font:700 14px var(--body);color:#fff;background:transparent;border:1px solid #555;border-radius:999px;padding:11px 16px;cursor:pointer}
+.cartbtn:hover{border-color:#fff}
+.cartbtn b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--amarelo);color:var(--ink);font-size:12px}
+.cartbtn b[data-n="0"]{background:#444;color:#bbb}
+.add{display:flex;align-items:center;justify-content:center;width:100%;height:56px;margin:0 0 10px;border:0;background:var(--pitch);color:#fff;border-radius:999px;font:700 16px var(--body);cursor:pointer}
+.add[disabled]{background:var(--tile);color:var(--muted);cursor:default}
+.buy.alt{background:#fff;color:var(--ink);border:1px solid var(--line2);height:48px;font-size:15px}
+.fr{margin:0 0 16px;padding:14px 0 0;border-top:1px solid var(--line)}
+.fr-t{font:700 14px var(--body);margin:0 0 8px}
+.fr-row{display:flex;gap:8px}
+.fr-row input{flex:1;min-width:0;height:44px;padding:0 14px;border:1px solid var(--line2);border-radius:999px;font:500 16px var(--body)}
+.fr-row button{height:44px;padding:0 18px;border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:999px;font:700 14px var(--body);cursor:pointer}
+.fr-row button[disabled]{opacity:.5;cursor:default}
+.fr-msg{min-height:20px;margin:8px 0 0;font-size:14px;color:var(--muted)}
+.fr-msg.err{color:var(--vermelho)}
+.fr-opts{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.fr-opt{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line2);border-radius:12px;font-size:14px;cursor:pointer}
+.fr-opt input{accent-color:var(--pitch)}
+.fr-opt.on{border-color:var(--pitch);box-shadow:inset 0 0 0 1px var(--pitch)}
+.fr-opt .fr-n{flex:1;min-width:0}
+.fr-opt .fr-n small{display:block;color:var(--muted)}
+.fr-opt b{font:700 15px var(--body);white-space:nowrap}
+.fr-opt.ro{cursor:default}
+.cscrim{position:fixed;inset:0;z-index:40;background:rgba(17,17,17,.55)}
+.cscrim[hidden],.cart[hidden]{display:none}
+.cart{position:fixed;z-index:41;top:0;right:0;bottom:0;width:min(100vw,440px);background:#fff;display:flex;flex-direction:column;animation:cin .2s ease-out}
+@keyframes cin{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.cart{animation:none}}
+.cart-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.cart-h h2{font:800 20px/1 var(--head);letter-spacing:-.03em;margin:0}
+.cart-h .x{position:static}
+.cart-b{flex:1;overflow:auto;padding:8px 20px 20px}
+.cart-empty{padding:40px 0;text-align:center;color:var(--muted)}
+.ci{display:grid;grid-template-columns:72px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.ci-img{width:72px;aspect-ratio:4/5;background:var(--tile);overflow:hidden}
+.ci-img img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.ci-t{font:700 14px/1.3 var(--body);margin:0 0 2px}
+.ci-d{font-size:13px;color:var(--muted);margin:0 0 8px}
+.ci-r{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:999px}
+.qty button{width:36px;height:36px;border:0;background:none;font-size:18px;cursor:pointer}
+.qty span{min-width:22px;text-align:center;font:700 14px var(--body)}
+.ci-p{font:700 15px var(--body)}
+.ci-p s{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.ci-rm{border:0;background:none;color:var(--muted);font:500 13px var(--body);text-decoration:underline;cursor:pointer;padding:6px 0}
+.cart-f{padding:16px 20px 20px;border-top:1px solid var(--line);background:#fff}
+.sum{display:grid;gap:6px;margin:0 0 14px;font-size:14px}
+.sum div{display:flex;justify-content:space-between;gap:12px}
+.sum .tot{font:800 18px var(--body);padding-top:8px;border-top:1px solid var(--line)}
+.sum .ok{color:var(--pitch);font-weight:600}
+.cart-f .buy{width:100%}
+.cart-f .buy[aria-disabled=true]{opacity:.6}
+.cart-note{font-size:12px;color:var(--muted);margin:10px 0 0}
 </style>
 </head>
 <body>
 <header class="top">
   <div class="wrap">
     <a class="brand" id="brand" href="./">Camizz</a>
-    <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
+    <div class="actions">
+      <button class="cartbtn" id="cartBtn" type="button" aria-haspopup="dialog">Carrinho <b id="cartN" data-n="0">0</b></button>
+      <a id="waTop" class="wa" href="#" hidden>Falar no WhatsApp</a>
+    </div>
   </div>
 </header>
 <h1 class="sr">Catálogo de camisas</h1>
@@ -323,12 +382,44 @@ select{width:100%;height:48px;border:1px solid var(--line2);border-radius:8px;ba
           <p class="cust-note">Prévia das costas. O valor da personalização é combinado pelo WhatsApp.</p>
         </div>
       </div>
-      <a class="buy" id="mBuy" href="#" target="_blank" rel="noopener" aria-disabled="true">Escolha um tamanho</a>
+      <button class="add" id="mAdd" type="button" disabled>Escolha um tamanho</button>
+      <div class="fr" id="mFrete">
+        <p class="fr-t">Calcular frete</p>
+        <form class="fr-row" id="mFreteF" novalidate>
+          <input id="mCep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="Seu CEP" aria-label="CEP para calcular o frete">
+          <button type="submit">Calcular</button>
+        </form>
+        <p class="fr-msg" id="mFreteMsg" aria-live="polite"></p>
+        <ul class="fr-opts" id="mFreteOpts"></ul>
+      </div>
+      <a class="buy alt" id="mBuy" href="#" target="_blank" rel="noopener" aria-disabled="true">Escolha um tamanho</a>
       <button class="share" id="mShare" type="button">Copiar link da peça</button>
       <p class="m-orig" id="mOrig"></p>
     </div>
   </div>
 </div>
+
+<div class="cscrim" id="cScrim" hidden></div>
+<aside class="cart" id="cart" role="dialog" aria-modal="true" aria-labelledby="cartT" hidden>
+  <div class="cart-h"><h2 id="cartT">Carrinho</h2><button class="x" id="cartClose" type="button" aria-label="Fechar carrinho">×</button></div>
+  <div class="cart-b">
+    <div id="cItems"></div>
+    <div class="fr" id="cFrete" hidden>
+      <p class="fr-t">Frete</p>
+      <form class="fr-row" id="cFreteF" novalidate>
+        <input id="cCep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="Seu CEP" aria-label="CEP para calcular o frete">
+        <button type="submit">Calcular</button>
+      </form>
+      <p class="fr-msg" id="cFreteMsg" aria-live="polite"></p>
+      <ul class="fr-opts" id="cFreteOpts"></ul>
+    </div>
+  </div>
+  <div class="cart-f" id="cFoot" hidden>
+    <div class="sum" id="cSum"></div>
+    <a class="buy" id="cBuy" href="#" target="_blank" rel="noopener">Finalizar pelo WhatsApp</a>
+    <p class="cart-note">O pedido é confirmado e pago pelo WhatsApp. Personalização (nome e número) tem valor combinado na conversa.</p>
+  </div>
+</aside>
 
 <script>
 (() => {
@@ -929,9 +1020,10 @@ Basquete|Kings|kings,sacramento kings`;
     $q('#mStock').classList.toggle('baixo', !!(s && s.qtd != null && s.qtd <= LOW_STOCK));
     $q('#mStock').textContent = !s ? '' : (s.qtd != null && s.qtd <= LOW_STOCK ? (s.qtd === 1 ? 'Resta 1 peça neste tamanho.' : 'Restam ' + s.qtd + ' peças neste tamanho.') : 'Disponível.');
     const buy = $q('#mBuy');
-    buy.textContent = 'Pedir pelo WhatsApp';
+    buy.textContent = 'Pedir só esta peça pelo WhatsApp';
     buy.href = waLink(current, size);
     buy.setAttribute('aria-disabled', 'false');
+    const add = $q('#mAdd'); add.disabled = false; add.textContent = 'Adicionar ao carrinho';
   }
 
   function openProduct(handle) {
@@ -955,6 +1047,8 @@ Basquete|Kings|kings,sacramento kings`;
     $q('#mStock').textContent = '';
     const buy = $q('#mBuy');
     buy.textContent = 'Escolha um tamanho'; buy.href = '#'; buy.setAttribute('aria-disabled', 'true');
+    const add = $q('#mAdd'); add.disabled = true; add.textContent = 'Escolha um tamanho';
+    $q('#mCep').value = FRETE.cep; $q('#mFreteMsg').textContent = ''; $q('#mFreteOpts').innerHTML = '';
     $q('#modal').hidden = false;
     document.body.style.overflow = 'hidden';
     $q('#mClose').focus();
@@ -1152,6 +1246,235 @@ Basquete|Kings|kings,sacramento kings`;
   $q('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeProduct(); });
   document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (!$q('#modal').hidden) closeProduct(); else drawer(false); });
 
+
+  // ---------- Carrinho e frete ----------
+  const CART_KEY = 'camizz_cart_v1', CEP_KEY = 'camizz_cep';
+  let CART = [];                       // [{ handle, tam, nome, num, qtd }]
+  let FRETE = { cep: '', opcoes: null, sel: null, loading: false, token: 0 };
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} }
+  };
+  const maskCep = v => { const d = v.replace(/\D/g, '').slice(0, 8); return d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d; };
+  const prazoTxt = o => {
+    const a = o.prazo_min, b = o.prazo_max;
+    if (a == null && b == null) return '';
+    return (a === b || b == null ? a : a + ' a ' + b) + ' dias úteis';
+  };
+  const cartKey = it => [it.handle, it.tam, it.nome || '', it.num || ''].join('|');
+
+  function cartLoad() {
+    try { const a = JSON.parse(store.get(CART_KEY) || '[]'); CART = Array.isArray(a) ? a.filter(i => i && i.handle && i.tam && i.qtd > 0) : []; } catch (_) { CART = []; }
+    FRETE.cep = store.get(CEP_KEY) || '';
+  }
+  function cartSave() { store.set(CART_KEY, JSON.stringify(CART)); }
+  function cartLines() {
+    // junta cada item do carrinho com a peça atual do catálogo (preço sempre atualizado)
+    return CART.map(it => ({ it, p: ALL.find(x => x.handle === it.handle) })).filter(l => l.p);
+  }
+  function cartTotals() {
+    const lines = cartLines();
+    const pecas = lines.reduce((n, l) => n + l.it.qtd, 0);
+    const d = DESCONTOS.filter(x => pecas >= x.qtd_min).sort((a, b) => b.qtd_min - a.qtd_min)[0];
+    const perc = d ? Number(d.percentual) : 0;
+    let bruto = 0, semPreco = 0;
+    lines.forEach(l => {
+      if (l.p.preco == null) { semPreco += l.it.qtd; return; }
+      l.unit = Math.round(Number(l.p.preco) * (1 - perc / 100) * 100) / 100;
+      bruto += Number(l.p.preco) * l.it.qtd;
+    });
+    const sub = lines.reduce((n, l) => n + (l.unit != null ? l.unit * l.it.qtd : 0), 0);
+    return { lines, pecas, perc, bruto, sub: Math.round(sub * 100) / 100, desc: Math.round((bruto - sub) * 100) / 100, semPreco };
+  }
+
+  function cartAdd(p, tam, custom) {
+    const it = { handle: p.handle, tam, nome: custom && custom.nome || '', num: custom && custom.num || '', qtd: 1 };
+    const ex = CART.find(x => cartKey(x) === cartKey(it));
+    const s = p._sizes.find(x => x.tamanho === tam);
+    const max = s && s.qtd != null ? s.qtd : 99;
+    if (ex) ex.qtd = Math.min(ex.qtd + 1, max); else CART.push(it);
+    cartChanged();
+  }
+  function cartBadge() {
+    const n = CART.reduce((a, i) => a + i.qtd, 0);
+    const b = $q('#cartN'); b.textContent = n; b.dataset.n = n;
+  }
+  function cartChanged() {
+    cartSave(); cartBadge();
+    FRETE.opcoes = null; FRETE.sel = null;
+    cartRender();
+    scheduleQuote();
+  }
+
+  function cartRender() {
+    const t = cartTotals();
+    const box = $q('#cItems');
+    $q('#cFrete').hidden = !t.lines.length;
+    $q('#cFoot').hidden = !t.lines.length;
+    if (!t.lines.length) { box.innerHTML = '<p class="cart-empty">Seu carrinho está vazio.</p>'; return; }
+    box.innerHTML = t.lines.map(l => {
+      const k = esc(cartKey(l.it));
+      const cz = [l.it.nome, l.it.num].filter(Boolean).join(' ');
+      const img = l.p.imagens[0] ? `<img src="${esc(imgUrl(l.p.imagens[0], 200))}" alt="" loading="lazy">` : '';
+      const preco = l.unit == null ? 'Consulte' : money(l.unit * l.it.qtd);
+      const riscado = l.unit != null && t.perc ? `<s>${money(Number(l.p.preco) * l.it.qtd)}</s>` : '';
+      return `<div class="ci" data-k="${k}"><div class="ci-img">${img}</div><div>
+        <p class="ci-t">${esc(l.p._titulo)}</p>
+        <p class="ci-d">${esc([l.p._det, 'Tam. ' + l.it.tam, cz && 'Personalizada: ' + cz].filter(Boolean).join(' · '))}</p>
+        <div class="ci-r"><div class="qty"><button type="button" data-a="-" aria-label="Menos uma">−</button><span>${l.it.qtd}</span><button type="button" data-a="+" aria-label="Mais uma">+</button></div><span class="ci-p">${riscado}${preco}</span></div>
+        <button class="ci-rm" type="button" data-a="x">Remover</button></div></div>`;
+    }).join('');
+    cartSummary();
+  }
+
+  function cartSummary() {
+    const t = cartTotals();
+    const fr = FRETE.sel;
+    const total = t.sub + (fr ? fr.preco : 0);
+    const dprox = DESCONTOS.filter(x => x.qtd_min > t.pecas).sort((a, b) => a.qtd_min - b.qtd_min)[0];
+    let h = `<div><span>${t.pecas} ${t.pecas === 1 ? 'peça' : 'peças'}</span><span>${money(t.bruto)}</span></div>`;
+    if (t.perc) h += `<div class="ok"><span>Desconto por quantidade (${t.perc}%)</span><span>− ${money(t.desc)}</span></div>`;
+    else if (dprox && t.bruto) h += `<div><span>Leve ${dprox.qtd_min} e ganhe ${dprox.percentual}% de desconto</span><span></span></div>`;
+    h += `<div><span>Frete${fr ? ' (' + esc(fr.empresa + ' ' + fr.servico) + ')' : ''}</span><span>${fr ? money(fr.preco) : 'calcule acima'}</span></div>`;
+    if (t.semPreco) h += `<div><span>${t.semPreco} ${t.semPreco === 1 ? 'item' : 'itens'} sem valor definido</span><span>a combinar</span></div>`;
+    h += `<div class="tot"><span>Total</span><span>${money(total)}</span></div>`;
+    $q('#cSum').innerHTML = h;
+    $q('#cBuy').href = cartWaLink(t);
+  }
+
+  function cartWaLink(t) {
+    const L = ['Olá! Quero fazer este pedido:', ''];
+    t.lines.forEach(l => {
+      const cz = [l.it.nome, l.it.num].filter(Boolean).join(' ');
+      L.push(`• ${l.it.qtd}x ${l.p._titulo}${l.p._det ? ' (' + l.p._det + ')' : ''}, tam. ${l.it.tam}${cz ? ', personalizada "' + cz + '"' : ''}${l.unit != null ? ' — ' + money(l.unit * l.it.qtd) : ' — valor a combinar'}`);
+    });
+    L.push('');
+    if (t.perc) L.push(`Desconto por quantidade (${t.perc}%): − ${money(t.desc)}`);
+    L.push(`Subtotal: ${money(t.sub)}`);
+    if (FRETE.sel) {
+      const o = FRETE.sel;
+      L.push(`Frete (${o.empresa} ${o.servico}${prazoTxt(o) ? ', ' + prazoTxt(o) : ''}) para o CEP ${FRETE.cep}: ${money(o.preco)}`);
+      L.push(`Total: ${money(t.sub + o.preco)}`);
+    } else if (FRETE.cep.replace(/\D/g, '').length === 8) L.push(`Entrega no CEP ${FRETE.cep}. Pode me passar o frete?`);
+    return 'https://wa.me/' + CONFIG.whatsapp.replace(/\D/g, '') + '?text=' + encodeURIComponent(L.join('\n'));
+  }
+
+  // ----- cotação -----
+  async function cotar(cep, pecas, valor) {
+    const r = await fetch(CONFIG.supabaseUrl + '/functions/v1/frete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: CONFIG.supabaseKey },
+      body: JSON.stringify({ cep: cep.replace(/\D/g, ''), pecas, valor })
+    });
+    let d = null; try { d = await r.json(); } catch (_) {}
+    if (!r.ok) { const e = new Error(d && d.erro || 'indisponivel'); e.status = r.status; throw e; }
+    return d.opcoes || [];
+  }
+  const freteErro = e => e.status === 400 ? e.message : 'Não consegui calcular o frete agora. Você pode combinar o frete pelo WhatsApp.';
+
+  let quoteTimer = 0;
+  function scheduleQuote() {
+    clearTimeout(quoteTimer);
+    if (FRETE.cep.replace(/\D/g, '').length !== 8 || !cartTotals().pecas) { $q('#cFreteMsg').textContent = ''; $q('#cFreteOpts').innerHTML = ''; return; }
+    $q('#cFreteOpts').innerHTML = ''; $q('#cFreteMsg').className = 'fr-msg'; $q('#cFreteMsg').textContent = 'Atualizando o frete…';
+    quoteTimer = setTimeout(() => quoteCart(), 350);
+  }
+  async function quoteCart() {
+    const t = cartTotals();
+    if (!t.pecas) return;
+    const my = ++FRETE.token, msg = $q('#cFreteMsg'), ul = $q('#cFreteOpts');
+    msg.className = 'fr-msg'; msg.textContent = 'Calculando…'; ul.innerHTML = '';
+    try {
+      const ops = await cotar(FRETE.cep, t.pecas, t.sub);
+      if (my !== FRETE.token) return;
+      FRETE.opcoes = ops; FRETE.sel = ops[0] || null;
+      if (!ops.length) { msg.className = 'fr-msg err'; msg.textContent = 'Nenhuma opção de entrega para esse CEP. Fale com a gente pelo WhatsApp.'; }
+      else { msg.textContent = ''; renderOpcoes(ul, ops, FRETE.sel, true); }
+    } catch (e) {
+      if (my !== FRETE.token) return;
+      msg.className = 'fr-msg err'; msg.textContent = freteErro(e);
+    }
+    cartSummary();
+  }
+  function renderOpcoes(ul, ops, sel, radio) {
+    ul.innerHTML = ops.map((o, i) => `<li><label class="fr-opt ${radio ? '' : 'ro'} ${sel && sel.id === o.id ? 'on' : ''}">
+      ${radio ? `<input type="radio" name="fr" value="${i}" ${sel && sel.id === o.id ? 'checked' : ''}>` : ''}
+      <span class="fr-n">${esc(o.empresa)} ${esc(o.servico)}<small>${esc(prazoTxt(o))}</small></span><b>${money(o.preco)}</b></label></li>`).join('');
+  }
+
+  // ----- gaveta -----
+  let cartFocus = null;
+  function openCart() {
+    cartFocus = document.activeElement;
+    cartRender();
+    $q('#cCep').value = FRETE.cep;
+    $q('#cart').hidden = false; $q('#cScrim').hidden = false;
+    document.body.style.overflow = 'hidden';
+    $q('#cartClose').focus();
+    if (!FRETE.opcoes) scheduleQuote(); else renderOpcoes($q('#cFreteOpts'), FRETE.opcoes, FRETE.sel, true);
+  }
+  function closeCart() {
+    $q('#cart').hidden = true; $q('#cScrim').hidden = true;
+    if ($q('#modal').hidden) document.body.style.overflow = '';
+    if (cartFocus && cartFocus.focus) cartFocus.focus();
+  }
+
+  $q('#cartBtn').addEventListener('click', openCart);
+  $q('#cartClose').addEventListener('click', closeCart);
+  $q('#cScrim').addEventListener('click', closeCart);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$q('#cart').hidden) { e.stopImmediatePropagation(); closeCart(); } }, true);
+  $q('#cItems').addEventListener('click', e => {
+    const b = e.target.closest('[data-a]'); const row = e.target.closest('.ci'); if (!b || !row) return;
+    const it = CART.find(x => cartKey(x) === row.dataset.k); if (!it) return;
+    const p = ALL.find(x => x.handle === it.handle), s = p && p._sizes.find(x => x.tamanho === it.tam);
+    const max = s && s.qtd != null ? s.qtd : 99;
+    if (b.dataset.a === '+') it.qtd = Math.min(it.qtd + 1, max);
+    else if (b.dataset.a === '-') it.qtd -= 1;
+    else it.qtd = 0;
+    CART = CART.filter(x => x.qtd > 0);
+    cartChanged();
+  });
+  $q('#cFreteOpts').addEventListener('change', e => {
+    if (e.target.name !== 'fr' || !FRETE.opcoes) return;
+    FRETE.sel = FRETE.opcoes[+e.target.value];
+    renderOpcoes($q('#cFreteOpts'), FRETE.opcoes, FRETE.sel, true);
+    cartSummary();
+  });
+  const bindCep = (inp) => inp.addEventListener('input', () => { inp.value = maskCep(inp.value); });
+  bindCep($q('#cCep')); bindCep($q('#mCep'));
+  $q('#cFreteF').addEventListener('submit', e => {
+    e.preventDefault();
+    const v = maskCep($q('#cCep').value);
+    if (v.replace(/\D/g, '').length !== 8) { const m = $q('#cFreteMsg'); m.className = 'fr-msg err'; m.textContent = 'Digite um CEP com 8 números.'; return; }
+    FRETE.cep = v; store.set(CEP_KEY, v); quoteCart();
+  });
+
+  // ----- cotação na peça aberta (1 unidade) -----
+  $q('#mFreteF').addEventListener('submit', async e => {
+    e.preventDefault();
+    const msg = $q('#mFreteMsg'), ul = $q('#mFreteOpts'), v = maskCep($q('#mCep').value);
+    ul.innerHTML = '';
+    if (!current) return;
+    if (v.replace(/\D/g, '').length !== 8) { msg.className = 'fr-msg err'; msg.textContent = 'Digite um CEP com 8 números.'; return; }
+    FRETE.cep = v; store.set(CEP_KEY, v);
+    const btn = e.target.querySelector('button'); btn.disabled = true;
+    msg.className = 'fr-msg'; msg.textContent = 'Calculando…';
+    const my = current.handle;
+    try {
+      const ops = await cotar(v, 1, current.preco != null ? Number(current.preco) : 0);
+      if (!current || current.handle !== my) return;
+      if (!ops.length) { msg.className = 'fr-msg err'; msg.textContent = 'Nenhuma opção de entrega para esse CEP.'; }
+      else { msg.textContent = 'Frete para 1 peça. No carrinho o valor considera todas as peças.'; renderOpcoes(ul, ops, null, false); }
+    } catch (err) { msg.className = 'fr-msg err'; msg.textContent = freteErro(err); }
+    finally { btn.disabled = false; }
+  });
+  $q('#mAdd').addEventListener('click', () => {
+    if (!current || !selSize) return;
+    cartAdd(current, selSize, CUSTOM.on && (CUSTOM.nome || CUSTOM.num) ? { nome: CUSTOM.nome, num: CUSTOM.num } : null);
+    closeProduct();
+    openCart();
+  });
+
   // ---------- Carregamento ----------
   const DEMO = [
     { handle:'demo-1', destaque:true, nome:'Camisa Flamengo I 26/27 Torcedor - Rubro Negra', categoria:'torcedor', preco:150, imagens:[],
@@ -1205,6 +1528,7 @@ Basquete|Kings|kings,sacramento kings`;
     }
     applyBrand();
     ALL = data.filter(p => p.categoria !== 'patch').map(prep);
+    CART = CART.filter(i => ALL.some(p => p.handle === i.handle)); cartSave(); cartBadge();
     const open = readHash();
     buildControls();
     buildHub();
@@ -1212,6 +1536,7 @@ Basquete|Kings|kings,sacramento kings`;
     if (open) openProduct(open);
   }
 
+  cartLoad(); cartBadge();
   applyBrand();
   cabInit();
   load();
